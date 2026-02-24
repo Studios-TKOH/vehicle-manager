@@ -1,11 +1,16 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import localforage from 'localforage';
-
-import rootSaga from './rootSaga';
+import { combineReducers } from 'redux';
 import authReducer from './slices/authSlice';
 import salesReducer from './slices/salesSlice';
+import rootSaga from './rootSaga';
+
+localforage.config({
+  name: 'FleetSUNAT_DB',
+  storeName: 'redux_state'
+});
 
 const persistConfig = {
   key: 'sunat-root',
@@ -26,7 +31,9 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       thunk: false,
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/REGISTER'],
+      },
     }).concat(sagaMiddleware),
 });
 
