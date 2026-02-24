@@ -1,43 +1,63 @@
 import { Outlet, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout } from "../../store/slices/authSlice";
-import styles from "./MainLayout.module.css";
+import { useMainLayout } from "../../hooks/useMainLayout";
+import styles from "../../styles/modules/main-layout.module.css";
+import {
+  Home,
+  Truck,
+  Users,
+  FileText,
+  BarChart3,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 
 export const MainLayout = () => {
-  const dispatch = useDispatch();
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const { handleLogout } = useMainLayout();
 
   return (
     <div className={styles.layoutContainer}>
+      {/* Barra Lateral */}
       <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>FleetSUNAT 2026</div>
+        <div className={styles.sidebarHeader}>
+          <ShieldCheck className="w-6 h-6 text-blue-500" />
+          <span>FleetSUNAT 2026</span>
+        </div>
+
         <nav className={styles.navLinks}>
-          <Link to="/" className={styles.link}>
-            🏠 Inicio
+          <Link to="/dashboard" className={styles.link}>
+            <Home className="w-5 h-5" />
+            Inicio
           </Link>
           <Link to="/vehicles" className={styles.link}>
-            🚛 Vehículos
+            <Truck className="w-5 h-5" />
+            Vehículos
+          </Link>
+          <Link to="/clients" className={styles.link}>
+            <Users className="w-5 h-5" />
+            Clientes
           </Link>
           <Link to="/sales" className={styles.link}>
-            📄 Facturación
+            <FileText className="w-5 h-5" />
+            Facturación
           </Link>
           <Link to="/reports" className={styles.link}>
-            📊 Reportes
+            <BarChart3 className="w-5 h-5" />
+            Reportes
           </Link>
         </nav>
       </aside>
 
+      {/* Contenido Principal */}
       <main className={styles.mainContent}>
         <header className={styles.topbar}>
           <button onClick={handleLogout} className={styles.logoutBtn}>
+            <LogOut className="w-4 h-4" />
             Cerrar Sesión
           </button>
         </header>
 
         <div className={styles.pageContent}>
+          {/* Aquí React Router inyectará las páginas dinámicamente */}
           <Outlet />
         </div>
       </main>

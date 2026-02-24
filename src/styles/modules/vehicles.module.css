@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+.container {
+    @apply bg-white rounded-xl p-6 shadow-sm border border-slate-200;
+}
+
+.header {
+    @apply flex justify-between items-center mb-6;
+}
+
+.title {
+    @apply text-2xl font-bold text-slate-800 m-0;
+}
+
+.addButton {
+    @apply bg-blue-600 text-white border-none py-2 px-4 rounded-lg font-medium cursor-pointer transition-colors flex items-center gap-2 hover:bg-blue-700;
+}
+
+.filtersContainer {
+    @apply flex gap-4 mb-6 relative;
+}
+
+.searchInput {
+    @apply w-full max-w-md pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
+}
+
+.searchIcon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5;
+}
+
+.tableContainer {
+    @apply overflow-x-auto border border-slate-200 rounded-xl;
+}
+
+.table {
+    @apply w-full text-left border-collapse whitespace-nowrap;
+}
+
+.table th {
+    @apply bg-slate-50 p-4 font-semibold text-slate-600 border-b-2 border-slate-200;
+}
+
+.table td {
+    @apply p-4 border-b border-slate-100 text-slate-700 align-middle;
+}
+
+.entityText {
+    @apply text-sm font-medium flex items-center gap-2 text-slate-700;
+}
+
+.subText {
+    @apply text-xs text-slate-500 mt-1 flex items-center gap-1;
+}
+
+.statusBadge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold inline-block;
+}
+
+.statusActive {
+    @apply bg-green-100 text-green-700;
+}
+
+.statusMaintenance {
+    @apply bg-yellow-100 text-yellow-700;
+}
+
+.statusInactive {
+    @apply bg-red-100 text-red-700;
+}
+
+.kmText {
+    @apply text-sm text-slate-600 block;
+}
+
+.kmWarning {
+    @apply text-orange-600 font-bold flex items-center gap-1;
+}
+
+.detailsBtn {
+    @apply bg-transparent border border-slate-300 py-1.5 px-3 rounded-md cursor-pointer text-blue-600 text-sm font-medium transition-colors hover:bg-blue-50 flex items-center gap-1;
+}
+
+.expandedRow {
+    @apply bg-slate-50/50;
+}
+
+.detailsContent {
+    @apply p-6 border-l-4 border-blue-500 bg-white shadow-inner m-4 rounded-r-lg;
+}
+
+.detailsGrid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
+.detailSection h4 {
+    @apply mt-0 mb-3 text-slate-800 border-b border-slate-200 pb-2 font-semibold;
+}
+
+.historyList {
+    @apply list-none p-0 m-0 space-y-3;
+}
+
+.historyItem {
+    @apply bg-white p-3 border border-slate-200 rounded-lg shadow-sm;
+}
+
+.pagination {
+    @apply flex justify-between items-center mt-6;
+}
+
+.pageBtn {
+    @apply px-4 py-2 border border-slate-300 bg-white rounded-lg cursor-pointer transition-colors text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.icon {
+    @apply w-4 h-4;
+}
