@@ -1,0 +1,79 @@
+@import 'tailwindcss';
+
+.pageContainer {
+    @apply min-h-screen flex items-center justify-center bg-slate-100 p-4;
+}
+
+.authCard {
+    @apply w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex overflow-hidden min-h-[600px] relative;
+}
+
+/* Panel Izquierdo (Marca) */
+.brandSection {
+    @apply hidden md:flex w-1/2 bg-gradient-to-br from-blue-700 via-indigo-700 to-blue-900 p-12 flex-col justify-between text-white relative overflow-hidden;
+}
+
+.brandDecoration {
+    @apply absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none;
+}
+
+.brandTitle {
+    @apply text-4xl font-extrabold mb-4 leading-tight z-10;
+}
+
+.brandSubtitle {
+    @apply text-blue-100 text-lg font-light z-10;
+}
+
+/* Panel Derecho (Formulario) */
+.formSection {
+    @apply w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white;
+}
+
+.formHeader {
+    @apply mb-8 text-center md:text-left;
+}
+
+.formTitle {
+    @apply text-3xl font-bold text-slate-800 mb-2;
+}
+
+.formSubtitle {
+    @apply text-slate-500;
+}
+
+.formGroup {
+    @apply flex flex-col gap-2 mb-5;
+}
+
+.label {
+    @apply text-sm font-semibold text-slate-700;
+}
+
+.inputWrapper {
+    @apply relative flex items-center text-slate-400 focus-within:text-blue-600;
+}
+
+.inputIcon {
+    @apply absolute left-3 w-5 h-5 transition-colors;
+}
+
+.input {
+    @apply w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-slate-800;
+}
+
+.errorBox {
+    @apply bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 flex items-start gap-2 border border-red-200;
+}
+
+.submitBtn {
+    @apply w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed;
+}
+
+.registerLink {
+    @apply mt-8 text-center text-sm text-slate-500;
+}
+
+.registerLink a {
+    @apply text-blue-600 font-bold hover:underline ml-1;
+}
