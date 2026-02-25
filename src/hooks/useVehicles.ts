@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../data/db'; // Importamos la base de datos simulada
+import { db } from '../data/db';
 
 export type ModalType = 'details' | 'add' | 'edit' | 'delete' | null;
 
@@ -32,7 +32,7 @@ export const useVehicles = () => {
 
             // Adjuntar productos a cada venta
             const historialConProductos = vehSales.map(sale => {
-                const items = db.saleItems
+                const items = db.saleDetails
                     .filter(si => si.saleId === sale.id)
                     .map(si => {
                         const prod = db.products.find(p => p.id === si.productId);

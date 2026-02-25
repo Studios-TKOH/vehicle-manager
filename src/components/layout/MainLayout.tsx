@@ -10,6 +10,7 @@ import {
   LogOut,
   ShieldCheck,
   Package,
+  Settings,
 } from "lucide-react";
 
 export const MainLayout = () => {
@@ -47,6 +48,10 @@ export const MainLayout = () => {
           <Link to="/reports" className={styles.link}>
             <BarChart3 className="w-5 h-5" />
             Reportes
+          </Link>
+          <Link to="/settings" className={styles.link}>
+            <Settings className="w-5 h-5" />
+            Configuración
           </Link>
         </nav>
       </aside>

@@ -18,6 +18,85 @@ export const db = {
             nombre: "Sede Central (Surquillo)",
             direccion: "Av. Angamos 456",
             telefono: "01-555-0001"
+        },
+        {
+            id: "branch-002",
+            companyId: "comp-1234-abcd",
+            codigoBase: "SUC02",
+            nombre: "Sede Norte (Los Olivos)",
+            direccion: "Av. Las Palmeras 789",
+            telefono: "01-555-0002"
+        }
+    ],
+    users: [
+        {
+            id: "user-001",
+            branchId: "branch-001",
+            nombre: "Carlos Vendedor",
+            email: "carlos@elmotors.com",
+            rol: "VENDEDOR"
+        }
+    ],
+    documentSeries: [
+        {
+            id: "ser-1",
+            branchId: "branch-001",
+            tipoDocumento: "FACTURA",
+            serie: "F001",
+            correlativoActual: 150
+        },
+        {
+            id: "ser-2",
+            branchId: "branch-001",
+            tipoDocumento: "BOLETA",
+            serie: "B001",
+            correlativoActual: 890
+        },
+        {
+            id: "ser-3",
+            branchId: "branch-002",
+            tipoDocumento: "FACTURA",
+            serie: "F002",
+            correlativoActual: 45
+        },
+        {
+            id: "ser-4",
+            branchId: "branch-002",
+            tipoDocumento: "BOLETA",
+            serie: "B002",
+            correlativoActual: 320
+        }
+    ],
+    products: [
+        {
+            id: "prod-001",
+            codigoBarras: "7751234567801",
+            nombre: "Aceite Castrol Magnatec 10W-40 (Galón)",
+            categoria: "Aceites de Motor",
+            precioVenta: 120.00,
+            unidadMedida: "GAL",
+            frecuenciaCambioKm: 5000,
+            afectacionIgv: "10"
+        },
+        {
+            id: "prod-002",
+            codigoBarras: "7751234567802",
+            nombre: "Filtro de Aceite Bosh TOY-01",
+            categoria: "Filtros",
+            precioVenta: 25.00,
+            unidadMedida: "NIU",
+            frecuenciaCambioKm: 5000,
+            afectacionIgv: "10"
+        },
+        {
+            id: "prod-003",
+            codigoBarras: "7751234567803",
+            nombre: "Refrigerante Verde Prestone 1L",
+            categoria: "Refrigerantes",
+            precioVenta: 35.00,
+            unidadMedida: "NIU",
+            frecuenciaCambioKm: 20000,
+            afectacionIgv: "10"
         }
     ],
     customers: [
@@ -53,30 +132,21 @@ export const db = {
             kilometrajeActual: 45000,
             createdAt: "2023-10-25T10:00:00Z",
             syncedAt: "2023-10-25T10:01:00Z",
-            isDeleted: false,
-            notas: "Usar siempre Magnatec por orden del dueño."
+            isDeleted: false
         }
     ],
-    products: [
+    vehicleUsualProducts: [
         {
-            id: "prod-001",
-            codigoBarras: "7751234567801",
-            nombre: "Aceite Castrol Magnatec 10W-40 (Galón)",
-            categoria: "Aceites de Motor",
-            precioVenta: 120.00,
-            unidadMedida: "GAL",
-            frecuenciaCambioKm: 5000,
-            afectacionIgv: "10"
+            id: "vup-001",
+            vehicleId: "veh-001",
+            productId: "prod-001",
+            notas: "Usar siempre Magnatec por orden del dueño."
         },
         {
-            id: "prod-002",
-            codigoBarras: "7751234567802",
-            nombre: "Filtro de Aceite Bosh TOY-01",
-            categoria: "Filtros",
-            precioVenta: 25.00,
-            unidadMedida: "NIU",
-            frecuenciaCambioKm: 5000,
-            afectacionIgv: "10"
+            id: "vup-002",
+            vehicleId: "veh-001",
+            productId: "prod-002",
+            notas: ""
         }
     ],
     sales: [
@@ -98,10 +168,14 @@ export const db = {
             kilometrajeIngreso: 45000,
             proximoCambioKm: 50000,
             estadoSunat: "ACEPTADO",
+            documentoReferenciaId: null,
+            motivoNotaReferencia: null,
+            createdAt: "2023-10-26T14:30:00Z",
+            syncedAt: "2023-10-26T14:31:00Z",
             isDeleted: false
         }
     ],
-    saleItems: [
+    saleDetails: [
         {
             id: "sd-001",
             saleId: "sale-001",
