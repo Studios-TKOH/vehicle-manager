@@ -9,6 +9,7 @@ import {
   BarChart3,
   LogOut,
   ShieldCheck,
+  Package,
 } from "lucide-react";
 
 export const MainLayout = () => {
@@ -31,6 +32,9 @@ export const MainLayout = () => {
           <Link to="/vehicles" className={styles.link}>
             <Truck className="w-5 h-5" />
             Vehículos
+          </Link>
+          <Link to="/products" className={styles.link}>
+            <Package className="w-5 h-5" /> Productos
           </Link>
           <Link to="/clients" className={styles.link}>
             <Users className="w-5 h-5" />

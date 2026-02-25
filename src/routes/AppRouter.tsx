@@ -3,6 +3,7 @@ import { MainLayout } from "../components/layout/MainLayout";
 import { Home } from "../pages/Home";
 import { Vehicles } from "../pages/Vehicles";
 import { Customers } from "../pages/Customers";
+import { Products } from "../pages/Products";
 
 const SalesMock = () => (
   <h2>Módulo de Facturación (Offline-First) en construcción...</h2>
@@ -18,6 +19,7 @@ export const AppRouter = () => {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/clients" element={<Customers />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/sales" element={<SalesMock />} />
           <Route path="/reports" element={<ReportsMock />} />
         </Route>
