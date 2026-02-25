@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .container {
-    @apply bg-white rounded-xl p-6 shadow-sm border border-slate-200;
+    @apply bg-white rounded-xl p-6 shadow-sm border border-slate-200 relative;
 }
 
 .header {
@@ -13,21 +13,34 @@
 }
 
 .addButton {
-    @apply bg-blue-600 text-white border-none py-2 px-4 rounded-lg font-medium cursor-pointer transition-colors flex items-center gap-2 hover:bg-blue-700;
+    @apply bg-blue-600 text-white border-none py-2 px-4 rounded-lg font-medium cursor-pointer transition-colors flex items-center gap-2 hover:bg-blue-700 shadow-sm;
 }
 
-.filtersContainer {
-    @apply flex gap-4 mb-6 relative;
+.controlsContainer {
+    @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6;
+}
+
+.searchBox {
+    @apply relative w-full md:max-w-md;
 }
 
 .searchInput {
-    @apply w-full max-w-md pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
+    @apply w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-slate-50;
 }
 
 .searchIcon {
     @apply absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5;
 }
 
+.paginationSelect {
+    @apply flex items-center gap-2 text-sm text-slate-600;
+}
+
+.selectInput {
+    @apply border border-slate-300 rounded-md py-1 px-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+/* Tabla */
 .tableContainer {
     @apply overflow-x-auto border border-slate-200 rounded-xl;
 }
@@ -37,81 +50,89 @@
 }
 
 .table th {
-    @apply bg-slate-50 p-4 font-semibold text-slate-600 border-b-2 border-slate-200;
+    @apply bg-slate-50 p-4 font-semibold text-slate-600 border-b-2 border-slate-200 uppercase text-xs tracking-wider;
 }
 
 .table td {
     @apply p-4 border-b border-slate-100 text-slate-700 align-middle;
 }
 
-.entityText {
-    @apply text-sm font-medium flex items-center gap-2 text-slate-700;
+/* Acciones en Tabla */
+.actionGroup {
+    @apply flex items-center gap-2;
 }
 
-.subText {
-    @apply text-xs text-slate-500 mt-1 flex items-center gap-1;
+.iconBtn {
+    @apply p-2 rounded-md transition-colors cursor-pointer;
 }
 
-.statusBadge {
-    @apply px-3 py-1 rounded-full text-xs font-semibold inline-block;
+.iconBtnView {
+    @apply text-blue-600 hover:bg-blue-50;
 }
 
-.statusActive {
-    @apply bg-green-100 text-green-700;
+.iconBtnEdit {
+    @apply text-orange-500 hover:bg-orange-50;
 }
 
-.statusMaintenance {
-    @apply bg-yellow-100 text-yellow-700;
+.iconBtnDelete {
+    @apply text-red-600 hover:bg-red-50;
 }
 
-.statusInactive {
-    @apply bg-red-100 text-red-700;
+/* Modal Styles */
+.modalOverlay {
+    @apply fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
 }
 
-.kmText {
-    @apply text-sm text-slate-600 block;
+.modalContent {
+    @apply bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col;
 }
 
-.kmWarning {
-    @apply text-orange-600 font-bold flex items-center gap-1;
+.modalHeader {
+    @apply flex justify-between items-center p-6 border-b border-slate-200 sticky top-0 bg-white z-10;
 }
 
-.detailsBtn {
-    @apply bg-transparent border border-slate-300 py-1.5 px-3 rounded-md cursor-pointer text-blue-600 text-sm font-medium transition-colors hover:bg-blue-50 flex items-center gap-1;
+.modalTitle {
+    @apply text-xl font-bold text-slate-800 flex items-center gap-2;
 }
 
-.expandedRow {
-    @apply bg-slate-50/50;
+.closeBtn {
+    @apply text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition-colors cursor-pointer;
 }
 
-.detailsContent {
-    @apply p-6 border-l-4 border-blue-500 bg-white shadow-inner m-4 rounded-r-lg;
+.modalBody {
+    @apply p-6 flex-1;
 }
 
-.detailsGrid {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+.modalFooter {
+    @apply p-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-0 bg-white z-10 rounded-b-2xl;
 }
 
-.detailSection h4 {
-    @apply mt-0 mb-3 text-slate-800 border-b border-slate-200 pb-2 font-semibold;
+/* Formularios genéricos */
+.formGrid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
 }
 
-.historyList {
-    @apply list-none p-0 m-0 space-y-3;
+.formGroup {
+    @apply flex flex-col gap-1;
 }
 
-.historyItem {
-    @apply bg-white p-3 border border-slate-200 rounded-lg shadow-sm;
+.label {
+    @apply text-sm font-semibold text-slate-700;
 }
 
-.pagination {
-    @apply flex justify-between items-center mt-6;
+.input {
+    @apply border border-slate-300 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.pageBtn {
-    @apply px-4 py-2 border border-slate-300 bg-white rounded-lg cursor-pointer transition-colors text-sm font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed;
+/* Botones genéricos */
+.btnSecondary {
+    @apply px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors cursor-pointer;
 }
 
-.icon {
-    @apply w-4 h-4;
+.btnPrimary {
+    @apply px-4 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2;
+}
+
+.btnDanger {
+    @apply px-4 py-2 bg-red-600 rounded-lg text-white font-medium hover:bg-red-700 transition-colors cursor-pointer;
 }
