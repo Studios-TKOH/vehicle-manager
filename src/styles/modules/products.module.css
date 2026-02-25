@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+.container {
+    @apply bg-white rounded-xl p-6 shadow-sm border border-slate-200 relative min-h-[80vh] flex flex-col;
+}
+
+.header {
+    @apply flex justify-between items-center mb-6;
+}
+
+.title {
+    @apply text-2xl font-bold text-slate-800 m-0 flex items-center gap-2;
+}
+
+.addButton {
+    @apply bg-blue-600 text-white border-none py-2 px-4 rounded-lg font-medium cursor-pointer transition-colors flex items-center gap-2 hover:bg-blue-700 shadow-sm;
+}
+
+.controlsContainer {
+    @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6;
+}
+
+.filtersGroup {
+    @apply flex flex-col sm:flex-row w-full md:w-auto gap-3 flex-1;
+}
+
+.searchBox {
+    @apply relative w-full sm:max-w-md flex-1;
+}
+
+.searchInput {
+    @apply w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-slate-50;
+}
+
+.searchIcon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5;
+}
+
+.filterSelect {
+    @apply border border-slate-300 rounded-lg py-2 px-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 min-w-[150px];
+}
+
+.paginationSelect {
+    @apply flex items-center gap-2 text-sm text-slate-600;
+}
+
+.selectInput {
+    @apply border border-slate-300 rounded-md py-1 px-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+/* Tabla */
+.tableContainer {
+    @apply overflow-x-auto border border-slate-200 rounded-xl flex-1;
+}
+
+.table {
+    @apply w-full text-left border-collapse whitespace-nowrap;
+}
+
+.table th {
+    @apply bg-slate-50 p-4 font-semibold text-slate-600 border-b-2 border-slate-200 uppercase text-xs tracking-wider;
+}
+
+.table td {
+    @apply p-4 border-b border-slate-100 text-slate-700 align-middle;
+}
+
+/* Tipografía de Tabla */
+.categoryBadge {
+    @apply px-2.5 py-1 rounded-md text-xs font-semibold border inline-block bg-slate-100 text-slate-600 border-slate-200;
+}
+
+.priceText {
+    @apply font-bold text-emerald-600 text-lg;
+}
+
+.actionGroup {
+    @apply flex items-center gap-2;
+}
+
+.iconBtn {
+    @apply p-2 rounded-md transition-colors cursor-pointer;
+}
+
+.iconBtnView {
+    @apply text-blue-600 hover:bg-blue-50;
+}
+
+.iconBtnEdit {
+    @apply text-orange-500 hover:bg-orange-50;
+}
+
+.iconBtnDelete {
+    @apply text-red-600 hover:bg-red-50;
+}
+
+/* Modales */
+.modalOverlay {
+    @apply fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+}
+
+.modalContent {
+    @apply bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col;
+}
+
+.modalHeader {
+    @apply flex justify-between items-center p-6 border-b border-slate-200 sticky top-0 bg-white z-10;
+}
+
+.modalTitle {
+    @apply text-xl font-bold text-slate-800 flex items-center gap-2;
+}
+
+.closeBtn {
+    @apply text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition-colors cursor-pointer;
+}
+
+.modalBody {
+    @apply p-6 flex-1;
+}
+
+.modalFooter {
+    @apply p-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-0 bg-white z-10 rounded-b-2xl;
+}
+
+/* Formularios */
+.formGrid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-5;
+}
+
+.formGroup {
+    @apply flex flex-col gap-1.5;
+}
+
+.label {
+    @apply text-sm font-semibold text-slate-700 flex items-center gap-1.5;
+}
+
+.input {
+    @apply border border-slate-300 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.inputGroup {
+    @apply flex items-center border border-slate-300 rounded-lg bg-slate-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white overflow-hidden;
+}
+
+.inputPrefix {
+    @apply px-3 py-2.5 bg-slate-100 border-r border-slate-300 text-slate-500 font-semibold;
+}
+
+.inputGroup .input {
+    @apply border-none ring-0 focus:ring-0 rounded-none flex-1 bg-transparent;
+}
+
+/* Botones */
+.btnSecondary {
+    @apply px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors cursor-pointer;
+}
+
+.btnPrimary {
+    @apply px-4 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2;
+}
+
+.btnDanger {
+    @apply px-4 py-2 bg-red-600 rounded-lg text-white font-medium hover:bg-red-700 transition-colors cursor-pointer;
+}
