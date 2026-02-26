@@ -8,15 +8,11 @@ import { Home } from "../pages/Home";
 import { Vehicles } from "../pages/Vehicles";
 import { Customers } from "../pages/Customers";
 import { Products } from "../pages/Products";
+import { Sales } from "../pages/Sales";
 import { Login } from "../pages/Login";
 import { Settings } from "../pages/Settings";
 
-// Mocks temporales
-const SalesMock = () => (
-  <div className="p-8">
-    <h2>Módulo de Facturación en construcción...</h2>
-  </div>
-);
+
 const ReportsMock = () => (
   <div className="p-8">
     <h2>Módulo de Reportes en construcción...</h2>
@@ -51,10 +47,9 @@ export const AppRouter = () => {
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/clients" element={<Customers />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/sales" element={<SalesMock />} />
+          <Route path="/sales" element={<Sales />} />
           <Route path="/reports" element={<ReportsMock />} />
           <Route path="/settings" element={<Settings />} />{" "}
-          {/* Nueva ruta de configuración */}
         </Route>
 
         {/* CATCH-ALL: Rutas inexistentes */}
