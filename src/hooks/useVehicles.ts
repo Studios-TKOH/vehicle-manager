@@ -46,10 +46,11 @@ export const useVehicles = () => {
                 clienteNombre: cliente?.nombreRazonSocial || 'Desconocido',
                 clienteDocumento: cliente?.numeroDocumento || '',
                 choferNombre: chofer?.nombreRazonSocial || 'Sin chofer',
+                notas: (v as any).notas || "Sin Observaciones",
                 // REGLA DE ORO: Si hay venta, muestra el km de la venta, sino, el km base de registro.
                 kmActual: latestSale?.kilometrajeIngreso || v.kilometrajeActual || 0,
                 kmProximo: latestSale?.proximoCambioKm || 0,
-                historial: historialConProductos
+                historial: historialConProductos,
             };
         });
     }, []);
@@ -105,7 +106,7 @@ export const useVehicles = () => {
                     vehicleId: vehicle.id,
                     customerId: vehicle.propietarioId,
                     choferId: vehicle.conductorHabitualId,
-                    placa: vehicle.placa
+                    placa: vehicle.placa,
                 }
             }
         });
