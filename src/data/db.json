@@ -126,6 +126,7 @@
             "conductorHabitualId": "cust-002",
             "placa": "ABC-123",
             "marca": "Toyota",
+            "notas": "",
             "modelo": "Hilux",
             "anio": 2020,
             "color": "Blanco",
