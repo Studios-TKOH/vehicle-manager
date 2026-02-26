@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+.container {
+    @apply relative flex flex-col bg-white shadow-md mt-4 p-6 pt-8 rounded-xl w-full h-full min-h-[85vh];
+}
+
+.titleGroup {
+    @apply flex justify-between items-center mb-8 pb-2;
+}
+
+.pageTitle {
+    @apply m-0 font-extrabold text-slate-800 text-3xl tracking-tight;
+}
+
+.checkboxLabel {
+    @apply flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-4 py-2 border border-slate-200 rounded-lg font-semibold text-slate-600 text-sm transition-colors cursor-pointer select-none;
+}
+
+.grid4 {
+    @apply gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-4;
+}
+
+.formLabel {
+    @apply block mb-1.5 font-semibold text-slate-500 text-xs;
+}
+
+.formInput {
+    @apply px-3 border border-slate-300 focus:border-blue-400 rounded-md outline-none focus:ring-2 focus:ring-blue-400 w-full h-11 text-slate-700 text-sm transition-all;
+}
+
+.inputGroup {
+    @apply flex items-center gap-2 bg-white px-3 border border-slate-300 focus-within:border-blue-400 rounded-md focus-within:ring-2 focus-within:ring-blue-400 w-full h-11 transition-all;
+}
+
+.inputNoBorder {
+    @apply flex-1 bg-transparent border-none outline-none h-full text-slate-800 text-sm;
+}
+
+.actionRow {
+    @apply flex sm:flex-row flex-col items-center gap-3 mb-6;
+}
+
+.actionBtn {
+    @apply flex justify-center items-center gap-2 shadow-sm px-4 py-2.5 rounded-lg w-full font-bold text-white text-sm transition-all;
+}
+
+.btnPrimary {
+    @apply bg-blue-600 hover:bg-blue-700;
+}
+
+.btnSuccess {
+    @apply bg-emerald-600 hover:bg-emerald-700;
+}
+
+.tableContainer {
+    @apply flex-1 bg-slate-50 mb-6 border border-slate-200 rounded-lg min-h-[250px] overflow-x-auto text-sm;
+}
+
+.table {
+    @apply w-full text-slate-700 border-collapse;
+}
+
+.table th {
+    @apply bg-slate-100 px-4 py-3 border-slate-200 border-b font-bold text-slate-500 text-xs uppercase;
+}
+
+.qtyBtn {
+    @apply flex justify-center items-center bg-slate-200 hover:bg-slate-300 rounded w-8 h-8 font-bold text-slate-700 transition-colors cursor-pointer;
+}
+
+.stickyBottom {
+    @apply bottom-0 sticky bg-white mt-auto pt-4 border-slate-200 border-t;
+}
+
+.searchProductBox {
+    @apply flex items-center gap-3 bg-white shadow-sm px-4 border border-slate-300 focus-within:border-blue-400 rounded-lg focus-within:ring-2 focus-within:ring-blue-400 w-full h-12 transition-all;
+}
+
+.searchProductInput {
+    @apply flex-1 bg-transparent border-none outline-none h-full font-medium text-slate-800 text-sm placeholder-slate-400;
+}
+
+.suggestionsMenu {
+    @apply right-0 bottom-full left-0 z-50 absolute bg-white shadow-2xl mb-2 border border-slate-200 rounded-lg max-h-64 overflow-y-auto;
+}
+
+.suggestionItem {
+    @apply flex justify-between items-center hover:bg-blue-50 p-3 border-slate-100 border-b last:border-none transition-colors cursor-pointer;
+}
