@@ -9,18 +9,12 @@ import { Vehicles } from "../pages/Vehicles";
 import { Customers } from "../pages/Customers";
 import { Products } from "../pages/Products";
 import { Sales } from "../pages/Sales";
+import { Reports } from "../pages/Reports";
 import { Login } from "../pages/Login";
 import { Settings } from "../pages/Settings";
 
 
-const ReportsMock = () => (
-  <div className="p-8">
-    <h2>Módulo de Reportes en construcción...</h2>
-  </div>
-);
-
 export const AppRouter = () => {
-  // Leemos el estado global de autenticación desde Redux
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
@@ -48,7 +42,7 @@ export const AppRouter = () => {
           <Route path="/clients" element={<Customers />} />
           <Route path="/products" element={<Products />} />
           <Route path="/sales" element={<Sales />} />
-          <Route path="/reports" element={<ReportsMock />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />{" "}
         </Route>
 
