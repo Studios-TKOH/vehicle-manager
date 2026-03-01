@@ -1,0 +1,38 @@
+[
+    {
+        "id": "cust-001",
+        "tipoDocumentoIdentidad": "RUC",
+        "numeroDocumento": "20987654321",
+        "nombreRazonSocial": "TRANSPORTES RAPIDOS S.A.C.",
+        "direccion": "Calle Los Camiones 123",
+        "telefono": "987654321",
+        "email": "logistica@transrapidos.com"
+    },
+    {
+        "id": "cust-002",
+        "tipoDocumentoIdentidad": "DNI",
+        "numeroDocumento": "76543210",
+        "nombreRazonSocial": "Juan Perez (Chofer)",
+        "direccion": "Av. Su Casa 456",
+        "telefono": "999888777",
+        "email": "juanperez@gmail.com"
+    },
+    {
+        "id": "cust-003",
+        "tipoDocumentoIdentidad": "DNI",
+        "numeroDocumento": "45678912",
+        "nombreRazonSocial": "María Rodríguez",
+        "direccion": "Urb. Las Flores Mz B Lt 4, Los Olivos",
+        "telefono": "912345678",
+        "email": "mariarodriguez99@hotmail.com"
+    },
+    {
+        "id": "cust-004",
+        "tipoDocumentoIdentidad": "RUC",
+        "numeroDocumento": "20123456789",
+        "nombreRazonSocial": "MINERA ANDINA DEL SUR S.A.",
+        "direccion": "Av. Industrial 500, Ate",
+        "telefono": "01-444-5555",
+        "email": "compras@mineraandina.pe"
+    }
+]

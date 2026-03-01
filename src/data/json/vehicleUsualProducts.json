@@ -1,0 +1,20 @@
+[
+    {
+        "id": "vup-001",
+        "vehicleId": "veh-001",
+        "productId": "prod-001",
+        "notas": "Usar siempre Magnatec por orden del dueño."
+    },
+    {
+        "id": "vup-002",
+        "vehicleId": "veh-001",
+        "productId": "prod-002",
+        "notas": ""
+    },
+    {
+        "id": "vup-003",
+        "vehicleId": "veh-003",
+        "productId": "prod-004",
+        "notas": "Vehículo de la mina, solo aceite sintético Motul."
+    }
+]
