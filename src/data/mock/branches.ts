@@ -1,0 +1,28 @@
+export const branchesData = {
+    branches: [
+        {
+            id: "branch-001",
+            companyId: "comp-1234-abcd",
+            codigoBase: "SUC01",
+            nombre: "Sede Central (Surquillo)",
+            direccion: "Av. Angamos 456",
+            telefono: "01-555-0001"
+        },
+        {
+            id: "branch-002",
+            companyId: "comp-1234-abcd",
+            codigoBase: "SUC02",
+            nombre: "Sede Norte (Los Olivos)",
+            direccion: "Av. Las Palmeras 789",
+            telefono: "01-555-0002"
+        },
+        {
+            id: "branch-003",
+            companyId: "comp-1234-abcd",
+            codigoBase: "SUC03",
+            nombre: "Sede Este (Ate)",
+            direccion: "Av. Separadora Industrial 1010",
+            telefono: "01-555-0003"
+        }
+    ]
+};
