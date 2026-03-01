@@ -8,33 +8,37 @@ export const useSales = () => {
 
     const [documento, setDocumento] = useState({
         tipo: 'FACTURA',
-        serie: db.documentSeries[0].serie, //
+        serie: db.documentSeries[0].serie,
         correlativo: String(db.documentSeries[0].correlativoActual + 1).padStart(6, '0'),
         fecha: new Date().toISOString().split('T')[0],
         cliente: db.customers.find(c => c.id === prefill?.customerId) || null,
     });
 
+    // 1. Agregamos el Kilometraje a los "Extras" (Botones superiores)
     const [extras, setExtras] = useState({
         placa: prefill?.placa || "",
         ordenCompra: "",
-        observaciones: "",
+        observaciones: prefill?.observacionSugerida || "",
         condicionPago: "CONTADO",
-        metodoPago: "EFECTIVO"
+        metodoPago: "EFECTIVO",
+        kilometrajeActual: prefill?.kilometrajeActual || "",
+        proximoCambioKm: prefill?.kmProximo || ""
     });
 
     const [inlineInputs, setInlineInputs] = useState<Record<string, boolean>>({});
 
-    const [cart, setCart] = useState<any[]>([]);
-    const [productSearch, setProductSearch] = useState("");
-    const [showSuggestions, setShowSuggestions] = useState(false);
+    // 2. Inicializamos el carrito DIRECTAMENTE si vienen productos a repetir
+    const [cart, setCart] = useState<any[]>(() => {
+        if (prefill?.cartItems && prefill.cartItems.length > 0) {
+            return prefill.cartItems.map((item: any) => ({
+                ...item,
+                tempId: crypto.randomUUID()
+            }));
+        }
+        return [];
+    });
 
-    const productSuggestions = useMemo(() => {
-        if (!productSearch) return [];
-        return db.products.filter(p =>
-            p.nombre.toLowerCase().includes(productSearch.toLowerCase()) ||
-            p.codigoBarras.includes(productSearch)
-        );
-    }, [productSearch]);
+    const [productSearch, setProductSearch] = useState("");
 
     const addItem = (product: any) => {
         const existing = cart.find(item => item.id === product.id);
@@ -51,7 +55,6 @@ export const useSales = () => {
             }]);
         }
         setProductSearch("");
-        setShowSuggestions(false);
     };
 
     const removeItem = (tempId: string) => {
@@ -103,9 +106,6 @@ export const useSales = () => {
         updateQuantity,
         productSearch,
         setProductSearch,
-        showSuggestions,
-        setShowSuggestions,
-        productSuggestions,
         totals,
         productosUsuales: prefill?.productosUsuales || []
     };
