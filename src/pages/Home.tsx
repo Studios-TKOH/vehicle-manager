@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
 import styles from "../styles/modules/home.module.css";
-import {
-  Truck,
-  FileText,
-  Wrench,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
+import { Truck, FileText, Wrench, TrendingUp, Users, Zap } from "lucide-react";
+import { useHomeStats } from "../hooks/useHomeStats";
 
 export const Home = () => {
+  const { totalVehicles, todaySales, pendingMaintenances, isLoading } =
+    useHomeStats();
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("es-PE", {
+      style: "currency",
+      currency: "PEN",
+    }).format(amount);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.heroCard}>
@@ -20,8 +24,8 @@ export const Home = () => {
             <h1 className={styles.title}>¡Hola, Administrador! 👋</h1>
             <p className={styles.subtitle}>
               El sistema <strong>FleetSUNAT 2026</strong> está operando de
-              manera óptima. Tienes 3 mantenimientos programados para hoy y la
-              sincronización offline está activa.
+              manera óptima. Tienes {pendingMaintenances} mantenimientos
+              programados para hoy y la sincronización offline está activa.
             </p>
 
             <div className={styles.glassBadge}>
@@ -111,7 +115,9 @@ export const Home = () => {
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Vehículos Activos</span>
-            <span className={styles.statValue}>24 / 30</span>
+            <span className={styles.statValue}>
+              {isLoading ? "..." : `${totalVehicles} en sistema`}
+            </span>
           </div>
         </div>
 
@@ -123,7 +129,9 @@ export const Home = () => {
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Facturación del Día</span>
-            <span className={styles.statValue}>S/ 4,520.00</span>
+            <span className={styles.statValue}>
+              {isLoading ? "..." : formatCurrency(todaySales)}
+            </span>
           </div>
         </div>
 
@@ -135,7 +143,9 @@ export const Home = () => {
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Mantenimientos Pendientes</span>
-            <span className={styles.statValue}>3 Vehículos</span>
+            <span className={styles.statValue}>
+              {isLoading ? "..." : `${pendingMaintenances} Vehículos`}
+            </span>
           </div>
         </div>
       </div>
