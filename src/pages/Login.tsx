@@ -1,8 +1,20 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import styles from "../styles/modules/Auth.module.css";
-import { Mail, Lock, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
+import styles from "../styles/modules/auth.module.css";
+import {
+  Mail,
+  Lock,
+  AlertCircle,
+  Loader2,
+  ShieldCheck,
+  User,
+} from "lucide-react";
 
 export const Login = () => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [nombre, setNombre] = useState("");
+
   const {
     email,
     setEmail,
@@ -11,7 +23,33 @@ export const Login = () => {
     error,
     isLoading,
     handleLogin,
+    register,
   } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let success = false;
+
+    if (isRegistering) {
+      // Si estamos en modo registro, llamamos a la función register del hook
+      success = await register(nombre, email, password);
+    } else {
+      // Si estamos en modo login, usamos el handleLogin
+      success = await handleLogin(e);
+    }
+
+    // Si la autenticación es exitosa, redirigimos al dashboard
+    if (success) {
+      navigate("/");
+    }
+  };
+
+  const toggleMode = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsRegistering(!isRegistering);
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -41,17 +79,39 @@ export const Login = () => {
         {/* Lado Derecho - Formulario */}
         <div className={styles.formSection}>
           <div className={styles.formHeader}>
-            <h2 className={styles.formTitle}>Bienvenido de nuevo</h2>
+            <h2 className={styles.formTitle}>
+              {isRegistering ? "Crea tu cuenta" : "Bienvenido de nuevo"}
+            </h2>
             <p className={styles.formSubtitle}>
-              Ingresa tus credenciales para acceder al sistema.
+              {isRegistering
+                ? "Configura tu negocio como dueño para empezar a facturar."
+                : "Ingresa tus credenciales para acceder al sistema."}
             </p>
           </div>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit}>
             {error && (
               <div className={styles.errorBox}>
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <p>{error}</p>
+              </div>
+            )}
+
+            {/* Campo de Nombre - Solo visible en Registro */}
+            {isRegistering && (
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Nombre Completo</label>
+                <div className={styles.inputWrapper}>
+                  <User className={styles.inputIcon} />
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="Ej. Juan Pérez"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
             )}
 
@@ -85,14 +145,17 @@ export const Login = () => {
               </div>
             </div>
 
-            <div className="flex justify-end mb-6">
-              <a
-                href="#"
-                className="text-sm font-medium text-blue-600 hover:underline"
-              >
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
+            {/* Link de recuperación de contraseña solo en Login */}
+            {!isRegistering && (
+              <div className="flex justify-end mb-6">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-blue-600 hover:underline"
+                >
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+            )}
 
             <button
               type="submit"
@@ -101,8 +164,10 @@ export const Login = () => {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-6 h-6 animate-spin" /> Verificando...
+                  <Loader2 className="w-6 h-6 animate-spin" /> Procesando...
                 </>
+              ) : isRegistering ? (
+                "Registrar mi Negocio"
               ) : (
                 "Iniciar Sesión"
               )}
@@ -110,8 +175,12 @@ export const Login = () => {
           </form>
 
           <p className={styles.registerLink}>
-            ¿Aún no tienes una cuenta en tu empresa?
-            <a href="#">Contacta al administrador</a>
+            {isRegistering
+              ? "¿Ya tienes una cuenta registrada?"
+              : "¿Eres dueño de un lubricentro nuevo?"}
+            <a href="#" onClick={toggleMode}>
+              {isRegistering ? "Inicia Sesión aquí" : "Regístrate aquí"}
+            </a>
           </p>
         </div>
       </div>
