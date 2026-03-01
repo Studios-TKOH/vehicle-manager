@@ -3,7 +3,7 @@ import { UserRole } from '../../constants/roles/roles';
 
 export interface User {
   id: string;
-  branchId: string | null; // El dueño podría no tener una sucursal fija al inicio
+  branchIds: string[];
   nombre: string;
   email: string;
   rol: UserRole;
