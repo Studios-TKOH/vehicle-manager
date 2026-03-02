@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../store/slices/authSlice";
-import { type RootState } from "../store";
-import { branchesData } from "../data/mock/branches";
-import { companyData } from "../data/mock/company";
+import { logout } from "@store/slices/authSlice";
+import { type RootState } from "@store/index";
+import { branchesData } from "@data/mock/branches";
+import { companyData } from "@data/mock/company";
 
 export const useMainLayout = () => {
     const dispatch = useDispatch();
