@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {Inbox, Receipt, Package, Truck, Users, FileText, BarChart3 } from "lucide-react";
-import { REPORTES_DISPONIBLES } from "../constants/reports/reportsData";
+import { REPORTES_DISPONIBLES } from "@constants/reports/reports";
 
 const iconMap: Record<string, React.ElementType> = {
     receipt: Receipt,
