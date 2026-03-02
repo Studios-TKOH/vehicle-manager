@@ -1,9 +1,9 @@
-import { useCustomers } from "@/hooks/useCustomers";
-import styles from "@/styles/modules/Customers.module.css";
+import { useCustomers } from "@hooks/useCustomers";
+import styles from "@styles/modules/Customers.module.css";
 import { Search, Plus, Users, Eye, Edit2, Trash2, Truck } from "lucide-react";
-import { CustomerDetailsModal } from "@/components/customers/CustomerDetailsModal";
-import { CustomerFormModal } from "@/components/customers/CustomerFormModal";
-import { CustomerDeleteModal } from "@/components/customers/CustomerDeleteModal";
+import { CustomerDetailsModal } from "@components/customers/CustomerDetailsModal";
+import { CustomerFormModal } from "@components/customers/CustomerFormModal";
+import { CustomerDeleteModal } from "@components/customers/CustomerDeleteModal";
 import { useState, useEffect } from "react";
 
 export const Customers = () => {
