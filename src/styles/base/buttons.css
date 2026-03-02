@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.addButton {
+    @apply flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg px-5 py-2.5 border-none rounded-xl font-semibold text-white active:scale-95 transition-all cursor-pointer;
+}
+
+.btnPrimary {
+    @apply px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer flex items-center gap-2 active:scale-95;
+}
+
+.btnSecondary {
+    @apply hover:bg-slate-50 px-5 py-2 border-2 border-slate-200 hover:border-slate-300 rounded-xl font-bold text-slate-700 transition-all cursor-pointer;
+}
+
+.btnDanger {
+    @apply px-5 py-2.5 bg-red-600 rounded-xl text-white font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all cursor-pointer active:scale-95;
+}
+
+.iconBtn {
+    @apply p-2 rounded-lg transition-all cursor-pointer;
+}
+
+.iconBtnView {
+    @apply hover:bg-blue-50 hover:shadow-sm text-blue-600;
+}
+
+.iconBtnEdit {
+    @apply hover:bg-orange-50 hover:shadow-sm text-orange-500;
+}
+
+.iconBtnDelete {
+    @apply hover:bg-red-50 hover:shadow-sm text-red-600;
+}
