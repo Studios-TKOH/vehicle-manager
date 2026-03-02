@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+.header {
+    @apply flex md:flex-row flex-col justify-between items-start md:items-center gap-4 mb-8;
+}
+
+.controlsContainer {
+    @apply flex md:flex-row flex-col justify-between items-start md:items-center gap-4 mb-6;
+}
+
+.formGrid {
+    @apply gap-x-6 gap-y-6 grid grid-cols-1 md:grid-cols-2;
+}
+
+.actionGroup {
+    @apply flex items-center gap-1.5;
+}
