@@ -1,5 +1,5 @@
-import { useSettings } from "../hooks/useSettings";
-import styles from "../styles/modules/Settings.module.css";
+import { useSettings } from "@hooks/useSettings";
+import styles from "@styles/modules/Settings.module.css";
 import {
   Settings as SettingsIcon,
   Building,
@@ -26,7 +26,7 @@ export const Settings = () => {
     <div className={styles.container}>
       {/* Menú Lateral de Ajustes */}
       <aside className={styles.tabsSidebar}>
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-2">
+        <h3 className="mb-2 ml-2 font-bold text-slate-400 text-xs uppercase tracking-wider">
           Ajustes del Sistema
         </h3>
         <button
@@ -59,7 +59,7 @@ export const Settings = () => {
       <main className={styles.contentArea}>
         {/* TAB 1: EMPRESA PRINCIPAL */}
         {activeTab === "empresa" && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
             <h2 className={styles.sectionTitle}>
               <SettingsIcon className="text-blue-600" /> Configuración de la
               Empresa
@@ -145,7 +145,7 @@ export const Settings = () => {
 
         {/* TAB 2: SUCURSALES */}
         {activeTab === "sucursales" && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
             <h2 className={styles.sectionTitle}>
               <Store className="text-blue-600" /> Establecimientos Anexos
             </h2>
@@ -157,14 +157,14 @@ export const Settings = () => {
                 <div key={branch.id} className={styles.infoCard}>
                   <div className={styles.cardBadge}>{branch.codigoBase}</div>
                   <h4 className={styles.cardTitle}>{branch.nombre}</h4>
-                  <p className="flex items-start gap-1 text-xs text-slate-500 mt-2">
+                  <p className="flex items-start gap-1 mt-2 text-slate-500 text-xs">
                     <MapPin className="w-4 h-4 shrink-0" /> {branch.direccion}
                   </p>
                 </div>
               ))}
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-5 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-blue-500 cursor-pointer transition-colors min-h-[120px]">
+              <div className="flex flex-col justify-center items-center hover:bg-slate-50 p-5 border-2 border-slate-300 border-dashed rounded-xl min-h-[120px] text-slate-400 hover:text-blue-500 transition-colors cursor-pointer">
                 <span className="text-3xl">+</span>
-                <span className="text-sm font-semibold mt-1">
+                <span className="mt-1 font-semibold text-sm">
                   Añadir Sucursal
                 </span>
               </div>
@@ -174,7 +174,7 @@ export const Settings = () => {
 
         {/* TAB 3: SERIES DE FACTURACIÓN */}
         {activeTab === "series" && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
             <h2 className={styles.sectionTitle}>
               <FileText className="text-blue-600" /> Series de Comprobantes
             </h2>
@@ -189,7 +189,7 @@ export const Settings = () => {
                   >
                     {serie.tipoDocumento}
                   </div>
-                  <h4 className="text-3xl font-black text-slate-800 mt-4 mb-1">
+                  <h4 className="mt-4 mb-1 font-black text-slate-800 text-3xl">
                     {serie.serie}
                   </h4>
                   <p className={styles.cardText}>
@@ -198,7 +198,7 @@ export const Settings = () => {
                       {String(serie.correlativoActual).padStart(6, "0")}
                     </strong>
                   </p>
-                  <p className="text-xs text-slate-400 mt-2 border-t border-slate-200 pt-2">
+                  <p className="mt-2 pt-2 border-slate-200 border-t text-slate-400 text-xs">
                     Asignada a:{" "}
                     {branchesData.find((b) => b.id === serie.branchId)?.nombre}
                   </p>
@@ -210,7 +210,7 @@ export const Settings = () => {
 
         {/* TAB 4: USUARIOS */}
         {activeTab === "usuarios" && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
             <h2 className={styles.sectionTitle}>
               <Users className="text-blue-600" /> Cuentas de Acceso
             </h2>
@@ -221,15 +221,15 @@ export const Settings = () => {
               {usersData.map((user) => (
                 <div
                   key={user.id}
-                  className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white shadow-sm"
+                  className="flex items-center gap-4 bg-white shadow-sm p-4 border border-slate-200 rounded-xl"
                 >
-                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
+                  <div className="flex justify-center items-center bg-slate-100 rounded-full w-12 h-12 text-slate-500">
                     <Users className="w-6 h-6" />
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-800">{user.nombre}</h4>
-                    <p className="text-xs text-slate-500 mb-1">{user.email}</p>
-                    <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase">
+                    <p className="mb-1 text-slate-500 text-xs">{user.email}</p>
+                    <span className="bg-blue-100 px-2 py-0.5 rounded font-bold text-[10px] text-blue-700 uppercase">
                       {user.rol}
                     </span>
                   </div>
