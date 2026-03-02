@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
-import styles from "../../styles/modules/vehicles.module.css";
+import styles from "@styles/modules/vehicles.module.css";
 
 interface VehicleDeleteModalProps {
   vehicle: any;
