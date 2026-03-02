@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { db } from '../data/db';
+import { db } from '@data/db';
 
 export type ModalType = 'details' | 'add' | 'edit' | 'delete' | null;
 
