@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { salesData } from "../data/mock/sales";
-import { vehiclesData } from "../data/mock/vehicles";
+import { salesData } from "@data/mock/sales";
+import { vehiclesData } from "@data/mock/vehicles";
 
 interface HomeStats {
     totalVehicles: number;
