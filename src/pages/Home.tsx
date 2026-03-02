@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import styles from "../styles/modules/home.module.css";
+import styles from "@styles/modules/home.module.css";
 import { Truck, FileText, Wrench, TrendingUp, Users, Zap } from "lucide-react";
-import { useHomeStats } from "../hooks/useHomeStats";
+import { useHomeStats } from "@hooks/useHomeStats";
 
 export const Home = () => {
   const { totalVehicles, todaySales, pendingMaintenances, isLoading } =
@@ -38,7 +38,7 @@ export const Home = () => {
             <svg
               viewBox="0 0 200 200"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full drop-shadow-2xl"
+              className="drop-shadow-2xl w-full h-full"
             >
               <circle cx="100" cy="100" r="80" fill="#60A5FA" opacity="0.2" />
               <circle cx="100" cy="100" r="60" fill="#60A5FA" opacity="0.4" />
