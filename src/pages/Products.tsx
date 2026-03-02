@@ -1,9 +1,9 @@
-import { useProducts } from "@/hooks/useProducts";
-import styles from "@/styles/modules/Products.module.css";
+import { useProducts } from "@hooks/useProducts";
+import styles from "@styles/modules/Products.module.css";
 import { Search, Plus, Eye, Edit2, Trash2, Tag, Barcode, Activity, PackageSearch } from "lucide-react";
-import { ProductDetailsModal } from "@/components/products/ProductDetailsModal";
-import { ProductFormModal } from "@/components/products/ProductFormModal";
-import { ProductDeleteModal } from "@/components/products/ProductDeleteModal";
+import { ProductDetailsModal } from "@components/products/ProductDetailsModal";
+import { ProductFormModal } from "@components/products/ProductFormModal";
+import { ProductDeleteModal } from "@components/products/ProductDeleteModal";
 import { useState, useEffect } from "react";
 
 export const Products = () => {
