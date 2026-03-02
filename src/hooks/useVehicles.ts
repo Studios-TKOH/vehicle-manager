@@ -2,11 +2,11 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Importamos los mocks desde sus respectivos archivos modulares
-import { vehiclesData } from '../data/mock/vehicles';
-import { customersData } from '../data/mock/customers';
-import { salesData } from '../data/mock/sales';
-import { saleDetailsData } from '../data/mock/saleDetails';
-import { productsData } from '../data/mock/products';
+import { vehiclesData } from '@data/mock/vehicles';
+import { customersData } from '@data/mock/customers';
+import { salesData } from '@data/mock/sales';
+import { saleDetailsData } from '@data/mock/saleDetails';
+import { productsData } from '@data/mock/products';
 
 export type ModalType = 'details' | 'add' | 'edit' | 'delete' | null;
 
