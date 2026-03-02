@@ -1,166 +1,229 @@
 @import "tailwindcss";
 
 .container {
-    @apply bg-white rounded-xl p-6 shadow-sm border border-slate-200 relative min-h-[80vh] flex flex-col;
+    @apply relative flex flex-col bg-white shadow-sm p-6 border border-slate-200 rounded-xl min-h-[80vh];
 }
 
 .header {
-    @apply flex justify-between items-center mb-6;
+    @apply flex md:flex-row flex-col justify-between items-start md:items-center gap-4 mb-8;
 }
 
 .title {
-    @apply text-2xl font-bold text-slate-800 m-0 flex items-center gap-2;
+    @apply flex items-center gap-2 m-0 font-bold text-slate-800 text-2xl;
 }
 
 .addButton {
-    @apply bg-blue-600 text-white border-none py-2 px-4 rounded-lg font-medium cursor-pointer transition-colors flex items-center gap-2 hover:bg-blue-700 shadow-sm;
+    @apply flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg px-5 py-2.5 border-none rounded-xl font-semibold text-white active:scale-95 transition-all cursor-pointer;
 }
 
+/* Controles */
 .controlsContainer {
-    @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6;
-}
-
-.filtersGroup {
-    @apply flex flex-col sm:flex-row w-full md:w-auto gap-3 flex-1;
+    @apply flex md:flex-row flex-col justify-between items-start md:items-center gap-4 mb-6;
 }
 
 .searchBox {
-    @apply relative w-full sm:max-w-md flex-1;
+    @apply relative w-full md:max-w-md;
 }
 
 .searchInput {
-    @apply w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-slate-50;
+    @apply w-full pl-11 pr-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all bg-slate-50 text-slate-700 font-medium;
 }
 
 .searchIcon {
-    @apply absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5;
+    @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5;
 }
 
 .filterSelect {
-    @apply border border-slate-300 rounded-lg py-2 px-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 min-w-[150px];
+    @apply border border-slate-300 rounded-xl py-2 px-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-700 min-w-[150px];
 }
 
-.paginationSelect {
-    @apply flex items-center gap-2 text-sm text-slate-600;
-}
-
-.selectInput {
-    @apply border border-slate-300 rounded-md py-1 px-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
-}
-
-/* Tabla */
+/* Tabla (ADN Vehicles) */
 .tableContainer {
-    @apply overflow-x-auto border border-slate-200 rounded-xl flex-1;
+    @apply flex-1 bg-white shadow-sm mb-6 border border-slate-200 rounded-xl overflow-x-auto;
 }
 
 .table {
-    @apply w-full text-left border-collapse whitespace-nowrap;
+    @apply w-full text-left whitespace-nowrap border-collapse;
 }
 
 .table th {
-    @apply bg-slate-50 p-4 font-semibold text-slate-600 border-b-2 border-slate-200 uppercase text-xs tracking-wider;
+    @apply bg-slate-50/80 p-4 font-bold text-slate-600 border-b border-slate-200 uppercase text-xs tracking-wider;
 }
 
 .table td {
-    @apply p-4 border-b border-slate-100 text-slate-700 align-middle;
+    @apply p-4 border-slate-100 border-b text-slate-700 align-middle;
 }
 
-/* Tipografía de Tabla */
-.categoryBadge {
-    @apply px-2.5 py-1 rounded-md text-xs font-semibold border inline-block bg-slate-100 text-slate-600 border-slate-200;
+/* Clases específicas de Producto en Tabla */
+.productName {
+    @apply font-extrabold text-slate-900 text-base tracking-wide;
+}
+
+.productSub {
+    @apply block mt-0.5 font-semibold text-slate-500 text-xs uppercase tracking-wider;
+}
+
+.skuBadge {
+    @apply block bg-slate-100 px-2 py-0.5 border border-slate-200 rounded w-fit font-mono font-bold text-slate-700 text-xs;
 }
 
 .priceText {
-    @apply font-bold text-emerald-600 text-lg;
+    @apply font-black text-emerald-600 text-lg;
 }
 
+/* Acciones (Corregidas y centradas) */
 .actionGroup {
-    @apply flex items-center gap-2;
+    @apply flex justify-center items-center gap-2;
 }
 
 .iconBtn {
-    @apply p-2 rounded-md transition-colors cursor-pointer;
+    @apply flex justify-center items-center rounded-xl transition-all cursor-pointer;
+    width: 38px;
+    height: 38px;
 }
 
 .iconBtnView {
-    @apply text-blue-600 hover:bg-blue-50;
+    @apply hover:bg-blue-50 text-blue-600;
 }
 
 .iconBtnEdit {
-    @apply text-orange-500 hover:bg-orange-50;
+    @apply hover:bg-orange-50 text-orange-500;
 }
 
 .iconBtnDelete {
-    @apply text-red-600 hover:bg-red-50;
+    @apply hover:bg-red-50 text-red-600;
 }
 
-/* Modales */
+/* Modales Reutilizados de Vehicles */
 .modalOverlay {
-    @apply fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity;
 }
 
 .modalContent {
-    @apply bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col;
+    @apply flex flex-col bg-white shadow-2xl rounded-[2.5rem] w-full max-w-3xl max-h-[90vh] overflow-hidden transition-transform transform;
+}
+
+.modalContentLarge {
+    @apply max-w-4xl;
+}
+
+.modalContentSmall {
+    @apply max-w-md;
 }
 
 .modalHeader {
-    @apply flex justify-between items-center p-6 border-b border-slate-200 sticky top-0 bg-white z-10;
+    @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-[2.5rem];
 }
 
 .modalTitle {
-    @apply text-xl font-bold text-slate-800 flex items-center gap-2;
+    @apply flex items-center gap-4 font-bold text-slate-800 text-2xl tracking-tight;
 }
 
-.closeBtn {
-    @apply text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition-colors cursor-pointer;
+.modalTitleIconBox {
+    @apply flex justify-center items-center bg-blue-100 shadow-inner p-3 rounded-2xl;
 }
 
 .modalBody {
-    @apply p-6 flex-1;
+    @apply flex-1 p-8 md:p-10 overflow-y-auto;
 }
 
 .modalFooter {
-    @apply p-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-0 bg-white z-10 rounded-b-2xl;
+    @apply flex flex-col sm:flex-row justify-end gap-4 p-8 border-t border-slate-100 bg-slate-50/50 rounded-b-[2.5rem];
 }
 
-/* Formularios */
-.formGrid {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-5;
+.closeBtn {
+    @apply hover:bg-slate-100 p-3 rounded-full text-slate-400 hover:text-slate-700 transition-all cursor-pointer;
 }
 
-.formGroup {
-    @apply flex flex-col gap-1.5;
+/* Tarjetas de Información (InfoCard) */
+.infoGrid {
+    @apply gap-8 grid grid-cols-1 md:grid-cols-2 mb-12;
 }
 
-.label {
-    @apply text-sm font-semibold text-slate-700 flex items-center gap-1.5;
+.infoCard {
+    @apply bg-slate-50/70 p-8 rounded-3xl border border-slate-200;
 }
 
-.input {
-    @apply border border-slate-300 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500;
+.infoCardLabel {
+    @apply block mb-4 font-bold text-[10px] text-slate-400 uppercase tracking-widest;
 }
 
-.inputGroup {
-    @apply flex items-center border border-slate-300 rounded-lg bg-slate-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white overflow-hidden;
+.infoCardValue {
+    @apply mb-4 font-extrabold text-slate-800 text-2xl leading-relaxed;
 }
 
-.inputPrefix {
-    @apply px-3 py-2.5 bg-slate-100 border-r border-slate-300 text-slate-500 font-semibold;
-}
-
-.inputGroup .input {
-    @apply border-none ring-0 focus:ring-0 rounded-none flex-1 bg-transparent;
-}
-
-/* Botones */
+/* Botones ADN Vehicles */
 .btnSecondary {
-    @apply px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors cursor-pointer;
+    @apply hover:bg-slate-50 px-6 py-2.5 border-2 border-slate-200 hover:border-slate-300 rounded-xl font-bold text-slate-500 text-xs uppercase tracking-widest transition-all cursor-pointer;
 }
 
 .btnPrimary {
-    @apply px-4 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2;
+    @apply px-6 py-2.5 bg-blue-600 rounded-xl text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer flex items-center gap-2 active:scale-95 uppercase text-xs tracking-widest;
 }
 
 .btnDanger {
-    @apply px-4 py-2 bg-red-600 rounded-lg text-white font-medium hover:bg-red-700 transition-colors cursor-pointer;
+    @apply px-6 py-2.5 bg-red-600 rounded-xl text-white font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all cursor-pointer active:scale-95 uppercase text-xs tracking-widest;
+}
+
+/* ================= PAGINACIÓN INFERIOR ================= */
+.paginationContainer {
+    @apply flex sm:flex-row flex-col justify-between items-center gap-6 mt-6;
+}
+
+.paginationInfo {
+    @apply bg-slate-50 px-4 py-2 border border-slate-200 rounded-lg font-medium text-slate-500 text-sm;
+}
+
+.paginationControls {
+    @apply flex items-center gap-4;
+}
+
+.paginationCurrentPage {
+    @apply bg-slate-100 shadow-sm px-6 py-2.5 border border-slate-200 rounded-xl min-w-[120px] font-extrabold text-slate-700 text-sm text-center tracking-wide;
+}
+
+/* ================= MODAL STYLES (Mejorados y Espaciosos) ================= */
+.modalOverlay {
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity;
+}
+
+.modalContent {
+    @apply flex flex-col bg-white shadow-2xl rounded-2xl w-full max-w-3xl max-h-[90vh] transition-transform transform;
+}
+
+.modalContentLarge {
+    @apply max-w-4xl;
+}
+
+.modalContentSmall {
+    @apply max-w-md;
+}
+
+/* Modales Header */
+.modalHeader {
+    @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-2xl;
+}
+
+.modalTitle {
+    @apply flex items-center gap-4 font-bold text-slate-800 text-2xl tracking-tight;
+}
+
+.modalTitleIconBox {
+    @apply flex justify-center items-center bg-blue-100 shadow-inner p-3 rounded-2xl;
+}
+
+.modalTitleTextContainer {
+    @apply flex flex-col;
+}
+
+.modalTitleText {
+    @apply text-3xl tracking-tight;
+}
+
+.modalTitleSubtext {
+    @apply mt-1 font-medium text-slate-500 text-base;
+}
+
+.closeBtn {
+    @apply hover:bg-slate-100 p-3 rounded-full text-slate-400 hover:text-slate-700 transition-all cursor-pointer;
 }
