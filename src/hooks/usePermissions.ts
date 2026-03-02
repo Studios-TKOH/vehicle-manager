@@ -1,5 +1,5 @@
-import { useAuth } from './useAuth';
-import { UserRole } from '../constants/roles/roles';
+import { useAuth } from '@hooks/useAuth';
+import { UserRole } from '@constants/roles/roles';
 
 export const usePermissions = () => {
     const { user } = useAuth();
