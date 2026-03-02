@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+.modalOverlay {
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity;
+}
+
+.modalHeader {
+    @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-2xl;
+}
+
+.modalBody {
+    @apply flex-1 p-6 md:p-8 overflow-y-auto;
+}
+
+.modalFooter {
+    @apply p-6 md:p-8 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 rounded-b-2xl;
+}
+
+/* ================= MODAL DE FORMULARIO (NUEVAS CLASES) ================= */
+.formWrapper {
+    @apply flex flex-col flex-1 overflow-hidden;
+}
+
+.formSectionBlue {
+    @apply mb-8 p-6 bg-blue-50/50 rounded-2xl border border-blue-100;
+}
+
+.formSectionTitleBlue {
+    @apply block mb-4 font-extrabold text-blue-800 text-sm uppercase tracking-wider;
+}
+
+.formSectionTitle {
+    @apply block mb-4 font-extrabold text-slate-400 text-sm uppercase tracking-wider;
+}
+
+.formGroupWide {
+    @apply flex flex-col gap-1.5 md:col-span-2 mt-2;
+}
+
+.inputUpper {
+    @apply border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium uppercase;
+}
+
+.textarea {
+    @apply border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium resize-none;
+}
+
+.asterisk {
+    @apply ml-1 font-bold text-red-500;
+}
+
+/* ================= MODAL DE ELIMINAR ================= */
+.deleteModalBody {
+    @apply pt-6 pb-2 text-center;
+}
+
+.deleteIconWrapper {
+    @apply flex justify-center items-center bg-red-100 shadow-inner mx-auto mb-6 rounded-full w-20 h-20 text-red-600;
+}
+
+.deleteIcon {
+    @apply w-10 h-10;
+}
+
+.deleteTitle {
+    @apply mb-3 font-extrabold text-slate-800 text-2xl tracking-tight;
+}
+
+.deleteText {
+    @apply mb-8 font-medium text-slate-600 leading-relaxed;
+}
+
+.deleteHighlight {
+    @apply bg-slate-100 mx-1 px-2 py-1 rounded text-slate-900;
+}
+
+.deleteActionRow {
+    @apply flex justify-center gap-4;
+}
