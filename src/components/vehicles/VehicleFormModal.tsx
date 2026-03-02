@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Save, Search as SearchIcon } from "lucide-react";
-import styles from "../../styles/modules/vehicles.module.css";
+import styles from "@styles/modules/vehicles.module.css";
 
 interface VehicleFormModalProps {
   vehicle: any | null;
