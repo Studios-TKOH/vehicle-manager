@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { db } from '../data/db';
+import { db } from '@data/db';
 
 export const useSettings = () => {
     const [activeTab, setActiveTab] = useState<'empresa' | 'sucursales' | 'series' | 'usuarios'>('empresa');
