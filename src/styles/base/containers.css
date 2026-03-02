@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.container {
+    @apply relative bg-white shadow-sm p-6 border border-slate-200 rounded-xl;
+}
+
+.tableContainer {
+    @apply bg-white shadow-sm mb-6 border border-slate-200 rounded-xl overflow-x-auto;
+}
+
+.modalContent {
+    @apply flex flex-col bg-white shadow-2xl rounded-2xl w-full max-w-3xl max-h-[90vh] transition-transform transform;
+}
+
+.modalContentLarge {
+    @apply max-w-4xl;
+}
+
+.modalContentSmall {
+    @apply max-w-md;
+}
+
+.infoCard {
+    @apply bg-slate-50/70 p-8 rounded-3xl border border-slate-200;
+}
