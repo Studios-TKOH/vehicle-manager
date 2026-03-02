@@ -1,5 +1,5 @@
-import { useVehicles } from "../hooks/useVehicles";
-import styles from "../styles/modules/vehicles.module.css";
+import { useVehicles } from "@hooks/useVehicles";
+import styles from "@styles/modules/vehicles.module.css";
 import {
   Search,
   Plus,
@@ -10,9 +10,9 @@ import {
   Trash2,
   AlertTriangle,
 } from "lucide-react";
-import { VehicleDetailsModal } from "../components/vehicles/VehicleDetailsModal";
-import { VehicleFormModal } from "../components/vehicles/VehicleFormModal";
-import { VehicleDeleteModal } from "../components/vehicles/VehicleDeleteModal";
+import { VehicleDetailsModal } from "@components/vehicles/VehicleDetailsModal";
+import { VehicleFormModal } from "@components/vehicles/VehicleFormModal";
+import { VehicleDeleteModal } from "@components/vehicles/VehicleDeleteModal";
 
 export const Vehicles = () => {
   const {
