@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { db } from '../data/db';
+import { db } from '@data/db';
 
 export const useReports = () => {
     const kpis = useMemo(() => {
