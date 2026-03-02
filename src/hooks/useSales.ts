@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { db } from '../data/db'; //
+import { db } from '@data/db'; //
 
 export const useSales = () => {
     const location = useLocation();
