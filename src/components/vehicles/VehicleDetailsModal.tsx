@@ -1,6 +1,6 @@
 import React from "react";
 import { X, Truck, Wrench, RotateCcw, Plus } from "lucide-react";
-import styles from "../../styles/modules/vehicles.module.css";
+import styles from "@styles/modules/vehicles.module.css";
 
 interface VehicleDetailsModalProps {
   vehicle: any;
@@ -148,7 +148,7 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
             </div>
           ) : (
             <div className={styles.historyEmptyState}>
-              <Wrench className="w-20 h-20 text-slate-300 mb-6" />
+              <Wrench className="mb-6 w-20 h-20 text-slate-300" />
               <p className={styles.historyEmptyText}>
                 No hay servicios registrados para este vehículo.
               </p>
