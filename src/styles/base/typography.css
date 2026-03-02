@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.title {
+    @apply m-0 font-bold text-slate-800 text-2xl;
+}
+
+.label {
+    @apply font-bold text-slate-700 text-sm tracking-wide;
+}
+
+.modalTitle {
+    @apply flex items-center gap-4 font-bold text-slate-800 text-2xl tracking-tight;
+}
+
+.modalTitleText {
+    @apply text-3xl tracking-tight;
+}
+
+.infoCardLabel {
+    @apply block mb-4 font-bold text-slate-400 text-sm uppercase tracking-widest;
+}
+
+.infoCardValue {
+    @apply mb-4 font-extrabold text-slate-800 text-2xl leading-relaxed;
+}
