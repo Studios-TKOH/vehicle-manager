@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import styles from "../styles/modules/auth.module.css";
+import { useAuth } from "@hooks/useAuth";
+import styles from "@styles/modules/auth.module.css";
 import {
   Mail,
   Lock,
@@ -58,7 +58,7 @@ export const Login = () => {
         <div className={styles.brandSection}>
           <div className={styles.brandDecoration}></div>
           <div className="z-10">
-            <ShieldCheck className="w-12 h-12 text-blue-300 mb-6" />
+            <ShieldCheck className="mb-6 w-12 h-12 text-blue-300" />
             <h1 className={styles.brandTitle}>
               Gestión Logística
               <br />
@@ -70,7 +70,7 @@ export const Login = () => {
             </p>
           </div>
           <div className="z-10">
-            <p className="text-sm text-blue-200 font-mono">
+            <p className="font-mono text-blue-200 text-sm">
               v2.0.0-beta • Conexión Segura
             </p>
           </div>
@@ -150,7 +150,7 @@ export const Login = () => {
               <div className="flex justify-end mb-6">
                 <a
                   href="#"
-                  className="text-sm font-medium text-blue-600 hover:underline"
+                  className="font-medium text-blue-600 text-sm hover:underline"
                 >
                   ¿Olvidaste tu contraseña?
                 </a>
