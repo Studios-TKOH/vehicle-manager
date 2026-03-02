@@ -1,17 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { type RootState } from "../store";
+import { type RootState } from "@store/index";
 
 // Componentes
-import { MainLayout } from "../components/layout/MainLayout";
-import { Home } from "../pages/Home";
-import { Vehicles } from "../pages/Vehicles";
-import { Customers } from "../pages/Customers";
-import { Products } from "../pages/Products";
-import { Sales } from "../pages/Sales";
-import { Reports } from "../pages/Reports";
-import { Login } from "../pages/Login";
-import { Settings } from "../pages/Settings";
+import { MainLayout } from "@components/layout/MainLayout";
+import { Home } from "@pages/Home";
+import { Vehicles } from "@pages/Vehicles";
+import { Customers } from "@pages/Customers";
+import { Products } from "@pages/Products";
+import { Sales } from "@pages/Sales";
+import { Reports } from "@pages/Reports";
+import { Login } from "@pages/Login";
+import { Settings } from "@pages/Settings";
 
 
 export const AppRouter = () => {
