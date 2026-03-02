@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { type RootState } from '../store';
+import { type RootState } from '@/store';
 import { loginStart, loginSuccess, loginFailure, logout, completeOnboarding, type User } from '../store/slices/authSlice';
-import { usersData } from '../data/mock/users';
-import { UserRole } from '../constants/roles/roles';
+import { usersData } from '@data/mock/users';
+import { UserRole } from '@constants/roles/roles';
 
 export const useAuth = () => {
     const dispatch = useDispatch();
