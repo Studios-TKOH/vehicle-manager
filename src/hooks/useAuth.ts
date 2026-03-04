@@ -62,7 +62,7 @@ export const useAuth = () => {
 
             const newUser: User = {
                 id: `user-new-${Date.now()}`,
-                branchId: null,
+                branchIds: [],
                 nombre: nombreNuevo,
                 email: emailNuevo.toLowerCase(),
                 rol: UserRole.OWNER, // Al registrarse, es DUEÑO por defecto
