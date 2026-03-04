@@ -1,10 +1,11 @@
+import { useState, useEffect } from "react";
 import { useCustomers } from "@hooks/useCustomers";
-import styles from "@styles/modules/Customers.module.css";
+import styles from "@styles/modules/customers.module.css";
 import { Search, Plus, Users, Eye, Edit2, Trash2, Truck } from "lucide-react";
 import { CustomerDetailsModal } from "@components/customers/CustomerDetailsModal";
 import { CustomerFormModal } from "@components/customers/CustomerFormModal";
 import { CustomerDeleteModal } from "@components/customers/CustomerDeleteModal";
-import { useState, useEffect } from "react";
+import type { CustomerFormData } from "@/types/customers";
 
 export const Customers = () => {
   const {
@@ -22,33 +23,90 @@ export const Customers = () => {
     closeModal,
     selectedCustomer,
     fetchDecolectaData,
-    isSearchingApi
+    isSearchingApi,
+    addCustomer,
+    updateCustomer,
   } = useCustomers();
-  
-  const [formData, setFormData] = useState({
-    tipoDocumentoIdentidad: "RUC", numeroDocumento: "", nombreRazonSocial: "", direccion: "", telefono: "", email: ""
+
+  const [formData, setFormData] = useState<CustomerFormData>({
+    tipoDocumentoIdentidad: "6",
+    numeroDocumento: "",
+    nombreRazonSocial: "",
+    direccion: "",
+    telefono: "",
+    email: "",
   });
   const [apiSuccess, setApiSuccess] = useState(false);
 
   useEffect(() => {
-    if (activeModal === "edit" && selectedCustomer) setFormData(selectedCustomer);
-    else if (activeModal === "add") {
-      setFormData({ tipoDocumentoIdentidad: "RUC", numeroDocumento: "", nombreRazonSocial: "", direccion: "", telefono: "", email: "" });
+    if (activeModal === "edit" && selectedCustomer) {
+      setFormData({
+        tipoDocumentoIdentidad: selectedCustomer.identityDocType || "6",
+        numeroDocumento: selectedCustomer.identityDocNumber || "",
+        nombreRazonSocial: selectedCustomer.name || "",
+        direccion: selectedCustomer.address || "",
+        telefono: selectedCustomer.phone || "",
+        email: selectedCustomer.email || "",
+      });
+    } else if (activeModal === "add") {
+      setFormData({
+        tipoDocumentoIdentidad: "6",
+        numeroDocumento: "",
+        nombreRazonSocial: "",
+        direccion: "",
+        telefono: "",
+        email: "",
+      });
       setApiSuccess(false);
     }
   }, [activeModal, selectedCustomer]);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setApiSuccess(false);
   };
 
   const handleSearchApi = async () => {
-    const data = await fetchDecolectaData(formData.tipoDocumentoIdentidad, formData.numeroDocumento);
+    const data = await fetchDecolectaData(
+      formData.tipoDocumentoIdentidad,
+      formData.numeroDocumento,
+    );
     if (data) {
-      setFormData(prev => ({ ...prev, nombreRazonSocial: data.nombreRazonSocial, direccion: data.direccion }));
+      setFormData((prev) => ({
+        ...prev,
+        nombreRazonSocial: data.name,
+        direccion: data.address || "",
+      }));
       setApiSuccess(true);
     }
+  };
+
+  const handleSaveCustomer = async () => {
+    if (!formData.numeroDocumento || !formData.nombreRazonSocial) {
+      alert("Por favor, llena los campos obligatorios (Documento y Nombre).");
+      return;
+    }
+
+    const payload = {
+      identityDocType: formData.tipoDocumentoIdentidad,
+      identityDocNumber: formData.numeroDocumento,
+      name: formData.nombreRazonSocial,
+      address: formData.direccion || null,
+      phone: formData.telefono || null,
+      email: formData.email || null,
+      isActive: true,
+    };
+
+    if (activeModal === "add") {
+      await addCustomer(payload);
+    } else if (activeModal === "edit" && selectedCustomer) {
+      await updateCustomer(selectedCustomer.id, payload);
+    }
+
+    // (Opcional) si 'addCustomer' no cierra el modal por dentro, añadir esto... como fallback... atte. lavender
+    // closeModal();
   };
 
   const handleConfirmDelete = () => {
@@ -58,15 +116,26 @@ export const Customers = () => {
 
   return (
     <div className={styles.container}>
+      {/* HEADER */}
       <div className={styles.header}>
-        <h1 className={styles.title}><Users className="text-blue-600" /> Directorio de Clientes</h1>
-        <button className={styles.addButton} onClick={() => openModal("add")}><Plus size={20} /> REGISTRAR CLIENTE</button>
+        <h1 className={styles.title}>
+          <Users className={styles.titleIcon} /> Directorio de Clientes
+        </h1>
+        <button className={styles.addButton} onClick={() => openModal("add")}>
+          <Plus size={20} /> REGISTRAR CLIENTE
+        </button>
       </div>
 
+      {/* CONTROLES (Búsqueda y Paginación) */}
       <div className={styles.controlsContainer}>
         <div className={styles.searchBox}>
           <Search className={styles.searchIcon} />
-          <input className={styles.searchInput} placeholder="Buscar por documento o nombre..." value={searchTerm} onChange={handleSearch} />
+          <input
+            className={styles.searchInput}
+            placeholder="Buscar por documento o nombre..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
         </div>
         <div className={styles.paginationSelect}>
           <label>Mostrar</label>
@@ -84,6 +153,7 @@ export const Customers = () => {
         </div>
       </div>
 
+      {/* TABLA PRINCIPAL */}
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>
@@ -91,28 +161,41 @@ export const Customers = () => {
               <th>DOCUMENTO</th>
               <th>CLIENTE / RAZÓN SOCIAL</th>
               <th>CONTACTO</th>
-              <th className="text-center">VEHÍCULOS</th>
-              <th className="text-center">ACCIONES</th>
+              <th className={styles.tableCellCenter}>VEHÍCULOS</th>
+              <th className={styles.tableCellCenter}>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
             {currentCustomers.length > 0 ? (
               currentCustomers.map((customer: any) => (
-                <tr key={customer.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="font-mono font-bold text-slate-600 italic">{customer.numeroDocumento}</td>
-                  <td className="font-black text-slate-800 text-sm uppercase tracking-tight">{customer.nombreRazonSocial}</td>
+                <tr key={customer.id} className={styles.tableRow}>
+                  <td className={styles.tableCellDoc}>
+                    {customer.identityDocNumber}
+                  </td>
+                  <td className={styles.tableCellName}>{customer.name}</td>
+
                   <td>
-                    <div className="flex flex-col text-sm">
-                      <span className="font-bold text-slate-700">{customer.telefono || "---"}</span>
-                      <span className="text-[10px] text-slate-400">{customer.email || "---"}</span>
+                    <div className={styles.contactWrapper}>
+                      <span className={styles.contactPhone}>
+                        {customer.phone || "---"}
+                      </span>
+                      <span className={styles.contactEmail}>
+                        {customer.email || "---"}
+                      </span>
                     </div>
                   </td>
-                  <td className="text-center">
-                    <button onClick={() => openModal("details", customer)} className="bg-blue-50 hover:bg-blue-600 px-3 py-1.5 border border-blue-100 rounded-xl font-black text-blue-600 hover:text-white text-xs transition-all">
-                      <Truck size={14} className="inline stroke-[3] mr-1" />{customer.totalVehiculosRelacionados}
+
+                  <td className={styles.tableCellCenter}>
+                    <button
+                      onClick={() => openModal("details", customer)}
+                      className={styles.vehicleCountBtn}
+                    >
+                      <Truck size={14} className={styles.vehicleCountIcon} />
+                      {customer.totalVehiculosRelacionados}
                     </button>
                   </td>
-                  <td className="text-center">
+
+                  <td className={styles.tableCellCenter}>
                     <div className={styles.actionGroup}>
                       <button
                         onClick={() => openModal("details", customer)}
@@ -155,6 +238,7 @@ export const Customers = () => {
         </table>
       </div>
 
+      {/* FOOTER PAGINACIÓN */}
       <div className={styles.paginationContainer}>
         <span className={styles.paginationInfo}>
           Mostrando {currentCustomers.length} de {totalItems} registros
@@ -182,26 +266,27 @@ export const Customers = () => {
         </div>
       </div>
 
-
+      {/* MODALES */}
       <CustomerDetailsModal
-        isOpen={activeModal === 'details'}
+        isOpen={activeModal === "details"}
         onClose={closeModal}
         customer={selectedCustomer}
       />
 
       <CustomerFormModal
-        isOpen={activeModal === 'add' || activeModal === 'edit'}
+        isOpen={activeModal === "add" || activeModal === "edit"}
         onClose={closeModal}
         mode={activeModal as any}
         formData={formData}
         onChange={handleInputChange}
         onSearchApi={handleSearchApi}
+        onSubmit={handleSaveCustomer}
         isSearching={isSearchingApi}
         apiSuccess={apiSuccess}
       />
 
       <CustomerDeleteModal
-        isOpen={activeModal === 'delete'}
+        isOpen={activeModal === "delete"}
         onClose={closeModal}
         onConfirm={handleConfirmDelete}
         customer={selectedCustomer}
