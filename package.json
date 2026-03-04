@@ -1,8 +1,10 @@
 {
-  "name": "fleet-pwa",
+  "name": "fleet-sync-erp",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "ERP Offline-First para gestión de flotas, lubricentros y facturación electrónica SUNAT",
   "type": "module",
+  "author": "Studios TKOH",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -11,6 +13,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
+    "dexie": "^4.3.0",
+    "dexie-react-hooks": "^4.2.0",
     "localforage": "^1.10.0",
     "lucide-react": "^0.575.0",
     "react": "^18.2.0",
@@ -19,6 +23,7 @@
     "react-router-dom": "^7.13.1",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.4.2",
+    "uuid": "^13.0.0",
     "vite-plugin-pwa": "^1.2.0"
   },
   "devDependencies": {
@@ -27,6 +32,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
