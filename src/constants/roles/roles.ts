@@ -1,11 +1,21 @@
 /**
  * Centralización de los roles del sistema.
- * Si en el futuro se necesita cambiar el nombre visible o el valor de un rol,
- * solo debes hacerlo aquí y toda la aplicación se actualizará automáticamente.
+ * Valores internos limpios (sin caracteres especiales) para la Base de Datos.
  */
 export enum UserRole {
-    OWNER = 'DUEÑO',
-    ADMIN = 'ADMINISTRADOR',
-    SELLER = 'VENDEDOR',
-    CASHIER = 'CAJERO',
+    OWNER = 'OWNER',
+    ADMIN = 'ADMIN',
+    SELLER = 'SELLER',
+    CASHIER = 'CASHIER',
 }
+
+/**
+ * Diccionario para mostrar los roles en la Interfaz de Usuario (UI).
+ * Uso: RoleLabels[user.rol] // Imprime "Dueño"
+ */
+export const RoleLabels: Record<UserRole, string> = {
+    [UserRole.OWNER]: 'Dueño',
+    [UserRole.ADMIN]: 'Administrador',
+    [UserRole.SELLER]: 'Vendedor',
+    [UserRole.CASHIER]: 'Cajero',
+};
