@@ -34,6 +34,8 @@ export interface ProductEntity extends SyncMetadata {
     companyId: string;
     code: string;
     name: string;
+    category: string;
+    description: string | null;
     unitType: string;
     price: number;
     isActive: boolean;
