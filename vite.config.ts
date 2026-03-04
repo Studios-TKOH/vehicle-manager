@@ -40,5 +40,14 @@ export default defineConfig({
       "@icons": path.resolve(__dirname, "./src/ui/icons"),
       "@assets": path.resolve(__dirname, "./src/assets")
     }
+  },
+  server: {
+    proxy: {
+      '/api-decolecta': {
+        target: 'https://api.decolecta.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-decolecta/, '')
+      }
+    }
   }
 })
