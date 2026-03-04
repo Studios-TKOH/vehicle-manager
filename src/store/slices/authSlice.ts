@@ -3,6 +3,7 @@ import { UserRole } from '../../constants/roles/roles';
 
 export interface User {
   id: string;
+  companyId: string;
   branchIds: string[];
   nombre: string;
   email: string;
@@ -12,15 +13,17 @@ export interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
+  deviceId: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  needsOnboarding: boolean; // Para saber si es un DUEÑO nuevo que debe configurar el RUC
+  needsOnboarding: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
+  deviceId: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -35,11 +38,12 @@ const authSlice = createSlice({
       state.isLoading = true;
       state.error = null;
     },
-    loginSuccess: (state, action: PayloadAction<{ user: User; isNew?: boolean; token: string }>) => {
+    loginSuccess: (state, action: PayloadAction<{ user: User; isNew?: boolean; token: string; deviceId: string }>) => {
       state.isLoading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.deviceId = action.payload.deviceId;
       state.needsOnboarding = action.payload.isNew || false;
       state.error = null;
     },
