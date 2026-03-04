@@ -199,6 +199,128 @@
     @apply max-w-md;
 }
 
+.deleteModalContent {
+    @apply flex flex-col bg-white shadow-2xl rounded-[2.5rem] w-full max-w-md transition-transform transform;
+}
+
+.modalTitleIcon {
+    @apply text-blue-600;
+}
+
+.unitBadge {
+    @apply inline-block bg-blue-50 text-blue-600 px-4 py-2 border border-blue-100 rounded-xl font-bold text-sm;
+}
+
+.barcodeCard {
+    @apply bg-slate-50/70 p-8 rounded-3xl border border-slate-200 flex flex-col items-center justify-center text-center;
+}
+
+.barcodeIconLarge {
+    @apply mb-4 text-slate-300;
+}
+
+.barcodeText {
+    @apply font-mono font-black text-slate-700 text-3xl tracking-widest;
+}
+
+.metricsGrid {
+    @apply gap-8 grid grid-cols-1 md:grid-cols-2;
+}
+
+/* Tarjeta Métrica: Precio (Azul) */
+.metricCardBlue {
+    @apply bg-blue-50/50 p-8 border border-blue-100 rounded-[2.5rem];
+}
+
+.metricLabelBlue {
+    @apply block mb-2 font-bold text-[10px] uppercase tracking-widest text-[#1e40af];
+}
+
+.metricValueBlue {
+    @apply mt-2 font-black text-blue-900 text-5xl;
+}
+
+.metricSubBlue {
+    @apply mt-4 font-bold text-blue-600/60 text-xs uppercase tracking-tighter;
+}
+
+/* Tarjeta Métrica: Mantenimiento (Naranja) */
+.metricCardOrange {
+    @apply bg-orange-50/50 p-8 border border-orange-100 rounded-[2.5rem];
+}
+
+.metricLabelOrange {
+    @apply block mb-2 font-bold text-[10px] uppercase tracking-widest text-[#9a3412];
+}
+
+.metricValueOrange {
+    @apply mt-2 font-black text-orange-900 text-5xl;
+}
+
+.metricSubOrange {
+    @apply mt-4 font-bold text-orange-600/60 text-xs uppercase tracking-tighter;
+}
+
+/* ================= MODAL FORM EXTRA STYLES (Clean Code) ================= */
+
+.formModalContent {
+    @apply flex flex-col bg-white shadow-2xl rounded-2xl w-full max-w-2xl max-h-[90vh] transition-transform transform duration-200;
+}
+
+.formSectionTitle {
+    @apply block mb-4 font-extrabold text-slate-400 text-sm uppercase tracking-wider mt-8;
+}
+
+/* El primer titulo no necesita margin top */
+.formSectionTitleFirst {
+    @apply block mb-4 font-extrabold text-slate-400 text-sm uppercase tracking-wider;
+}
+
+.formGrid {
+    @apply gap-x-6 gap-y-6 grid grid-cols-1 md:grid-cols-2;
+}
+
+.formGroup {
+    @apply flex flex-col gap-1.5;
+}
+
+.formGroupWide {
+    @apply flex flex-col gap-1.5 md:col-span-2 mt-2;
+}
+
+.labelWithIcon {
+    @apply font-bold text-slate-700 text-sm tracking-wide flex items-center gap-2;
+}
+
+.label {
+    @apply font-bold text-slate-700 text-sm tracking-wide;
+}
+
+.input {
+    @apply border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium;
+}
+
+/* Estilos para inputs con add-ons (S/ o KM) */
+.inputGroup {
+    @apply flex;
+}
+
+.inputPrefix {
+    @apply flex items-center bg-slate-50 px-3 border border-slate-300 border-r-0 rounded-l-xl font-medium text-slate-600 text-sm;
+}
+
+.inputWithPrefix {
+    @apply border border-slate-300 p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium w-full rounded-r-xl border-l-0;
+}
+
+.inputSuffix {
+    @apply flex items-center bg-slate-50 px-3 border border-slate-300 border-l-0 rounded-r-xl font-medium text-slate-600 text-sm;
+}
+
+.inputWithSuffix {
+    @apply border border-slate-300 p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium w-full rounded-l-xl border-r-0;
+}
+
 /* Modales Header */
 .modalHeader {
     @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-2xl;
@@ -226,4 +348,47 @@
 
 .closeBtn {
     @apply hover:bg-slate-100 p-3 rounded-full text-slate-400 hover:text-slate-700 transition-all cursor-pointer;
+}
+
+/* Filas y celdas */
+.tableRow {
+    @apply hover:bg-slate-50 transition-colors;
+}
+
+.tableCellCenter {
+    @apply text-center;
+}
+
+/* Badges de la Tabla */
+.skuBadgeWrapper {
+    @apply flex items-center gap-1.5 bg-slate-100 px-2 py-1 border border-slate-200 rounded w-fit font-mono text-xs;
+}
+
+.categoryBadge {
+    @apply inline-block bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100;
+}
+
+.maintenanceBadge {
+    @apply flex items-center gap-1.5 bg-orange-50 px-2.5 py-1 rounded-full w-fit font-bold text-orange-600 text-xs border border-orange-100;
+}
+
+.maintenanceNone {
+    @apply text-slate-300 text-xs italic font-medium;
+}
+
+/* Empty State (Reutilizamos la lógica que hicimos en clientes) */
+.tableEmptyRow {
+    @apply border-b-0;
+}
+
+.tableEmptyState {
+    @apply flex flex-col justify-center items-center py-16 m-4 bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-200;
+}
+
+.tableEmptyIcon {
+    @apply w-12 h-12 text-slate-300 mb-3;
+}
+
+.tableEmptyText {
+    @apply font-medium text-slate-500 text-lg;
 }
