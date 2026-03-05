@@ -186,6 +186,133 @@
     @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-2xl;
 }
 
+/* ================= MODAL DE FICHA TÉCNICA (PRODUCTOS HABITUALES) ================= */
+.usualProductList {
+    @apply flex flex-col gap-3 mt-4;
+}
+
+.usualProductItemBox {
+    @apply flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl transition-all hover:border-blue-300 hover:shadow-sm;
+}
+
+.usualProductDetails {
+    @apply flex flex-col flex-1 pr-4;
+}
+
+.usualProductInputWrapper {
+    @apply flex items-center gap-3 shrink-0;
+}
+
+.usualProductNotesInput {
+    @apply border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-48;
+}
+
+.metricsGrid {
+    @apply gap-8 grid grid-cols-1 md:grid-cols-2;
+}
+
+.usualProductName {
+    @apply block font-bold text-slate-800;
+}
+
+.usualProductSku {
+    @apply block font-mono text-xs text-slate-500 mt-0.5;
+}
+
+.usualProductDeleteBtn {
+    @apply p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer;
+}
+
+.usualProductEmptyState {
+    @apply flex flex-col justify-center items-center bg-slate-50 py-8 px-4 border-2 border-slate-200 border-dashed rounded-3xl text-center;
+}
+
+.usualProductEmptyIcon {
+    @apply mb-4 w-12 h-12 text-slate-300;
+}
+
+.usualProductEmptyText {
+    @apply font-medium text-slate-500 text-base;
+}
+
+.usualProductsHeader {
+    @apply flex justify-between items-end mb-6;
+}
+
+.usualProductsContainer {
+    @apply bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-10;
+}
+
+.usualProductsListModal {
+    @apply space-y-3;
+}
+
+.usualProductsListItem {
+    @apply flex flex-col border-b border-amber-100 last:border-0 pb-3 last:pb-0;
+}
+
+.usualProductsItemName {
+    @apply font-bold text-amber-900 text-sm;
+}
+
+.usualProductsItemNotes {
+    @apply text-amber-700 text-sm mt-1 italic;
+}
+
+.usualProductsEmptyTextAlt {
+    @apply text-amber-700/60 font-medium text-sm text-center;
+}
+
+.usualProductsActionRow {
+    @apply mt-4 flex justify-end;
+}
+
+.btnManageUsualProducts {
+    @apply text-xs font-bold text-amber-700 hover:text-amber-900 uppercase tracking-widest flex items-center gap-1 transition-colors cursor-pointer bg-transparent border-none;
+}
+
+.btnPrimaryAmber {
+    @apply px-5 py-2.5 rounded-xl text-white font-bold transition-all flex items-center gap-2 active:scale-95 bg-amber-600 hover:bg-amber-700 hover:shadow-lg hover:shadow-amber-500/30 cursor-pointer;
+}
+
+/* Tarjeta Métrica: Precio/General (Azul) */
+.metricCardBlue {
+    @apply bg-blue-50/50 p-8 border border-blue-100 rounded-[2.5rem];
+}
+
+.metricLabelBlue {
+    @apply block mb-2 font-bold text-[10px] uppercase tracking-widest text-[#1e40af];
+}
+
+.metricValueBlue {
+    @apply mt-2 font-black text-blue-900 text-5xl;
+}
+
+.metricSubBlue {
+    @apply mt-4 font-bold text-blue-600/60 text-xs uppercase tracking-tighter;
+}
+
+/* Tarjeta Métrica: Mantenimiento (Naranja) */
+.metricCardOrange {
+    @apply bg-orange-50/50 p-8 border border-orange-100 rounded-[2.5rem];
+}
+
+.metricLabelOrange {
+    @apply block mb-2 font-bold text-[10px] uppercase tracking-widest text-[#9a3412];
+}
+
+.metricValueOrange {
+    @apply mt-2 font-black text-orange-900 text-5xl;
+}
+
+.metricSubOrange {
+    @apply mt-4 font-bold text-orange-600/60 text-xs uppercase tracking-tighter;
+}
+
+.modalTitleIcon {
+    @apply text-blue-600;
+}
+
 .modalTitle {
     @apply flex items-center gap-4 font-bold text-slate-800 text-2xl tracking-tight;
 }
@@ -247,6 +374,10 @@
 
 .historyTitle {
     @apply flex items-center gap-3 font-extrabold text-slate-800 text-2xl;
+}
+
+.historyTitleIcon {
+    @apply w-7 h-7 text-slate-400;
 }
 
 .historyList {
@@ -371,6 +502,11 @@
 .label {
     @apply font-bold text-slate-700 text-sm tracking-wide;
 }
+
+.labelWithIcon {
+    @apply font-bold text-slate-700 text-sm tracking-wide flex items-center gap-2;
+}
+
 
 .input {
     @apply border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium;

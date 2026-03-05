@@ -9,10 +9,12 @@ import {
   Edit2,
   Trash2,
   AlertTriangle,
+  ClipboardList,
 } from "lucide-react";
 import { VehicleDetailsModal } from "@components/vehicles/VehicleDetailsModal";
 import { VehicleFormModal } from "@components/vehicles/VehicleFormModal";
 import { VehicleDeleteModal } from "@components/vehicles/VehicleDeleteModal";
+import { VehicleUsualProductsModal } from "@components/vehicles/VehicleUsualProductsModal";
 
 export const Vehicles = () => {
   const {
@@ -31,8 +33,10 @@ export const Vehicles = () => {
     selectedVehicle,
     handleEmitirFactura,
     customersList,
+    productsList,
     handleSaveVehicle,
     handleDeleteVehicle,
+    saveUsualProducts,
   } = useVehicles();
 
   return (
@@ -83,7 +87,7 @@ export const Vehicles = () => {
               <th>Cliente / Chofer</th>
               <th>Kilometraje</th>
               <th>Notas</th>
-              <th>Acciones</th>
+              <th className="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -91,14 +95,17 @@ export const Vehicles = () => {
               currentVehicles.map((vehicle) => (
                 <tr key={vehicle.id} className={styles.tableRow}>
                   <td>
+                    {/* Variables mapeadas a la BD (Inglés) */}
                     <strong className={styles.vehiclePlaca}>
-                      {vehicle.placa}
+                      {vehicle.licensePlate}
                     </strong>
                     <span className={styles.vehicleDetails}>
-                      {vehicle.marca} {vehicle.modelo} ({vehicle.anio})
+                      {vehicle.brand} {vehicle.model}{" "}
+                      {vehicle.year ? `(${vehicle.year})` : ""}
                     </span>
                   </td>
                   <td>
+                    {/* Variables calculadas en useVehicles.ts */}
                     <span className={styles.customerInfo}>
                       <Building2 className={styles.customerIcon} />{" "}
                       {vehicle.clienteNombre}
@@ -110,17 +117,19 @@ export const Vehicles = () => {
                   </td>
                   <td>
                     <span className={styles.kmActualBadge}>
-                      Act: {vehicle.kmActual.toLocaleString()} km
+                      Act: {(vehicle.kmActual || 0).toLocaleString()} km
                     </span>
                     <span
                       className={`${styles.kmNextBadgeBase} ${
-                        vehicle.kmActual >= vehicle.kmProximo - 1000
+                        (vehicle.kmActual || 0) >=
+                        (vehicle.kmProximo || 0) - 1000
                           ? styles.kmNextBadgeAlert
                           : styles.kmNextBadgeNormal
                       }`}
                     >
-                      Próx: {vehicle.kmProximo.toLocaleString()} km
-                      {vehicle.kmActual >= vehicle.kmProximo - 1000 && (
+                      Próx: {(vehicle.kmProximo || 0).toLocaleString()} km
+                      {(vehicle.kmActual || 0) >=
+                        (vehicle.kmProximo || 0) - 1000 && (
                         <AlertTriangle className={styles.kmAlertIcon} />
                       )}
                     </span>
@@ -139,6 +148,15 @@ export const Vehicles = () => {
                       >
                         <Eye className="w-5 h-5" />
                       </button>
+
+                      <button
+                        onClick={() => openModal("usualProducts", vehicle)}
+                        className={`${styles.iconBtn} hover:bg-amber-50 text-amber-500`}
+                        title="Ficha Técnica / Productos Habituales"
+                      >
+                        <ClipboardList className="w-4 h-4" />
+                      </button>
+
                       <button
                         onClick={() => openModal("edit", vehicle)}
                         className={`${styles.iconBtn} ${styles.iconBtnEdit}`}
@@ -202,31 +220,37 @@ export const Vehicles = () => {
       </div>
 
       {/* ================= MODALES EXTERNALIZADOS ================= */}
+      <VehicleDetailsModal
+        isOpen={activeModal === "details"}
+        onClose={closeModal}
+        vehicle={selectedVehicle}
+        onEmitFactura={handleEmitirFactura}
+        onOpenUsualProducts={() => openModal("usualProducts", selectedVehicle)} // <-- Enviamos la acción
+      />
 
-      {activeModal === "details" && (
-        <VehicleDetailsModal
-          vehicle={selectedVehicle}
-          onClose={closeModal}
-          onEmitFactura={handleEmitirFactura}
-        />
-      )}
+      <VehicleUsualProductsModal
+        isOpen={activeModal === "usualProducts"}
+        onClose={closeModal}
+        vehicle={selectedVehicle}
+        productsList={productsList}
+        onSave={saveUsualProducts}
+      />
 
-      {(activeModal === "add" || activeModal === "edit") && (
-        <VehicleFormModal
-          vehicle={activeModal === "edit" ? selectedVehicle : null}
-          customers={customersList}
-          onClose={closeModal}
-          onSave={handleSaveVehicle}
-        />
-      )}
+      <VehicleFormModal
+        isOpen={activeModal === "add" || activeModal === "edit"}
+        mode={activeModal as any}
+        vehicle={activeModal === "edit" ? selectedVehicle : null}
+        customers={customersList}
+        onClose={closeModal}
+        onSave={handleSaveVehicle}
+      />
 
-      {activeModal === "delete" && (
-        <VehicleDeleteModal
-          vehicle={selectedVehicle}
-          onClose={closeModal}
-          onConfirm={handleDeleteVehicle}
-        />
-      )}
+      <VehicleDeleteModal
+        isOpen={activeModal === "delete"}
+        onClose={closeModal}
+        vehicle={selectedVehicle}
+        onConfirm={handleDeleteVehicle}
+      />
     </div>
   );
 };
