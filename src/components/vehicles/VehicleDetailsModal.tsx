@@ -1,19 +1,27 @@
 import React from "react";
-import { X, Truck, Wrench, RotateCcw, Plus } from "lucide-react";
+import { X, Truck, Wrench, RotateCcw, Plus, ClipboardList } from "lucide-react";
 import styles from "@styles/modules/vehicles.module.css";
 
 interface VehicleDetailsModalProps {
   vehicle: any;
+  isOpen: boolean;
   onClose: () => void;
-  onEmitFactura: (vehicle: any, pastSale?: any) => void;
+  onEmitFactura: (
+    vehicle: any,
+    pastSale?: any,
+    useUsualProducts?: boolean,
+  ) => void;
+  onOpenUsualProducts: () => void;
 }
 
 export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
   vehicle,
+  isOpen,
   onClose,
   onEmitFactura,
+  onOpenUsualProducts,
 }) => {
-  if (!vehicle) return null;
+  if (!isOpen || !vehicle) return null;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -27,7 +35,9 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
               <Truck className="w-8 h-8 text-blue-600" />
             </div>
             <div className={styles.modalTitleTextContainer}>
-              <span className={styles.modalTitleText}>{vehicle.placa}</span>
+              <span className={styles.modalTitleText}>
+                {vehicle.licensePlate}
+              </span>
               <span className={styles.modalTitleSubtext}>
                 Expediente del Vehículo
               </span>
@@ -55,22 +65,63 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
             <div className={styles.infoCard}>
               <span className={styles.infoCardLabel}>Características</span>
               <p className={styles.infoCardValue}>
-                {vehicle.marca} {vehicle.modelo}
+                {vehicle.brand || "Sin Marca"} {vehicle.model || "Sin Modelo"}
               </p>
               <div className={styles.infoCardBadgeGroup}>
                 <span className={styles.infoCardBadge}>
-                  Año: {vehicle.anio}
+                  Año: {vehicle.year || "N/A"}
                 </span>
                 <span className={styles.infoCardBadge}>
-                  Color: {vehicle.color || "N/A"}
+                  KM: {(vehicle.kmActual || 0).toLocaleString()}
                 </span>
               </div>
             </div>
           </div>
 
+          <div className={styles.usualProductsHeader}>
+            <h3 className={styles.historyTitle}>
+              <ClipboardList className={styles.historyTitleIcon} /> Preferencias
+              y Notas del Cliente
+            </h3>
+          </div>
+
+          <div className={styles.usualProductsContainer}>
+            {vehicle.productosHabituales &&
+            vehicle.productosHabituales.length > 0 ? (
+              <ul className={styles.usualProductsListModal}>
+                {vehicle.productosHabituales.map((pref: any, idx: number) => (
+                  <li key={idx} className={styles.usualProductsListItem}>
+                    <span className={styles.usualProductsItemName}>
+                      {pref.productName}
+                    </span>
+                    {pref.notes && (
+                      <span className={styles.usualProductsItemNotes}>
+                        "{pref.notes}"
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.usualProductsEmptyTextAlt}>
+                No hay preferencias o productos habituales registrados para este
+                vehículo.
+              </p>
+            )}
+
+            <div className={styles.usualProductsActionRow}>
+              <button
+                onClick={onOpenUsualProducts}
+                className={styles.btnManageUsualProducts}
+              >
+                <Plus size={14} /> Gestionar Preferencias
+              </button>
+            </div>
+          </div>
+
           <div className={styles.historyHeader}>
             <h3 className={styles.historyTitle}>
-              <Wrench className="w-7 h-7 text-slate-400" /> Historial de
+              <Wrench className={styles.historyTitleIcon} /> Historial de
               Servicios
             </h3>
           </div>
@@ -82,17 +133,21 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
                   <div className={styles.historyCardHeader}>
                     <div>
                       <span className={styles.historyCardType}>
-                        {sale.tipoComprobante}: {sale.serie}-{sale.correlativo}
+                        {sale.status === "CONFIRMED"
+                          ? "COMPROBANTE"
+                          : "Borrador / Otro"}
                       </span>
                       <span className={styles.historyCardDate}>
-                        {new Date(sale.fechaEmision).toLocaleDateString(
-                          "es-PE",
-                          { year: "numeric", month: "long", day: "numeric" },
-                        )}
+                        {new Date(sale.issueDate).toLocaleDateString("es-PE", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
                       </span>
                     </div>
                     <span className={styles.historyCardTotal}>
-                      S/ {sale.total.toFixed(2)}
+                      S/{" "}
+                      {sale.totalAmount ? sale.totalAmount.toFixed(2) : "0.00"}
                     </span>
                   </div>
 
@@ -102,16 +157,20 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
                     </span>
 
                     <ul className={styles.historyProductList}>
-                      {sale.items.map((item: any) => (
-                        <li key={item.id} className={styles.historyProductItem}>
-                          <span className={styles.historyProductQty}>
-                            {item.cantidad}x
-                          </span>
-                          <span className={styles.historyProductDesc}>
-                            {item.productName}
-                          </span>
-                        </li>
-                      ))}
+                      {sale.items &&
+                        sale.items.map((item: any) => (
+                          <li
+                            key={item.id}
+                            className={styles.historyProductItem}
+                          >
+                            <span className={styles.historyProductQty}>
+                              {item.quantity}x
+                            </span>
+                            <span className={styles.historyProductDesc}>
+                              {item.productName}
+                            </span>
+                          </li>
+                        ))}
                     </ul>
 
                     <div className={styles.historyKmBox}>
@@ -120,7 +179,7 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
                           KM Ingreso
                         </span>
                         <p className={styles.historyKmValue}>
-                          {sale.kilometrajeIngreso.toLocaleString()} km
+                          {(sale.currentMileage || 0).toLocaleString()} km
                         </p>
                       </div>
                       <div className={styles.historyKmDivider}></div>
@@ -129,7 +188,8 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
                           Próximo Cambio
                         </span>
                         <p className={styles.historyKmValue}>
-                          {sale.proximoCambioKm.toLocaleString()} km
+                          {(sale.nextMaintenanceMileage || 0).toLocaleString()}{" "}
+                          km
                         </p>
                       </div>
                     </div>
@@ -148,7 +208,7 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
             </div>
           ) : (
             <div className={styles.historyEmptyState}>
-              <Wrench className="mb-6 w-20 h-20 text-slate-300" />
+              <Wrench className={styles.historyEmptyIconLarge} />
               <p className={styles.historyEmptyText}>
                 No hay servicios registrados para este vehículo.
               </p>
@@ -160,11 +220,22 @@ export const VehicleDetailsModal: React.FC<VehicleDetailsModalProps> = ({
           <button className={styles.btnSecondary} onClick={onClose}>
             Cerrar Ventana
           </button>
+
+          {vehicle.productosHabituales &&
+            vehicle.productosHabituales.length > 0 && (
+              <button
+                className={styles.btnPrimaryAmber}
+                onClick={() => onEmitFactura(vehicle, null, true)}
+              >
+                <ClipboardList className="w-5 h-5" /> Facturar Ficha Técnica
+              </button>
+            )}
+
           <button
             className={styles.btnPrimary}
             onClick={() => onEmitFactura(vehicle)}
           >
-            <Plus className="w-6 h-6" /> Nueva Venta en Blanco
+            <Plus className="w-5 h-5" /> Nueva Venta en Blanco
           </button>
         </div>
       </div>

@@ -1,77 +1,98 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Save, Search as SearchIcon } from "lucide-react";
 import styles from "@styles/modules/vehicles.module.css";
+import type { VehicleFormData } from "@/types/vehicles";
 
 interface VehicleFormModalProps {
   vehicle: any | null;
   customers: any[];
+  isOpen: boolean;
+  mode: "add" | "edit";
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: VehicleFormData) => void;
 }
 
 export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
   vehicle,
   customers,
+  isOpen,
   onClose,
   onSave,
 }) => {
   const isEditing = !!vehicle;
 
-  // Estados del formulario
-  const [formData, setFormData] = useState({
-    placa: "",
-    marca: "",
-    modelo: "",
-    anio: new Date().getFullYear(),
-    color: "",
-    kilometrajeActual: "",
-    propietarioId: "",
+  // 1. ESTADOS DEL FORMULARIO Y AUTOCOMPLETADO
+  const [formData, setFormData] = useState<VehicleFormData>({
+    licensePlate: "",
+    brand: "",
+    model: "",
+    year: new Date().getFullYear(),
+    mileage: "",
+    customerId: "",
     conductorHabitualId: "",
-    notas: "",
+    notes: "",
   });
 
-  // Estados para el autocompletado del Propietario
   const [searchOwner, setSearchOwner] = useState("");
   const [showOwnerMenu, setShowOwnerMenu] = useState(false);
   const [selectedOwner, setSelectedOwner] = useState<any | null>(null);
 
-  // Estados para el autocompletado del Conductor
   const [searchDriver, setSearchDriver] = useState("");
   const [showDriverMenu, setShowDriverMenu] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<any | null>(null);
 
-  // Referencias para cerrar menús al hacer clic fuera
+  // 2. REFERENCIAS
   const ownerMenuRef = useRef<HTMLDivElement>(null);
   const driverMenuRef = useRef<HTMLDivElement>(null);
 
-  // Si estamos editando, rellenar los datos
+  // 3. EFECTOS
+  // Rellenar/Limpiar datos al abrir/cerrar el modal
   useEffect(() => {
-    if (vehicle) {
+    if (vehicle && isOpen) {
       setFormData({
-        placa: vehicle.placa || "",
-        marca: vehicle.marca || "",
-        modelo: vehicle.modelo || "",
-        anio: vehicle.anio || new Date().getFullYear(),
-        color: vehicle.color || "",
-        kilometrajeActual: vehicle.kilometrajeActual || vehicle.kmActual || "",
-        propietarioId: vehicle.propietarioId || "",
+        licensePlate: vehicle.licensePlate || "",
+        brand: vehicle.brand || "",
+        model: vehicle.model || "",
+        year: vehicle.year || new Date().getFullYear(),
+        mileage: vehicle.mileage || vehicle.kmActual || "",
+        customerId: vehicle.customerId || "",
         conductorHabitualId: vehicle.conductorHabitualId || "",
-        notas: vehicle.notas === "Sin Observaciones" ? "" : vehicle.notas || "",
+        notes: vehicle.notas === "Sin Observaciones" ? "" : vehicle.notas || "",
       });
 
-      // Rellenar clientes seleccionados
-      if (vehicle.propietarioId) {
-        const owner = customers.find((c) => c.id === vehicle.propietarioId);
-        if (owner) setSelectedOwner(owner);
+      if (vehicle.customerId) {
+        const owner = customers.find((c) => c.id === vehicle.customerId);
+        if (owner) {
+          setSelectedOwner(owner);
+          setSearchOwner("");
+        }
       }
       if (vehicle.conductorHabitualId) {
         const driver = customers.find(
           (c) => c.id === vehicle.conductorHabitualId,
         );
-        if (driver) setSelectedDriver(driver);
+        if (driver) {
+          setSelectedDriver(driver);
+          setSearchDriver("");
+        }
       }
+    } else if (!isOpen) {
+      setFormData({
+        licensePlate: "",
+        brand: "",
+        model: "",
+        year: new Date().getFullYear(),
+        mileage: "",
+        customerId: "",
+        conductorHabitualId: "",
+        notes: "",
+      });
+      setSelectedOwner(null);
+      setSelectedDriver(null);
+      setSearchOwner("");
+      setSearchDriver("");
     }
-  }, [vehicle, customers]);
+  }, [vehicle, customers, isOpen]);
 
   // Cerrar menús al hacer clic fuera
   useEffect(() => {
@@ -93,6 +114,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 4. HANDLERS
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -102,34 +124,48 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (!formData.customerId || !formData.licensePlate) {
+      alert("Por favor, selecciona un propietario y escribe la placa.");
+      return;
+    }
+
+    const dataToSave: any = {
+      ...formData,
+      year: formData.year ? Number(formData.year) : null,
+      mileage: formData.mileage ? Number(formData.mileage) : null,
+    };
+
+    if (!dataToSave.conductorHabitualId) {
+      delete dataToSave.conductorHabitualId;
+    }
+
+    onSave(dataToSave);
   };
 
-  // Lógica de filtrado
-  const filterCustomers = (searchTerm: string) => {
-    if (!searchTerm) return customers;
-    const term = searchTerm.toLowerCase();
+  // 5. LÓGICA DE AUTOCOMPLETADO
+  const filterCustomers = (term: string) => {
+    if (!term) return customers;
+    const lowerTerm = term.toLowerCase();
     return customers.filter(
       (c) =>
-        c.nombreRazonSocial.toLowerCase().includes(term) ||
-        (c.numeroDocumento && c.numeroDocumento.includes(term)),
+        c.name.toLowerCase().includes(lowerTerm) ||
+        (c.identityDocNumber && c.identityDocNumber.includes(lowerTerm)),
     );
   };
 
   const filteredOwners = filterCustomers(searchOwner);
   const filteredDrivers = filterCustomers(searchDriver);
 
-  // Manejadores de selección
   const handleSelectOwner = (customer: any) => {
     setSelectedOwner(customer);
-    setFormData((prev) => ({ ...prev, propietarioId: customer.id }));
+    setFormData((prev) => ({ ...prev, customerId: customer.id }));
     setSearchOwner("");
     setShowOwnerMenu(false);
   };
 
   const handleClearOwner = () => {
     setSelectedOwner(null);
-    setFormData((prev) => ({ ...prev, propietarioId: "" }));
+    setFormData((prev) => ({ ...prev, customerId: "" }));
   };
 
   const handleSelectDriver = (customer: any) => {
@@ -144,13 +180,17 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     setFormData((prev) => ({ ...prev, conductorHabitualId: "" }));
   };
 
+  // 6. RENDER TEMPRANO (Siempre va después de los hooks)
+  if (!isOpen) return null;
+
+  // 7. RENDER JSX
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>
             {isEditing
-              ? `Editar Vehículo: ${vehicle.placa}`
+              ? `Editar Vehículo: ${vehicle?.licensePlate}`
               : "Registrar Nuevo Vehículo"}
           </h2>
           <button className={styles.closeBtn} onClick={onClose} type="button">
@@ -160,13 +200,12 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className={styles.formWrapper}>
           <div className={styles.modalBody}>
-            {/* Sección: Relaciones */}
             <div className={styles.formSectionBlue}>
               <h3 className={styles.formSectionTitleBlue}>
                 Asignación de Cliente
               </h3>
               <div className={styles.formGrid}>
-                {/* AUTOCOMPLETADO PROPIETARIO */}
+                {/* PROPIETARIO */}
                 <div className={styles.formGroup} ref={ownerMenuRef}>
                   <label className={styles.label}>
                     Propietario / Empresa{" "}
@@ -200,11 +239,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                 onClick={() => handleSelectOwner(c)}
                               >
                                 <span className={styles.autocompleteItemName}>
-                                  {c.nombreRazonSocial}
+                                  {c.name}
                                 </span>
                                 <span className={styles.autocompleteItemDoc}>
-                                  {c.tipoDocumentoIdentidad}:{" "}
-                                  {c.numeroDocumento}
+                                  {c.identityDocType === "6" ? "RUC" : "DNI"}:{" "}
+                                  {c.identityDocNumber}
                                 </span>
                               </div>
                             ))
@@ -221,13 +260,15 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                       <div className={styles.selectedCustomerInfo}>
                         <span
                           className={styles.selectedCustomerText}
-                          title={selectedOwner.nombreRazonSocial}
+                          title={selectedOwner.name}
                         >
-                          {selectedOwner.nombreRazonSocial}
+                          {selectedOwner.name}
                         </span>
                         <span className={styles.selectedCustomerSubtext}>
-                          {selectedOwner.tipoDocumentoIdentidad}:{" "}
-                          {selectedOwner.numeroDocumento}
+                          {selectedOwner.identityDocType === "6"
+                            ? "RUC"
+                            : "DNI"}
+                          : {selectedOwner.identityDocNumber}
                         </span>
                       </div>
                       <button
@@ -239,16 +280,15 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                       </button>
                     </div>
                   )}
-                  {/* Input oculto para validación HTML HTML5 */}
                   <input
                     type="hidden"
-                    name="propietarioId"
-                    value={formData.propietarioId}
+                    name="customerId"
+                    value={formData.customerId}
                     required
                   />
                 </div>
 
-                {/* AUTOCOMPLETADO CONDUCTOR */}
+                {/* CONDUCTOR */}
                 <div className={styles.formGroup} ref={driverMenuRef}>
                   <label className={styles.label}>Conductor Habitual</label>
 
@@ -271,7 +311,6 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
 
                       {showDriverMenu && (
                         <div className={styles.autocompleteMenu}>
-                          {/* Opción rápida para copiar el dueño */}
                           {selectedOwner && (
                             <div
                               className={styles.autocompleteItemHighlight}
@@ -283,7 +322,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                 Mismo que el propietario
                               </span>
                               <span className={styles.autocompleteItemDoc}>
-                                {selectedOwner.nombreRazonSocial}
+                                {selectedOwner.name}
                               </span>
                             </div>
                           )}
@@ -296,11 +335,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                 onClick={() => handleSelectDriver(c)}
                               >
                                 <span className={styles.autocompleteItemName}>
-                                  {c.nombreRazonSocial}
+                                  {c.name}
                                 </span>
                                 <span className={styles.autocompleteItemDoc}>
-                                  {c.tipoDocumentoIdentidad}:{" "}
-                                  {c.numeroDocumento}
+                                  {c.identityDocType === "6" ? "RUC" : "DNI"}:{" "}
+                                  {c.identityDocNumber}
                                 </span>
                               </div>
                             ))
@@ -317,13 +356,15 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                       <div className={styles.selectedCustomerInfo}>
                         <span
                           className={styles.selectedCustomerText}
-                          title={selectedDriver.nombreRazonSocial}
+                          title={selectedDriver.name}
                         >
-                          {selectedDriver.nombreRazonSocial}
+                          {selectedDriver.name}
                         </span>
                         <span className={styles.selectedCustomerSubtext}>
-                          {selectedDriver.tipoDocumentoIdentidad}:{" "}
-                          {selectedDriver.numeroDocumento}
+                          {selectedDriver.identityDocType === "6"
+                            ? "RUC"
+                            : "DNI"}
+                          : {selectedDriver.identityDocNumber}
                         </span>
                       </div>
                       <button
@@ -339,7 +380,6 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               </div>
             </div>
 
-            {/* Sección: Datos del Vehículo */}
             <h3 className={styles.formSectionTitle}>Datos del Vehículo</h3>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
@@ -348,9 +388,9 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  name="placa"
+                  name="licensePlate"
                   required
-                  value={formData.placa}
+                  value={formData.licensePlate}
                   onChange={handleChange}
                   className={styles.inputUpper}
                   placeholder="Ej: ABC-123"
@@ -361,8 +401,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 <label className={styles.label}>Marca</label>
                 <input
                   type="text"
-                  name="marca"
-                  value={formData.marca}
+                  name="brand"
+                  value={formData.brand}
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Ej: TOYOTA"
@@ -373,8 +413,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 <label className={styles.label}>Modelo</label>
                 <input
                   type="text"
-                  name="modelo"
-                  value={formData.modelo}
+                  name="model"
+                  value={formData.model}
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Ej: HILUX"
@@ -385,8 +425,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 <label className={styles.label}>Año</label>
                 <input
                   type="number"
-                  name="anio"
-                  value={formData.anio}
+                  name="year"
+                  value={formData.year}
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Ej: 2024"
@@ -394,27 +434,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Color</label>
-                <input
-                  type="text"
-                  name="color"
-                  value={formData.color}
-                  onChange={handleChange}
-                  className={styles.input}
-                  placeholder="Ej: Blanco"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>
-                  Kilometraje (Tablero){" "}
-                  <span className={styles.asterisk}>*</span>
-                </label>
+                <label className={styles.label}>Kilometraje (Tablero) </label>
                 <input
                   type="number"
-                  name="kilometrajeActual"
-                  required
-                  value={formData.kilometrajeActual}
+                  name="mileage"
+                  value={formData.mileage}
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Ej: 45000"
@@ -424,8 +448,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <div className={styles.formGroupWide}>
                 <label className={styles.label}>Notas / Preferencias</label>
                 <textarea
-                  name="notas"
-                  value={formData.notas}
+                  name="notes"
+                  value={formData.notes}
                   onChange={handleChange}
                   className={styles.textarea}
                   rows={3}

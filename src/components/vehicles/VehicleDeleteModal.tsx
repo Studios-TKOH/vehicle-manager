@@ -1,19 +1,23 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
 import styles from "@styles/modules/vehicles.module.css";
+import type { VehicleEntity } from "@data/LocalDB";
 
 interface VehicleDeleteModalProps {
-  vehicle: any;
+  vehicle: VehicleEntity | null;
+  isOpen: boolean; // 1. Añadimos isOpen a la interfaz
   onClose: () => void;
   onConfirm: (id: string) => void;
 }
 
 export const VehicleDeleteModal: React.FC<VehicleDeleteModalProps> = ({
   vehicle,
+  isOpen, // 2. Recibimos isOpen
   onClose,
   onConfirm,
 }) => {
-  if (!vehicle) return null;
+  // 3. LA CORRECCIÓN CRÍTICA: Validamos isOpen
+  if (!isOpen || !vehicle) return null;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -30,7 +34,7 @@ export const VehicleDeleteModal: React.FC<VehicleDeleteModalProps> = ({
             <p className={styles.deleteText}>
               Estás a punto de eliminar el vehículo con placa{" "}
               <strong className={styles.deleteHighlight}>
-                {vehicle.placa}
+                {vehicle.licensePlate}
               </strong>
               . Esta acción lo ocultará del sistema.
             </p>
