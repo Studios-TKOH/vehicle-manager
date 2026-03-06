@@ -47,21 +47,31 @@ export interface SaleEntity extends SyncMetadata {
     branchId: string;
     customerId: string;
     vehicleId: string | null;
+    docType: string; // '01', '03', 'PR'
+    series: string;
+    correlativeNumber: number;
     issueDate: string;
+    currency: string;
+    subtotalAmount: number;
+    igvAmount: number;
     totalAmount: number;
-    status: 'DRAFT' | 'CONFIRMED' | 'VOIDED';
     currentMileage?: number | null;
     nextMaintenanceMileage?: number | null;
     notes?: string | null;
+    status: 'DRAFT' | 'CONFIRMED' | 'VOIDED';
+    sunatStatus: 'NOT_SENT' | 'SENT' | 'ACCEPTED' | 'REJECTED' | 'VOIDED';
 }
 
-// Detalles de Venta
 export interface SaleDetailEntity extends SyncMetadata {
     saleId: string;
     productId: string;
+    descriptionSnapshot: string;
     quantity: number;
-    unitPrice: number;
-    subtotal: number;
+    unitValueNoIgv: number;
+    unitPriceWithIgv: number;
+    lineSubtotalNoIgv: number;
+    lineIgv: number;
+    lineTotalWithIgv: number;
 }
 
 // Productos Habituales del Vehículo
@@ -69,6 +79,14 @@ export interface VehicleUsualProductEntity extends SyncMetadata {
     vehicleId: string;
     productId: string;
     notes: string | null; // Ej: "Solo usa aceite sintético de esta marca"
+}
+
+export interface DocumentSeriesEntity extends SyncMetadata {
+    branchId: string;
+    docType: string; // '01', '03', 'PR'
+    series: string;
+    nextCorrelative: number;
+    active: boolean;
 }
 
 // --- Tablas de Sincronización (Outbox) ---
@@ -102,19 +120,22 @@ export class VehicleManagerDB extends Dexie {
     sales!: Table<SaleEntity, string>;
     saleDetails!: Table<SaleDetailEntity, string>;
     vehicleUsualProducts!: Table<VehicleUsualProductEntity, string>;
+    documentSeries!: Table<DocumentSeriesEntity, string>;
     outboxEvents!: Table<OutboxEventEntity, string>;
     syncState!: Table<SyncStateEntity, number>;
 
     constructor() {
         super('FleetSUNAT_DB');
 
-        this.version(3).stores({
+        // VERSIÓN 4: Añadimos documentSeries y ajustamos SaleEntity
+        this.version(4).stores({
             customers: 'id, companyId, identityDocNumber, name, deletedAt',
             vehicles: 'id, customerId, conductorHabitualId, licensePlate, deletedAt',
             products: 'id, companyId, code, deletedAt',
-            sales: 'id, companyId, branchId, customerId, status, deletedAt',
+            sales: 'id, companyId, branchId, customerId, vehicleId, docType, status, deletedAt',
             saleDetails: 'id, saleId, productId, deletedAt',
             vehicleUsualProducts: 'id, vehicleId, productId, deletedAt',
+            documentSeries: 'id, branchId, docType, series, deletedAt', // NUEVO
             outboxEvents: 'id, deviceId, status, createdAt',
             syncState: 'id'
         });
