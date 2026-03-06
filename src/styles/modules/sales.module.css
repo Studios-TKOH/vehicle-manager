@@ -39,3 +39,379 @@
 .suggestionItem {
     @apply flex justify-between items-center hover:bg-blue-50 p-3 border-slate-100 border-b last:border-none transition-colors cursor-pointer;
 }
+
+/* ================= MODAL DE ÉXITO DE VENTA ================= */
+
+.successModalOverlay {
+    @apply fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity;
+}
+
+.successModalContent {
+    @apply bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden duration-200;
+}
+
+.successHeader {
+    @apply bg-emerald-500 p-8 flex flex-col items-center text-center text-white;
+}
+
+.successIconBox {
+    @apply bg-white/20 p-4 rounded-full mb-4;
+}
+
+.successTitle {
+    @apply text-2xl font-extrabold tracking-tight mb-1;
+}
+
+.successSubtitle {
+    @apply text-emerald-100 font-medium;
+}
+
+.successBody {
+    @apply p-8 bg-slate-50;
+}
+
+.receiptPreview {
+    @apply bg-white border border-slate-200 border-dashed rounded-2xl p-6 flex flex-col gap-4 text-center shadow-sm relative overflow-hidden;
+}
+
+/* Efecto de borde dentado de ticket */
+.receiptPreview::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-2 bg-repeat-x;
+    background-image: radial-gradient(circle at 50% 0, transparent 4px, white 5px);
+    background-size: 12px 10px;
+}
+
+.receiptLabel {
+    @apply text-slate-400 font-bold text-xs uppercase tracking-widest;
+}
+
+.receiptDoc {
+    @apply text-slate-800 font-black text-xl tracking-wide;
+}
+
+.receiptCustomer {
+    @apply text-slate-600 font-medium text-sm truncate px-4;
+}
+
+.receiptTotalBox {
+    @apply mt-2 pt-4 border-t border-slate-100;
+}
+
+.receiptTotal {
+    @apply text-emerald-600 font-black text-4xl tracking-tighter;
+}
+
+.successActions {
+    @apply p-6 bg-white border-t border-slate-100 flex flex-col gap-3;
+}
+
+.btnActionOutline {
+    @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer active:scale-95;
+}
+
+.btnActionSolid {
+    @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer active:scale-95;
+}
+
+/* ================= EXTRAS Y CONTENEDOR PRINCIPAL ================= */
+
+.salesContainer {
+    @apply flex flex-col bg-white shadow-sm border border-slate-200 rounded-xl w-full h-[calc(100vh-6rem)] overflow-hidden;
+}
+
+.salesScrollableArea {
+    @apply flex flex-col flex-none gap-4 px-6 py-5 overflow-y-auto;
+}
+
+.headerTitleWrapper {
+    @apply flex items-center gap-3;
+}
+
+.iconWrapperBlue {
+    @apply flex justify-center items-center bg-blue-100 p-2 rounded-lg;
+}
+
+.checkboxInput {
+    @apply border-slate-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600;
+}
+
+.autocompleteContainer {
+    @apply relative col-span-1 md:col-span-2;
+}
+
+.seriesGroup {
+    @apply flex gap-2;
+}
+
+.seriesInput {
+    @apply !px-1 w-1/3 text-center;
+}
+
+.correlativeInput {
+    @apply w-2/3;
+}
+
+.actionRowGrid {
+    @apply gap-3 grid grid-cols-2 md:grid-cols-5;
+}
+
+.btnOtros {
+    @apply w-full h-11;
+}
+
+.usualProductsSuggestion {
+    @apply flex flex-wrap gap-2 mt-2 items-center;
+}
+
+.usualProductsLabel {
+    @apply font-bold text-slate-500 text-xs;
+}
+
+.btnUsualProduct {
+    @apply bg-blue-50 hover:bg-blue-600 px-3 py-1 border border-blue-100 rounded-md font-bold text-blue-700 hover:text-white text-xs transition-colors cursor-pointer;
+}
+
+/* ================= ZONA DEL CARRITO ================= */
+
+.cartArea {
+    @apply flex-1 bg-slate-50 border-slate-200 border-t border-b overflow-y-auto;
+}
+
+.cartEmptyState {
+    @apply flex justify-center items-center p-10 h-full font-medium text-slate-400 text-sm text-center;
+}
+
+.cartTable {
+    @apply w-full text-slate-600 text-sm text-left relative;
+}
+
+.cartTableHeader {
+    @apply top-0 z-10 sticky bg-slate-100 border-slate-200 border-b font-bold text-[10px] text-slate-700 uppercase tracking-wider;
+}
+
+.thBase {
+    @apply px-6 py-3;
+}
+
+.thCenter {
+    @apply px-6 py-3 text-center;
+}
+
+.thQty {
+    @apply px-6 py-3 w-32 text-center;
+}
+
+.thAction {
+    @apply px-6 py-3 w-20 text-center;
+}
+
+.cartTableBody {
+    @apply divide-y divide-slate-200;
+}
+
+.cartTableRow {
+    @apply bg-white hover:bg-slate-50 transition-colors;
+}
+
+.tdBase {
+    @apply px-6 py-3;
+}
+
+.cartItemName {
+    @apply block font-semibold text-slate-800;
+}
+
+.cartItemNote {
+    @apply block text-xs text-slate-500 mt-0.5 italic;
+}
+
+.cartItemPrice {
+    @apply px-6 py-3 font-medium text-center;
+}
+
+.cartItemTotal {
+    @apply px-6 py-3 font-bold text-slate-800 text-center;
+}
+
+.qtyControlGroup {
+    @apply flex justify-center items-center gap-2;
+}
+
+.btnQtyControl {
+    @apply flex justify-center items-center bg-white hover:bg-slate-100 border border-slate-300 rounded-md w-7 h-7 font-bold text-slate-600 cursor-pointer;
+}
+
+.qtyValue {
+    @apply w-6 font-bold text-slate-800 text-center;
+}
+
+.btnRemoveItem {
+    @apply p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center;
+}
+
+/* ================= FOOTER Y TOTALES ================= */
+
+.footerArea {
+    @apply z-20 flex flex-col flex-none gap-5 bg-white p-6;
+}
+
+.searchContainer {
+    @apply relative;
+}
+
+.autocompleteOptionRow {
+    @apply flex justify-between items-center w-full;
+}
+
+.autocompleteOptionText {
+    @apply flex flex-col;
+}
+
+.autocompleteItemName {
+    @apply font-bold text-slate-800 text-sm;
+}
+
+.autocompleteItemDoc {
+    @apply text-slate-500 text-xs mt-0.5;
+}
+
+.autocompleteProductPrice {
+    @apply font-bold text-emerald-600;
+}
+
+.totalsBox {
+    @apply flex md:flex-row flex-col justify-between items-center gap-6 bg-slate-50 p-5 border border-slate-200 rounded-xl;
+}
+
+.totalsTextWrapper {
+    @apply md:text-left text-center;
+}
+
+.totalBigText {
+    @apply font-black text-slate-800 text-2xl md:text-3xl tracking-tight;
+}
+
+.subtotalsText {
+    @apply mt-1 font-semibold text-slate-500 text-sm;
+}
+
+.totalsActionWrapper {
+    @apply flex gap-4 w-full md:w-auto;
+}
+
+.btnTotalsAction {
+    @apply flex-1 md:w-48 text-base;
+}
+
+.btnTotalsActionMain {
+    @apply flex-1 md:w-56 text-base;
+}
+
+/* Nueva clase para el icono dentro del contenedor azul */
+.titleIconBlue {
+    @apply w-6 h-6 text-blue-600;
+}
+
+.checkboxInput {
+    @apply border-slate-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600;
+}
+
+.btnOtros {
+    @apply w-full h-11;
+}
+
+/* Nueva clase para el icono dentro del botón OTROS */
+.btnOtrosIcon {
+    @apply ml-1 w-4 h-4;
+}
+
+/* ================= MODAL DE ERROR DE VENTA ================= */
+
+.errorModalOverlay {
+    @apply fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4 transition-opacity;
+}
+
+.errorModalContent {
+    @apply bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden duration-200;
+}
+
+.errorHeader {
+    @apply bg-rose-500 p-6 flex flex-col items-center text-center text-white;
+}
+
+.errorIconBox {
+    @apply bg-white/20 p-3 rounded-full mb-3 text-white;
+}
+
+.errorTitle {
+    @apply text-xl font-extrabold tracking-tight;
+}
+
+.errorBody {
+    @apply p-6 bg-slate-50 flex flex-col items-center text-center;
+}
+
+.errorMessageText {
+    @apply text-slate-700 font-medium text-base mb-6 leading-relaxed;
+}
+
+.errorActions {
+    @apply w-full;
+}
+
+.btnActionError {
+    @apply w-full flex items-center justify-center py-3.5 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 hover:shadow-lg transition-all cursor-pointer active:scale-95;
+}
+
+/* ================= COMPONENTE AUTOCOMPLETE GENÉRICO ================= */
+.autocompleteWrapperBase {
+    @apply relative w-full;
+}
+
+.autocompleteInputContainerBase {
+    @apply relative flex items-center border border-slate-300 rounded-lg bg-slate-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all overflow-hidden min-h-[38px];
+}
+
+.autocompleteIconBox {
+    @apply pr-2 pl-3 text-slate-400 flex items-center justify-center;
+}
+
+.autocompleteNativeInput {
+    @apply bg-transparent px-2 py-1.5 border-none outline-none w-full font-semibold text-slate-700 text-sm h-full;
+}
+
+.autocompleteClearButton {
+    @apply pr-3 text-slate-400 hover:text-red-500 flex items-center justify-center;
+}
+
+.autocompleteClearIcon {
+    @apply w-4 h-4;
+}
+
+/* Modificadores de posición del Dropdown */
+.autocompleteDropdownContainer {
+    @apply absolute left-0 w-full bg-white border border-slate-200 shadow-xl rounded-xl z-50 max-h-60 overflow-y-auto;
+}
+
+.autocompleteDropdownPositionTop {
+    @apply bottom-[calc(100%+8px)] mb-1;
+}
+
+.autocompleteDropdownPositionBottom {
+    @apply top-full mt-1;
+}
+
+.autocompleteDropdownItem {
+    @apply hover:bg-slate-50 p-3 border-slate-100 last:border-0 border-b cursor-pointer;
+}
+
+/* ================= COMPONENTE FORM FIELD GENÉRICO ================= */
+.formFieldGenericLabel {
+    @apply block mb-1.5 font-bold text-[11px] text-slate-400 uppercase tracking-wider;
+}
+
+/* ================= COMPONENTE INPUT GENÉRICO ================= */
+.inputGenericBase {
+    @apply w-full border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-3 h-[38px] outline-none transition-all bg-white disabled:opacity-50 disabled:bg-slate-100 read-only:bg-slate-50;
+}
