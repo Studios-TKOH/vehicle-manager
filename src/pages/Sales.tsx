@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useSales } from "@hooks/useSales";
-import { db } from "@data/db";
 import {
   PackageSearch,
   FileText,
   Menu as MenuIcon,
+  Trash2,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
@@ -12,92 +14,115 @@ import { Select } from "@components/ui/Select";
 import { FormField } from "@components/ui/FormField";
 import { Autocomplete } from "@components/ui/Autocomplete";
 import { InlineActionButton } from "@components/sales/InlineActionButton";
+import {
+  SaleSuccessModal,
+  type SaleSuccessData,
+} from "@components/sales/SaleSuccessModal";
+import styles from "@styles/modules/sales.module.css";
+import { SaleErrorModal } from "@components/sales/SaleErrorModal";
 
 export const Sales = () => {
   const {
-    documento,
-    setDocumento,
+    customers,
+    products,
+    docType,
+    setDocType,
+    selectedSeries,
+    selectedCustomer,
+    setSelectedCustomer,
     extras,
     handleExtraChange,
     inlineInputs,
     toggleInlineInput,
     blurInlineInput,
     cart,
-    addItem,
-    removeItem,
-    updateQuantity,
     productSearch,
     setProductSearch,
     totals,
-    productosUsuales,
+    addItem,
+    removeItem,
+    updateQuantity,
+    processSale,
+    saleError,
+    setSaleError
   } = useSales();
 
-  const [proformaChecked, setProformaChecked] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
+  const [successData, setSuccessData] = useState<SaleSuccessData | null>(null);
 
-  const [showPlacaModal, setShowPlacaModal] = useState(false);
-  const [showOrdenCompraModal, setShowOrdenCompraModal] = useState(false);
-  const [showObservacionesModal, setShowObservacionesModal] = useState(false);
-  const [showPagosModal, setShowPagosModal] = useState(false);
-
-  const filteredCustomers = db.customers.filter(
+  const filteredCustomers = customers.filter(
     (c) =>
-      c.nombreRazonSocial.toLowerCase().includes(customerSearch.toLowerCase()) ||
-      c.numeroDocumento.includes(customerSearch)
+      c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+      c.identityDocNumber.includes(customerSearch),
   );
 
-  const filteredProducts = db.products.filter(
+  const filteredProducts = products.filter(
     (p) =>
-      p.nombre.toLowerCase().includes(productSearch.toLowerCase()) ||
-      p.codigoBarras?.includes(productSearch)
+      p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+      (p.code && p.code.toLowerCase().includes(productSearch.toLowerCase())),
   );
+
+  const handleProcessSale = async () => {
+    const saleResult = await processSale();
+
+    if (saleResult) {
+      setSuccessData({
+        docType: saleResult.docType,
+        series: saleResult.series,
+        correlativeNumber: saleResult.correlativeNumber,
+        customerName: saleResult.customerName,
+        totalAmount: saleResult.totalAmount,
+      });
+    }
+  };
+
+  const handleNewSale = () => {
+    window.location.reload();
+  };
 
   return (
-    <div className="flex flex-col bg-white shadow-sm border border-slate-200 rounded-xl w-full h-[calc(100vh-6rem)] overflow-hidden">
-      <div className="flex flex-col flex-none gap-4 px-6 py-5 overflow-y-auto">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="flex justify-center items-center bg-blue-100 p-2 rounded-lg">
-              <FileText className="w-6 h-6 text-blue-600" strokeWidth={2} />
+    <div className={styles.salesContainer}>
+      <div className={styles.salesScrollableArea}>
+        {/* HEADER */}
+        <div className={styles.titleGroup}>
+          <div className={styles.headerTitleWrapper}>
+            <div className={styles.iconWrapperBlue}>
+              <FileText className={styles.titleIconBlue} strokeWidth={2} />
             </div>
-            <h2 className="m-0 font-semibold text-slate-800 text-2xl">
-              Nueva Venta
-            </h2>
+            <h2 className={styles.pageTitle}>Nueva Venta</h2>
           </div>
-          <label className="flex items-center gap-2 font-bold text-slate-600 text-sm cursor-pointer select-none">
+          <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
-              checked={proformaChecked}
-              onChange={(e) => setProformaChecked(e.target.checked)}
-              className="border-slate-300 rounded focus:ring-blue-500 w-4 h-4 text-blue-600"
+              checked={docType === "PR"}
+              onChange={(e) => setDocType(e.target.checked ? "PR" : "03")}
+              className={styles.checkboxInput}
             />
             PROFORMA
           </label>
         </div>
 
-        <div className="gap-4 grid grid-cols-1 md:grid-cols-4">
-          <FormField label="Cliente" className="relative col-span-1 md:col-span-2">
+        {/* FILA 1: CLIENTE Y FECHAS */}
+        <div className={styles.grid4}>
+          <FormField label="Cliente" className={styles.autocompleteContainer}>
             <Autocomplete
               placeholder="Escribe para buscar un cliente..."
               searchValue={customerSearch}
               onSearchChange={setCustomerSearch}
-              selectedItem={documento.cliente}
+              selectedItem={selectedCustomer}
               options={filteredCustomers}
-              getDisplayValue={(c) => c.nombreRazonSocial}
-              onSelect={(c) => {
-                if (setDocumento) setDocumento((prev) => ({ ...prev, cliente: c }));
-              }}
+              getDisplayValue={(c) => c.name}
+              onSelect={(c) => setSelectedCustomer(c)}
               onClear={() => {
-                if (setDocumento) setDocumento((prev) => ({ ...prev, cliente: null }));
+                setSelectedCustomer(null);
                 setCustomerSearch("");
               }}
               renderOption={(c) => (
                 <>
-                  <div className="font-bold text-slate-800 text-sm">
-                    {c.nombreRazonSocial}
-                  </div>
-                  <div className="text-slate-500 text-xs">
-                    {c.tipoDocumentoIdentidad}: {c.numeroDocumento}
+                  <div className={styles.autocompleteItemName}>{c.name}</div>
+                  <div className={styles.autocompleteItemDoc}>
+                    {c.identityDocType === "6" ? "RUC" : "DNI"}:{" "}
+                    {c.identityDocNumber}
                   </div>
                 </>
               )}
@@ -105,7 +130,11 @@ export const Sales = () => {
           </FormField>
 
           <FormField label="Fecha de emisión">
-            <Input type="date" value={documento.fecha} readOnly />
+            <Input
+              type="date"
+              value={new Date().toISOString().split("T")[0]}
+              readOnly
+            />
           </FormField>
 
           <FormField label="Fecha de vencimiento">
@@ -113,27 +142,43 @@ export const Sales = () => {
           </FormField>
         </div>
 
-        <div className="gap-4 grid grid-cols-1 md:grid-cols-4">
+        {/* FILA 2: COMPROBANTE Y DESCUENTOS */}
+        <div className={styles.grid4}>
           <FormField label="Tipo de comprobante">
-            <Select>
-              <option>FACTURA ELECTRÓNICA</option>
-              <option>BOLETA DE VENTA</option>
+            <Select
+              value={docType}
+              onChange={(e) => setDocType(e.target.value as any)}
+              disabled={docType === "PR"}
+            >
+              {docType === "PR" && (
+                <option value="PR">PROFORMA / COTIZACIÓN</option>
+              )}
+              {docType !== "PR" && (
+                <>
+                  <option value="03">BOLETA DE VENTA</option>
+                  <option value="01">FACTURA ELECTRÓNICA</option>
+                </>
+              )}
             </Select>
           </FormField>
 
           <FormField label="Serie y Correlativo">
-            <div className="flex gap-2">
+            <div className={styles.seriesGroup}>
               <Input
                 type="text"
-                value={documento.serie}
+                value={selectedSeries?.series || "----"}
                 readOnly
-                className="!px-1 w-1/3 text-center"
+                className={styles.seriesInput}
               />
               <Input
                 type="text"
-                value={documento.correlativo}
+                value={
+                  selectedSeries
+                    ? String(selectedSeries.nextCorrelative).padStart(6, "0")
+                    : "000000"
+                }
                 readOnly
-                className="w-2/3"
+                className={styles.correlativeInput}
               />
             </div>
           </FormField>
@@ -149,7 +194,8 @@ export const Sales = () => {
           </FormField>
         </div>
 
-        <div className="gap-3 grid grid-cols-2 md:grid-cols-5">
+        {/* FILA 3: EXTRAS DEL VEHÍCULO */}
+        <div className={styles.actionRowGrid}>
           <InlineActionButton
             label="PLACA"
             value={extras.placa?.toString() || ""}
@@ -186,91 +232,77 @@ export const Sales = () => {
             onChange={(val) => handleExtraChange("observaciones", val)}
           />
 
-          <Button variant="primary" className="w-full h-11" fullWidth>
-            OTROS <MenuIcon className="ml-1 w-4 h-4" />
+          <Button variant="primary" className={styles.btnOtros} fullWidth>
+            OTROS <MenuIcon className={styles.btnOtrosIcon} />
           </Button>
         </div>
-
-        {productosUsuales.length > 0 && cart.length === 0 && (
-          <div className="flex gap-2 mt-2">
-            <span className="mt-1 font-bold text-slate-500 text-xs">
-              FRECUENTES:
-            </span>
-            {productosUsuales.map((p: any) => (
-              <button
-                key={p.id}
-                onClick={() => addItem(p)}
-                className="bg-blue-50 hover:bg-blue-600 px-3 py-1 border border-blue-100 rounded-md font-bold text-blue-700 hover:text-white text-xs transition-colors"
-              >
-                + {p.nombre}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="flex-1 bg-slate-50 border-slate-200 border-t border-b overflow-y-auto">
+      {/* ZONA CENTRAL: CARRITO */}
+      <div className={styles.cartArea}>
         {cart.length === 0 ? (
-          <div className="flex justify-center items-center p-10 h-full font-medium text-slate-400 text-sm text-center">
+          <div className={styles.cartEmptyState}>
             Busca un producto en la barra inferior para comenzar...
           </div>
         ) : (
-          <table className="w-full text-slate-600 text-sm text-left">
-            <thead className="top-0 z-10 sticky bg-slate-100 border-slate-200 border-b font-bold text-[10px] text-slate-700 uppercase tracking-wider">
+          <table className={styles.cartTable}>
+            <thead className={styles.cartTableHeader}>
               <tr>
-                <th className="px-6 py-3">Producto</th>
-                <th className="px-6 py-3 text-center">Precio Unit.</th>
-                <th className="px-6 py-3 text-center">Total</th>
-                <th className="px-6 py-3 w-32 text-center">Cantidad</th>
-                <th className="px-6 py-3 w-20 text-center"></th>
+                <th className={styles.thBase}>Producto</th>
+                <th className={styles.thCenter}>Precio Unit.</th>
+                <th className={styles.thCenter}>Total</th>
+                <th className={styles.thQty}>Cantidad</th>
+                <th className={styles.thAction}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className={styles.cartTableBody}>
               {cart.map((item) => (
-                <tr
-                  key={item.tempId}
-                  className="bg-white hover:bg-slate-50 transition-colors"
-                >
-                  <td className="px-6 py-3 font-semibold text-slate-800">
-                    {item.nombre}
+                <tr key={item.tempId} className={styles.cartTableRow}>
+                  <td className={styles.tdBase}>
+                    <span className={styles.cartItemName}>
+                      {item.name || (item as any).nombre}
+                    </span>
+                    {item.notaItem && (
+                      <span className={styles.cartItemNote}>
+                        Nota: {item.notaItem}
+                      </span>
+                    )}
                   </td>
-                  <td className="px-6 py-3 font-medium text-center">
-                    S/ {item.precioUnitario.toFixed(2)}
+                  <td className={styles.cartItemPrice}>
+                    S/ {item.price.toFixed(2)}
                   </td>
-                  <td className="px-6 py-3 font-bold text-slate-800 text-center">
-                    S/ {(item.precioUnitario * item.cantidad).toFixed(2)}
+                  <td className={styles.cartItemTotal}>
+                    S/ {(item.price * item.cantidad).toFixed(2)}
                   </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center gap-2">
+                  <td className={styles.tdBase}>
+                    <div className={styles.qtyControlGroup}>
                       <button
                         onClick={() =>
                           updateQuantity(item.tempId, item.cantidad - 1)
                         }
-                        className="flex justify-center items-center bg-white hover:bg-slate-100 border border-slate-300 rounded-md w-7 h-7 font-bold text-slate-600"
+                        className={styles.btnQtyControl}
                       >
-                        -
+                        <Minus size={14} />
                       </button>
-                      <span className="w-6 font-bold text-slate-800 text-center">
-                        {item.cantidad}
-                      </span>
+                      <span className={styles.qtyValue}>{item.cantidad}</span>
                       <button
                         onClick={() =>
                           updateQuantity(item.tempId, item.cantidad + 1)
                         }
-                        className="flex justify-center items-center bg-white hover:bg-slate-100 border border-slate-300 rounded-md w-7 h-7 font-bold text-slate-600"
+                        className={styles.btnQtyControl}
                       >
-                        +
+                        <Plus size={14} />
                       </button>
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-center">
-                    <Button
-                      variant="danger"
-                      size="sm"
+                  <td className={styles.tdCenter}>
+                    <button
                       onClick={() => removeItem(item.tempId)}
+                      className={styles.btnRemoveItem}
+                      title="Eliminar línea"
                     >
-                      Eliminar
-                    </Button>
+                      <Trash2 size={16} />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -279,73 +311,89 @@ export const Sales = () => {
         )}
       </div>
 
-      <div className="z-20 flex flex-col flex-none gap-5 bg-white p-6">
-        <div className="relative">
+      {/* FOOTER FIJO: BÚSQUEDA Y TOTALES */}
+      <div className={styles.footerArea}>
+        <div className={styles.searchContainer}>
           <Autocomplete
             placeholder="Escriba el nombre o código del producto..."
             searchValue={productSearch}
             onSearchChange={setProductSearch}
             selectedItem={null}
             options={filteredProducts}
-            getDisplayValue={(p) => p.nombre}
+            getDisplayValue={(p) => p.name}
             onSelect={(p) => {
-              addItem(p);
+              addItem(p as any);
               setProductSearch("");
             }}
             onClear={() => setProductSearch("")}
-            icon={<PackageSearch className="w-5 h-5 text-blue-600" />}
+            icon={<PackageSearch className={styles.titleIconBlue} />}
             inputHeightClass="h-[46px]"
             dropdownPosition="top"
             renderOption={(p) => (
-              <div className="flex justify-between items-center w-full">
-                <div>
-                  <div className="font-bold text-slate-800 text-sm">
-                    {p.nombre}
-                  </div>
-                  <div className="text-slate-500 text-xs">
-                    Cód: {p.codigoBarras}
+              <div className={styles.autocompleteOptionRow}>
+                <div className={styles.autocompleteOptionText}>
+                  <div className={styles.autocompleteItemName}>{p.name}</div>
+                  <div className={styles.autocompleteItemDoc}>
+                    Cód: {p.code}
                   </div>
                 </div>
-                <div className="font-bold text-emerald-600">
-                  S/ {p.precioVenta.toFixed(2)}
+                <div className={styles.autocompleteProductPrice}>
+                  S/ {p.price.toFixed(2)}
                 </div>
               </div>
             )}
           />
         </div>
 
-        <div className="flex md:flex-row flex-col justify-between items-center gap-6 bg-slate-50 p-5 border border-slate-200 rounded-xl">
-          <div className="md:text-left text-center">
-            <p className="font-black text-slate-800 text-2xl md:text-3xl tracking-tight">
+        <div className={styles.totalsBox}>
+          <div className={styles.totalsTextWrapper}>
+            <p className={styles.totalBigText}>
               TOTAL{" "}
-              <span className="ml-2 text-blue-600">
+              <span className={styles.totalBigTextValue}>
                 S/ {totals.total.toFixed(2)}
               </span>
             </p>
-            <p className="mt-1 font-semibold text-slate-500 text-sm">
-              Subtotal: S/ {totals.subtotal.toFixed(2)} &nbsp;&bull;&nbsp; IGV:{" "}
+            <p className={styles.subtotalsText}>
+              Subtotal: S/ {totals.subtotal.toFixed(2)} &nbsp;&bull;&nbsp; IGV:
               S/ {totals.igv.toFixed(2)}
             </p>
           </div>
 
-          <div className="flex gap-4 w-full md:w-auto">
+          <div className={styles.totalsActionWrapper}>
             <Button
               variant="secondary"
               size="xl"
-              className="flex-1 md:w-48 text-base"
+              className={styles.btnTotalsAction}
             >
               VISTA PREVIA
             </Button>
             <Button
               variant="success"
               size="xl"
-              className="flex-1 md:w-56 text-base"
+              className={styles.btnTotalsActionMain}
+              onClick={handleProcessSale}
             >
               PROCESAR VENTA
             </Button>
           </div>
         </div>
       </div>
+
+      {/* MODAL DE ÉXITO */}
+      <SaleSuccessModal
+        isOpen={!!successData}
+        saleData={successData}
+        onNewSale={handleNewSale}
+        onPrintTicket={() => alert("Simulando impresión...")}
+        onDownloadPdf={() => alert("Simulando PDF...")}
+      />
+
+      {/* NUEVO: MODAL DE ERROR */}
+      <SaleErrorModal
+        isOpen={!!saleError}
+        errorMessage={saleError}
+        onClose={() => setSaleError(null)}
+      />
     </div>
   );
 };
