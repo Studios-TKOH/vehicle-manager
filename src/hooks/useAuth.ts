@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid'; // Generador de UUIDs reales
+import { v4 as uuidv4 } from 'uuid';
 import { type RootState } from '@/store';
 import { loginStart, loginSuccess, loginFailure, logout, completeOnboarding, type User } from '../store/slices/authSlice';
 import { usersData } from '@data/mock/users';
 import { UserRole } from '@constants/roles/roles';
 import { getOrCreateDeviceId } from '../utils/device';
+import { db, type UserEntity, type CompanyEntity } from '@data/LocalDB';
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -14,26 +15,30 @@ export const useAuth = () => {
     const [email, setEmail] = useState('carlos@elmotors.com');
     const [password, setPassword] = useState('123456');
 
-    // --- SIMULACIÓN DE LOGIN ---
+    // --- LOGIN ---
     const handleLogin = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-
         dispatch(loginStart());
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 800)); // Simulamos latencia
 
-            const userFound = usersData.users.find(u => u.email === email.toLowerCase());
+            // 1. Buscar en la Base de Datos Local (Dexie)
+            const localUsers = await db.users.toArray();
+            let userFound: any = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-            if (userFound && password === '123456') {
+            // 2. Si no existe en la BD Local, buscar en los Mocks (Fallback temporal)
+            if (!userFound) {
+                userFound = usersData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+            }
+
+            if (userFound && password === '123456') { // (Validación estricta de hash se haría en el backend)
                 const deviceId = getOrCreateDeviceId();
 
-                // Adaptamos el mock a la estructura estricta del DTO
+                // Adaptamos a la interfaz del Estado Global de Redux
                 const userPayload: User = {
                     id: userFound.id,
-                    // Si el JSON de mock no lo tiene, forzamos un ID, pero idealmente 
-                    // ya viene de tu BD backend.
-                    companyId: (userFound as any).companyId || 'COMP-MOCK-1234',
+                    companyId: userFound.companyId,
                     branchIds: userFound.branchIds || [],
                     nombre: userFound.nombre,
                     email: userFound.email,
@@ -43,7 +48,7 @@ export const useAuth = () => {
                 dispatch(loginSuccess({
                     user: userPayload,
                     isNew: false,
-                    token: `mock-jwt-token-para-${userFound.id}`,
+                    token: `local-jwt-token-para-${userFound.id}`,
                     deviceId
                 }));
 
@@ -53,48 +58,109 @@ export const useAuth = () => {
                 return false;
             }
         } catch (error) {
+            console.error("Error en login:", error);
             dispatch(loginFailure('Ocurrió un error interno al intentar iniciar sesión.'));
             return false;
         }
     };
 
-    // --- REGISTRO DEL PRIMER USUARIO (DUEÑO REAL) ---
+    // --- REGISTRO REAL EN DEXIE (OFFLINE-FIRST) ---
     const register = async (nombreNuevo: string, emailNuevo: string, passwordNuevo?: string) => {
         dispatch(loginStart());
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 800));
+            const emailLower = emailNuevo.toLowerCase();
 
-            const userExists = usersData.users.find((u) => u.email === emailNuevo.toLowerCase());
-            if (userExists) {
+            // Verificar si el correo ya existe (Local o Mock)
+            const existingLocalUsers = await db.users.toArray();
+            const userExistsLocal = existingLocalUsers.some(u => u.email.toLowerCase() === emailLower);
+            const userExistsMock = usersData.users.some(u => u.email.toLowerCase() === emailLower);
+
+            if (userExistsLocal || userExistsMock) {
                 dispatch(loginFailure('Este correo ya está registrado en el sistema.'));
                 return false;
             }
 
-            // Aquí creamos la estructura fundacional real
-            const newCompanyId = uuidv4(); // Nace una nueva empresa
-            const newUserId = uuidv4();    // Nace su dueño
-            const deviceId = getOrCreateDeviceId(); // Obtenemos la máquina en la que está
+            // Generamos identificadores reales y permanentes
+            const newCompanyId = uuidv4();
+            const newUserId = uuidv4();
+            const deviceId = getOrCreateDeviceId();
+            const now = new Date().toISOString();
 
-            const newUser: User = {
+            // 1. Crear el cascarón vacío de la Empresa
+            const newCompany: CompanyEntity = {
+                id: newCompanyId,
+                ruc: '',
+                razonSocial: '',
+                nombreComercial: '',
+                direccionFiscal: '',
+                ubigeo: null,
+                datosBancarios: null,
+                mensajeDespedidaPie: null,
+                monedaPorDefecto: 'PEN',
+                createdAt: now,
+                updatedAt: now,
+                deletedAt: null,
+                version: 1
+            };
+
+            // 2. Crear la Entidad del Usuario Dueño
+            const newUserEntity: UserEntity = {
                 id: newUserId,
                 companyId: newCompanyId,
-                branchIds: [], // Inicialmente no tiene sucursales hasta que las configure
+                defaultBranchId: 'PENDING_SETUP', // Marcador temporal hasta que registre la primera sucursal
                 nombre: nombreNuevo,
-                email: emailNuevo.toLowerCase(),
+                email: emailLower,
+                rol: UserRole.OWNER,
+                activo: true,
+                createdAt: now,
+                updatedAt: now,
+                deletedAt: null,
+                version: 1
+            };
+
+            // 3. Transacción ACID Local + Patrón Outbox
+            await db.transaction('rw', db.company, db.users, db.outboxEvents, async () => {
+
+                // Guardar y encolar la Empresa
+                await db.company.add(newCompany);
+                await db.outboxEvents.add({
+                    id: uuidv4(), deviceId, entityType: 'company', entityId: newCompanyId,
+                    operation: 'UPSERT', payloadJson: JSON.stringify(newCompany),
+                    clientUpdatedAt: now, entityVersion: 1, status: 'PENDING', createdAt: now
+                });
+
+                // Guardar y encolar el Usuario
+                await db.users.add(newUserEntity);
+                await db.outboxEvents.add({
+                    id: uuidv4(), deviceId, entityType: 'user', entityId: newUserId,
+                    operation: 'UPSERT', payloadJson: JSON.stringify(newUserEntity),
+                    clientUpdatedAt: now, entityVersion: 1, status: 'PENDING', createdAt: now
+                });
+            });
+
+            // 4. Iniciar sesión automáticamente en Redux
+            const userPayload: User = {
+                id: newUserId,
+                companyId: newCompanyId,
+                branchIds: [],
+                nombre: nombreNuevo,
+                email: emailLower,
                 rol: UserRole.OWNER,
             };
 
             dispatch(loginSuccess({
-                user: newUser,
-                isNew: true, // Esto activará el flujo de Onboarding para configurar su RUC
-                token: `mock-jwt-token-new-${newUser.id}`,
+                user: userPayload,
+                isNew: true, // Esto activará el flujo de Onboarding visual
+                token: `local-jwt-token-new-${newUserId}`,
                 deviceId
             }));
 
             return true;
 
         } catch (error) {
-            dispatch(loginFailure('Error en el registro del sistema.'));
+            console.error("Error crítico al registrar en BD Local:", error);
+            dispatch(loginFailure('Error al crear la cuenta en la base de datos local.'));
             return false;
         }
     };
