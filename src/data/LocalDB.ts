@@ -9,6 +9,37 @@ export interface SyncMetadata {
     version: number;
 }
 
+// --- Entidades de Configuración ---
+export interface CompanyEntity extends SyncMetadata {
+    ruc: string;
+    razonSocial: string;
+    nombreComercial: string;
+    direccionFiscal: string;
+    ubigeo: string | null;
+    datosBancarios: string | null;
+    mensajeDespedidaPie: string | null;
+    monedaPorDefecto: string;
+}
+
+export interface BranchEntity extends SyncMetadata {
+    companyId: string;
+    codigoBase: string;
+    nombre: string;
+    direccion: string;
+    telefono: string | null;
+    sunatCodigoSucursal: string | null;
+}
+
+export interface UserEntity extends SyncMetadata {
+    companyId: string;
+    defaultBranchId: string;
+    nombre: string;
+    email: string;
+    rol: string; // 'ADMIN' | 'VENDEDOR'
+    activo: boolean;
+}
+
+// --- Entidades Operativas ---
 export interface CustomerEntity extends SyncMetadata {
     companyId: string;
     identityDocType: string; // Ej: '1' para DNI, '6' para RUC
@@ -114,28 +145,34 @@ export interface SyncStateEntity {
 
 // --- Configuración Dexie ---
 export class VehicleManagerDB extends Dexie {
+    company!: Table<CompanyEntity, string>;
+    branches!: Table<BranchEntity, string>;
+    users!: Table<UserEntity, string>;
+    documentSeries!: Table<DocumentSeriesEntity, string>;
     customers!: Table<CustomerEntity, string>;
     vehicles!: Table<VehicleEntity, string>;
     products!: Table<ProductEntity, string>;
     sales!: Table<SaleEntity, string>;
     saleDetails!: Table<SaleDetailEntity, string>;
     vehicleUsualProducts!: Table<VehicleUsualProductEntity, string>;
-    documentSeries!: Table<DocumentSeriesEntity, string>;
     outboxEvents!: Table<OutboxEventEntity, string>;
     syncState!: Table<SyncStateEntity, number>;
 
     constructor() {
         super('FleetSUNAT_DB');
 
-        // VERSIÓN 4: Añadimos documentSeries y ajustamos SaleEntity
-        this.version(4).stores({
+        // VERSIÓN 5: Añadimos Company, Branches y Users
+        this.version(5).stores({
+            company: 'id, ruc',
+            branches: 'id, companyId, codigoBase, deletedAt',
+            users: 'id, companyId, email, deletedAt',
+            documentSeries: 'id, branchId, docType, series, deletedAt',
             customers: 'id, companyId, identityDocNumber, name, deletedAt',
             vehicles: 'id, customerId, conductorHabitualId, licensePlate, deletedAt',
             products: 'id, companyId, code, deletedAt',
             sales: 'id, companyId, branchId, customerId, vehicleId, docType, status, deletedAt',
             saleDetails: 'id, saleId, productId, deletedAt',
             vehicleUsualProducts: 'id, vehicleId, productId, deletedAt',
-            documentSeries: 'id, branchId, docType, series, deletedAt', // NUEVO
             outboxEvents: 'id, deviceId, status, createdAt',
             syncState: 'id'
         });
