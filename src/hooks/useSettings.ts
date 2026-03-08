@@ -1,27 +1,21 @@
 import { useState } from 'react';
-import { db } from '@data/db';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@data/LocalDB';
 
 export const useSettings = () => {
     const [activeTab, setActiveTab] = useState<'empresa' | 'sucursales' | 'series' | 'usuarios'>('empresa');
 
-    // Cargamos los datos de la base de datos simulada
-    const [companyData, setCompanyData] = useState(db.company);
-    const [branchesData] = useState(db.branches);
-    const [seriesData] = useState(db.documentSeries);
-    const [usersData] = useState(db.users);
-
-    const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setCompanyData({ ...companyData, [e.target.name]: e.target.value });
-    };
-
-    const saveCompanySettings = (e: React.FormEvent) => {
-        e.preventDefault();
-        alert('¡Configuración de empresa guardada con éxito! (Simulación)');
-    };
+    // Mantenemos solo lo que aún no hemos modularizado
+    const dbData = useLiveQuery(async () => {
+        const series = await db.documentSeries.filter(s => s.deletedAt === null && s.active).toArray();
+        const users = await db.users.filter(u => u.deletedAt === null && u.activo).toArray();
+        return { series, users };
+    }, []) || { series: [], users: [] };
 
     return {
-        activeTab, setActiveTab,
-        companyData, handleCompanyChange, saveCompanySettings,
-        branchesData, seriesData, usersData
+        activeTab,
+        setActiveTab,
+        seriesData: dbData.series,
+        usersData: dbData.users
     };
 };
