@@ -1,182 +1,54 @@
 import { useSettings } from "@hooks/useSettings";
 import styles from "@styles/modules/Settings.module.css";
-import {
-  Settings as SettingsIcon,
-  Building,
-  MapPin,
-  FileText,
-  Users,
-  Store,
-  Save,
-} from "lucide-react";
+import { Building, FileText, Users, Store } from "lucide-react";
+import { BranchesTab } from "@components/branches/BranchesTab";
+import { CompanyTab } from "@components/company/CompanyTab";
 
 export const Settings = () => {
-  const {
-    activeTab,
-    setActiveTab,
-    companyData,
-    handleCompanyChange,
-    saveCompanySettings,
-    branchesData,
-    seriesData,
-    usersData,
-  } = useSettings();
+  const { activeTab, setActiveTab, seriesData, usersData } = useSettings();
 
   return (
     <div className={styles.container}>
       {/* Menú Lateral de Ajustes */}
       <aside className={styles.tabsSidebar}>
-        <h3 className="mb-2 ml-2 font-bold text-slate-400 text-xs uppercase tracking-wider">
-          Ajustes del Sistema
-        </h3>
+        <h3 className={styles.sidebarTitle}>Ajustes del Sistema</h3>
         <button
           onClick={() => setActiveTab("empresa")}
           className={`${styles.tabBtn} ${activeTab === "empresa" ? styles.activeTab : ""}`}
         >
-          <Building className="w-5 h-5" /> Empresa Principal
+          <Building className={styles.iconMedium} /> Empresa Principal
         </button>
         <button
           onClick={() => setActiveTab("sucursales")}
           className={`${styles.tabBtn} ${activeTab === "sucursales" ? styles.activeTab : ""}`}
         >
-          <Store className="w-5 h-5" /> Locales / Sucursales
+          <Store className={styles.iconMedium} /> Locales / Sucursales
         </button>
         <button
           onClick={() => setActiveTab("series")}
           className={`${styles.tabBtn} ${activeTab === "series" ? styles.activeTab : ""}`}
         >
-          <FileText className="w-5 h-5" /> Series de Facturación
+          <FileText className={styles.iconMedium} /> Series de Facturación
         </button>
         <button
           onClick={() => setActiveTab("usuarios")}
           className={`${styles.tabBtn} ${activeTab === "usuarios" ? styles.activeTab : ""}`}
         >
-          <Users className="w-5 h-5" /> Usuarios
+          <Users className={styles.iconMedium} /> Usuarios
         </button>
       </aside>
 
       {/* Área de Contenido */}
       <main className={styles.contentArea}>
-        {/* TAB 1: EMPRESA PRINCIPAL */}
-        {activeTab === "empresa" && (
-          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
-            <h2 className={styles.sectionTitle}>
-              <SettingsIcon className="text-blue-600" /> Configuración de la
-              Empresa
-            </h2>
-            <p className={styles.sectionSubtitle}>
-              Estos datos se utilizarán para la emisión de comprobantes
-              electrónicos (SUNAT).
-            </p>
+        {/* TABS MODULARIZADOS */}
+        {activeTab === "empresa" && <CompanyTab />}
+        {activeTab === "sucursales" && <BranchesTab />}
 
-            <form onSubmit={saveCompanySettings}>
-              <div className={styles.formGrid}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>RUC</label>
-                  <input
-                    type="text"
-                    name="ruc"
-                    className={styles.input}
-                    value={companyData.ruc}
-                    onChange={handleCompanyChange}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Razón Social</label>
-                  <input
-                    type="text"
-                    name="razonSocial"
-                    className={styles.input}
-                    value={companyData.razonSocial}
-                    onChange={handleCompanyChange}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Nombre Comercial</label>
-                  <input
-                    type="text"
-                    name="nombreComercial"
-                    className={styles.input}
-                    value={companyData.nombreComercial}
-                    onChange={handleCompanyChange}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Dirección Fiscal</label>
-                  <input
-                    type="text"
-                    name="direccionFiscal"
-                    className={styles.input}
-                    value={companyData.direccionFiscal}
-                    onChange={handleCompanyChange}
-                  />
-                </div>
-                <div className={`${styles.formGroup} md:col-span-2`}>
-                  <label className={styles.label}>
-                    Cuentas Bancarias (Visible en PDF de Factura)
-                  </label>
-                  <textarea
-                    name="datosBancarios"
-                    className={styles.input}
-                    value={companyData.datosBancarios}
-                    onChange={handleCompanyChange}
-                    rows={2}
-                  ></textarea>
-                </div>
-                <div className={`${styles.formGroup} md:col-span-2`}>
-                  <label className={styles.label}>
-                    Mensaje de Despedida (Pie de página)
-                  </label>
-                  <input
-                    type="text"
-                    name="mensajeDespedidaPie"
-                    className={styles.input}
-                    value={companyData.mensajeDespedidaPie}
-                    onChange={handleCompanyChange}
-                  />
-                </div>
-              </div>
-              <button type="submit" className={styles.btnPrimary}>
-                <Save className="w-5 h-5" /> Guardar Cambios
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* TAB 2: SUCURSALES */}
-        {activeTab === "sucursales" && (
-          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
-            <h2 className={styles.sectionTitle}>
-              <Store className="text-blue-600" /> Establecimientos Anexos
-            </h2>
-            <p className={styles.sectionSubtitle}>
-              Sucursales registradas en SUNAT asociadas a tu RUC principal.
-            </p>
-            <div className={styles.cardGrid}>
-              {branchesData.map((branch) => (
-                <div key={branch.id} className={styles.infoCard}>
-                  <div className={styles.cardBadge}>{branch.codigoBase}</div>
-                  <h4 className={styles.cardTitle}>{branch.nombre}</h4>
-                  <p className="flex items-start gap-1 mt-2 text-slate-500 text-xs">
-                    <MapPin className="w-4 h-4 shrink-0" /> {branch.direccion}
-                  </p>
-                </div>
-              ))}
-              <div className="flex flex-col justify-center items-center hover:bg-slate-50 p-5 border-2 border-slate-300 border-dashed rounded-xl min-h-[120px] text-slate-400 hover:text-blue-500 transition-colors cursor-pointer">
-                <span className="text-3xl">+</span>
-                <span className="mt-1 font-semibold text-sm">
-                  Añadir Sucursal
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: SERIES DE FACTURACIÓN */}
+        {/* TAB 3: SERIES DE FACTURACIÓN (Siguiente paso a modularizar) */}
         {activeTab === "series" && (
-          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
+          <div className={styles.tabContent}>
             <h2 className={styles.sectionTitle}>
-              <FileText className="text-blue-600" /> Series de Comprobantes
+              <FileText className={styles.iconBlue} /> Series de Comprobantes
             </h2>
             <p className={styles.sectionSubtitle}>
               Control de correlativos para la emisión electrónica por sucursal.
@@ -185,22 +57,27 @@ export const Settings = () => {
               {seriesData.map((serie) => (
                 <div key={serie.id} className={styles.infoCard}>
                   <div
-                    className={`${styles.cardBadge} ${serie.tipoDocumento === "FACTURA" ? "text-blue-600 bg-blue-50 border-blue-200" : "text-indigo-600 bg-indigo-50 border-indigo-200"}`}
+                    className={`${styles.cardBadge} ${
+                      serie.docType === "01"
+                        ? styles.badgeFactura
+                        : styles.badgeBoleta
+                    }`}
                   >
-                    {serie.tipoDocumento}
+                    {serie.docType === "01"
+                      ? "FACTURA"
+                      : serie.docType === "03"
+                        ? "BOLETA"
+                        : "OTRO"}
                   </div>
-                  <h4 className="mt-4 mb-1 font-black text-slate-800 text-3xl">
-                    {serie.serie}
-                  </h4>
+                  <h4 className={styles.serieBigText}>{serie.series}</h4>
                   <p className={styles.cardText}>
                     Correlativo actual:{" "}
-                    <strong className="text-blue-600">
-                      {String(serie.correlativoActual).padStart(6, "0")}
+                    <strong className={styles.serieNumber}>
+                      {String(serie.nextCorrelative - 1).padStart(6, "0")}
                     </strong>
                   </p>
-                  <p className="mt-2 pt-2 border-slate-200 border-t text-slate-400 text-xs">
-                    Asignada a:{" "}
-                    {branchesData.find((b) => b.id === serie.branchId)?.nombre}
+                  <p className={styles.serieFooter}>
+                    Asignada a: {serie.branchId || "Sucursal Desconocida"}
                   </p>
                 </div>
               ))}
@@ -208,30 +85,25 @@ export const Settings = () => {
           </div>
         )}
 
-        {/* TAB 4: USUARIOS */}
+        {/* TAB 4: USUARIOS (Pendiente) */}
         {activeTab === "usuarios" && (
-          <div className="slide-in-from-bottom-2 animate-in duration-300 fade-in">
+          <div className={styles.tabContent}>
             <h2 className={styles.sectionTitle}>
-              <Users className="text-blue-600" /> Cuentas de Acceso
+              <Users className={styles.iconBlue} /> Cuentas de Acceso
             </h2>
             <p className={styles.sectionSubtitle}>
               Personal autorizado para operar el sistema offline-first.
             </p>
             <div className={styles.cardGrid}>
               {usersData.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center gap-4 bg-white shadow-sm p-4 border border-slate-200 rounded-xl"
-                >
-                  <div className="flex justify-center items-center bg-slate-100 rounded-full w-12 h-12 text-slate-500">
-                    <Users className="w-6 h-6" />
+                <div key={user.id} className={styles.userCard}>
+                  <div className={styles.userAvatarBox}>
+                    <Users className={styles.userAvatarIcon} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800">{user.nombre}</h4>
-                    <p className="mb-1 text-slate-500 text-xs">{user.email}</p>
-                    <span className="bg-blue-100 px-2 py-0.5 rounded font-bold text-[10px] text-blue-700 uppercase">
-                      {user.rol}
-                    </span>
+                    <h4 className={styles.userName}>{user.nombre}</h4>
+                    <p className={styles.userEmail}>{user.email}</p>
+                    <span className={styles.userRoleBadge}>{user.rol}</span>
                   </div>
                 </div>
               ))}
