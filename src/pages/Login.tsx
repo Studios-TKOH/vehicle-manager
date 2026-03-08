@@ -33,14 +33,11 @@ export const Login = () => {
     let success = false;
 
     if (isRegistering) {
-      // Si estamos en modo registro, llamamos a la función register del hook
       success = await register(nombre, email, password);
     } else {
-      // Si estamos en modo login, usamos el handleLogin
       success = await handleLogin(e);
     }
 
-    // Si la autenticación es exitosa, redirigimos al dashboard
     if (success) {
       navigate("/");
     }
