@@ -4,7 +4,7 @@ import styles from "@styles/modules/Settings.module.css";
 import { useSeriesSettings } from "@hooks/settings/useSeriesSettings";
 import { SeriesFormModal } from "./SeriesFormModal";
 import { SeriesDeleteModal } from "./SeriesDeleteModal";
-import { NoBranchWarningModal } from "./NoBranchWarningModal";
+import { NoBranchWarningModal } from "../settings/NoBranchWarningModal";
 
 interface Props {
   changeTab: (tab: "empresa" | "sucursales" | "series" | "usuarios") => void;
