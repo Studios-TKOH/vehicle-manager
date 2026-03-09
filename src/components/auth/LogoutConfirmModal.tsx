@@ -31,7 +31,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
           <button className={styles.btnCancel} onClick={onCancel}>
             Mantener Sesión
           </button>
-          <button className={styles.btnLogout} onClick={onConfirm}>
+          <button className={styles.btnLogoutConfirm} onClick={onConfirm}>
             Sí, Salir
           </button>
         </div>
