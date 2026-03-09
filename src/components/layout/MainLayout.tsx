@@ -11,8 +11,14 @@ import {
   Package,
   Settings,
   MapPin,
+  PanelLeftClose,
+  PanelLeftOpen,
+  HelpCircle,
+  Receipt,
+  ClipboardType,
 } from "lucide-react";
 import { LogoutConfirmModal } from "../auth/LogoutConfirmModal";
+import { UnderConstructionModal } from "@components/ui/UnderConstructionModal";
 
 export const MainLayout = () => {
   const {
@@ -25,6 +31,11 @@ export const MainLayout = () => {
     cancelLogout,
     confirmLogout,
     handleProfileClick,
+    isSidebarCollapsed,
+    toggleSidebar,
+    constructionModal,
+    openConstructionModal,
+    closeConstructionModal,
   } = useMainLayout();
 
   const location = useLocation();
@@ -35,69 +46,164 @@ export const MainLayout = () => {
 
   return (
     <div className={styles.layoutContainer}>
-      {/* Barra Lateral */}
-      <aside className={styles.sidebar}>
+      {/* ================= SIDEBAR ================= */}
+      <aside
+        className={`${styles.sidebar} ${isSidebarCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}
+      >
+        {/* Header del Sidebar */}
         <div className={styles.sidebarHeader}>
-          <img
-            src="/assets/logo-empresa.png"
-            alt="Studios TKOH Logo"
-            className={styles.logoImage}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
-            }}
-          />
-          <span>Studios TKOH</span>
+          <div className={styles.brandContainer}>
+            {/* Logo estilo cuadrado limpio como en el diseño */}
+            <div className={styles.logoBox}>MD</div>
+            <span className={styles.brandName}>MotorDesk</span>
+          </div>
+
+          {/* Botón para colapsar/expandir */}
+          <button
+            onClick={toggleSidebar}
+            className={styles.collapseBtn}
+            title={isSidebarCollapsed ? "Expandir" : "Colapsar"}
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeftOpen size={20} />
+            ) : (
+              <PanelLeftClose size={20} />
+            )}
+          </button>
         </div>
 
-        <nav className={styles.navLinks}>
+        {/* Links de Navegación Anidada */}
+        <nav className={styles.scrollArea}>
+          {/* Categoría: DASHBOARD */}
+          <div className={styles.navCategory}>Dashboard</div>
+
           <Link
             to="/"
-            className={`${styles.link} ${location.pathname === "/" ? styles.activeLink : ""}`}
+            className={`${styles.link} ${isActive("/")}`}
+            title="Inicio"
           >
-            <Home className="w-5 h-5" /> Inicio
+            <Home className={styles.linkIcon} />
+            <span className={styles.linkText}>Inicio</span>
           </Link>
+
           <Link
-            to="/vehicles"
-            className={`${styles.link} ${isActive("/vehicles")}`}
+            to="/sales"
+            className={`${styles.link} ${isActive("/sales")}`}
+            title="Facturación"
           >
-            <Truck className="w-5 h-5" /> Vehículos
+            <FileText className={styles.linkIcon} />
+            <span className={styles.linkText}>Facturación</span>
           </Link>
-          <Link
-            to="/products"
-            className={`${styles.link} ${isActive("/products")}`}
-          >
-            <Package className="w-5 h-5" /> Productos
-          </Link>
+
           <Link
             to="/clients"
             className={`${styles.link} ${isActive("/clients")}`}
+            title="Clientes"
           >
-            <Users className="w-5 h-5" /> Clientes
+            <Users className={styles.linkIcon} />
+            <span className={styles.linkText}>Clientes</span>
           </Link>
-          <Link to="/sales" className={`${styles.link} ${isActive("/sales")}`}>
-            <FileText className="w-5 h-5" /> Facturación
+
+          <Link
+            to="/vehicles"
+            className={`${styles.link} ${isActive("/vehicles")}`}
+            title="Vehículos"
+          >
+            <Truck className={styles.linkIcon} />
+            <span className={styles.linkText}>Vehículos</span>
           </Link>
+
+          <Link
+            to="/products"
+            className={`${styles.link} ${isActive("/products")}`}
+            title="Productos"
+          >
+            <Package className={styles.linkIcon} />
+            <span className={styles.linkText}>Productos</span>
+          </Link>
+
           <Link
             to="/reports"
             className={`${styles.link} ${isActive("/reports")}`}
+            title="Reportes"
           >
-            <BarChart3 className="w-5 h-5" /> Reportes
+            <BarChart3 className={styles.linkIcon} />
+            <span className={styles.linkText}>Reportes</span>
           </Link>
+
+          {/* NUEVO: Historial de Ventas (En construcción) */}
+          <button
+            className={`${styles.sidebarButtonLink} ${styles.link}`}
+            title="Historial de Ventas"
+            onClick={() => openConstructionModal("Historial de Ventas")}
+          >
+            <Receipt className={styles.linkIcon} />
+            <span className={styles.linkText}>Historial de Ventas</span>
+          </button>
+
+          {/* NUEVO: Guías de Remisión (En construcción) */}
+          <button
+            className={`${styles.sidebarButtonLink} ${styles.link}`}
+            title="Guías de Remisión"
+            onClick={() => openConstructionModal("Guías de Remisión")}
+          >
+            <ClipboardType className={styles.linkIcon} />
+            <span className={styles.linkText}>Guías de Remisión</span>
+          </button>
+
+          {/* Categoría: SETTINGS */}
+          <div className={styles.navCategory}>Configuración</div>
+
           <Link
             to="/settings"
             className={`${styles.link} ${isActive("/settings")}`}
+            title="Configuración"
           >
-            <Settings className="w-5 h-5" /> Configuración
+            <Settings className={styles.linkIcon} />
+            <span className={styles.linkText}>Configuración</span>
           </Link>
         </nav>
+
+        {/* Footer del Sidebar (Ayuda y Logout) */}
+        <div className={styles.sidebarFooter}>
+          {/* Botón de ayuda conectado al modal de construcción */}
+          <button
+            className={styles.logoutBtn}
+            title="Ayuda"
+            onClick={() => openConstructionModal("Centro de Ayuda")}
+          >
+            <HelpCircle className={styles.linkIcon} />
+            <span className={styles.linkText}>Ayuda</span>
+          </button>
+
+          {/* El botón de Logout ahora vive en la base del sidebar */}
+          <button
+            onClick={requestLogout}
+            className={styles.logoutBtn}
+            title="Cerrar Sesión"
+          >
+            <LogOut className={styles.linkIcon} />
+            <span className={styles.linkText}>Cerrar Sesión</span>
+          </button>
+        </div>
       </aside>
 
-      {/* Contenido Principal */}
+      {/* ================= CONTENIDO PRINCIPAL ================= */}
       <main className={styles.mainContent}>
+        {/* Cabecera Superior (TopBar) */}
         <header className={styles.topbar}>
           <div className={styles.topbarLeft}>
-            {/* Selector de Sucursales (Oculto si solo tiene 1, visible si tiene más) */}
+            {isSidebarCollapsed && (
+              <button
+                onClick={toggleSidebar}
+                className={styles.mobileExpandBtn}
+                title="Expandir Menú"
+              >
+                <PanelLeftOpen size={24} />
+              </button>
+            )}
+
+            {/* Selector de Sucursales */}
             {availableBranches.length > 0 && (
               <div className={styles.branchSelectorContainer}>
                 <MapPin className={styles.branchIcon} />
@@ -106,7 +212,7 @@ export const MainLayout = () => {
                   value={selectedBranchId}
                   onChange={handleBranchChange}
                   title="Cambiar Sucursal Activa"
-                  disabled={availableBranches.length === 1} // Si solo tiene 1 sucursal, no lo dejamos cambiar
+                  disabled={availableBranches.length === 1}
                 >
                   {availableBranches.map((branch) => (
                     <option key={branch.id} value={branch.id}>
@@ -119,10 +225,11 @@ export const MainLayout = () => {
           </div>
 
           <div className={styles.topbarRight}>
+            {/* Perfil de Usuario */}
             <div
               className={styles.userProfile}
               onClick={handleProfileClick}
-              title="Ir a Configuración"
+              title="Ir a Ajustes de Perfil"
             >
               <div className={styles.userInfo}>
                 <span className={styles.userName}>
@@ -134,11 +241,6 @@ export const MainLayout = () => {
               </div>
               <div className={styles.avatarCircle}>{initial}</div>
             </div>
-
-            <button onClick={requestLogout} className={styles.logoutBtn}>
-              <LogOut className="w-4 h-4" />
-              Cerrar Sesión
-            </button>
           </div>
         </header>
 
@@ -151,6 +253,12 @@ export const MainLayout = () => {
         isOpen={isLogoutModalOpen}
         onConfirm={confirmLogout}
         onCancel={cancelLogout}
+      />
+
+      <UnderConstructionModal
+        isOpen={constructionModal.isOpen}
+        moduleName={constructionModal.moduleName}
+        onClose={closeConstructionModal}
       />
     </div>
   );
