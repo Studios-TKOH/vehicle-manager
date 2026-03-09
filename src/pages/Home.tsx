@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import styles from "@styles/modules/home.module.css";
 import { Truck, FileText, Wrench, TrendingUp, Users, Zap } from "lucide-react";
 import { useHomeStats } from "@hooks/useHomeStats";
+import { useAuth } from "@hooks/useAuth";
 
 export const Home = () => {
   const { totalVehicles, todaySales, pendingMaintenances, isLoading } =
     useHomeStats();
+  const { user } = useAuth();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-PE", {
@@ -21,9 +23,11 @@ export const Home = () => {
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
             <span className={styles.greeting}>Panel de Administración</span>
-            <h1 className={styles.title}>¡Hola, Administrador! 👋</h1>
+            <h1 className={styles.title}>
+              ¡Hola, {user?.nombre || "Administrador"}! 👋
+            </h1>
             <p className={styles.subtitle}>
-              El sistema <strong>FleetSUNAT 2026</strong> está operando de
+              El sistema <strong>MotorDesk</strong> está operando de
               manera óptima. Tienes {pendingMaintenances} mantenimientos
               programados para hoy y la sincronización offline está activa.
             </p>
@@ -38,7 +42,7 @@ export const Home = () => {
             <svg
               viewBox="0 0 200 200"
               xmlns="http://www.w3.org/2000/svg"
-              className="drop-shadow-2xl w-full h-full"
+              className={styles.heroIllustrationSvg}
             >
               <circle cx="100" cy="100" r="80" fill="#60A5FA" opacity="0.2" />
               <circle cx="100" cy="100" r="60" fill="#60A5FA" opacity="0.4" />
@@ -108,10 +112,8 @@ export const Home = () => {
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <div
-            className={`${styles.statIconWrapper} bg-blue-100 text-blue-600`}
-          >
-            <Truck className="w-8 h-8" />
+          <div className={styles.statIconWrapperBlue}>
+            <Truck className={styles.statIconLarge} />
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Vehículos Activos</span>
@@ -122,10 +124,8 @@ export const Home = () => {
         </div>
 
         <div className={styles.statCard}>
-          <div
-            className={`${styles.statIconWrapper} bg-green-100 text-green-600`}
-          >
-            <TrendingUp className="w-8 h-8" />
+          <div className={styles.statIconWrapperGreen}>
+            <TrendingUp className={styles.statIconLarge} />
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Facturación del Día</span>
@@ -136,10 +136,8 @@ export const Home = () => {
         </div>
 
         <div className={styles.statCard}>
-          <div
-            className={`${styles.statIconWrapper} bg-orange-100 text-orange-600`}
-          >
-            <Wrench className="w-8 h-8" />
+          <div className={styles.statIconWrapperOrange}>
+            <Wrench className={styles.statIconLarge} />
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Mantenimientos Pendientes</span>
@@ -154,22 +152,22 @@ export const Home = () => {
         <h3 className={styles.sectionTitle}>Accesos Rápidos</h3>
         <div className={styles.actionsGrid}>
           <Link to="/sales" className={styles.actionBtn}>
-            <FileText className={`${styles.actionIcon} w-8 h-8`} />
+            <FileText className={styles.actionIconLarge} />
             <span>Emitir Factura</span>
           </Link>
 
           <Link to="/vehicles" className={styles.actionBtn}>
-            <Truck className={`${styles.actionIcon} w-8 h-8`} />
+            <Truck className={styles.actionIconLarge} />
             <span>Ver Flota</span>
           </Link>
 
           <Link to="/clients" className={styles.actionBtn}>
-            <Users className={`${styles.actionIcon} w-8 h-8`} />
+            <Users className={styles.actionIconLarge} />
             <span>Gestión de Clientes</span>
           </Link>
 
           <button className={styles.actionBtn}>
-            <Zap className={`${styles.actionIcon} w-8 h-8`} />
+            <Zap className={styles.actionIconLarge} />
             <span>Sincronizar Offline</span>
           </button>
         </div>
