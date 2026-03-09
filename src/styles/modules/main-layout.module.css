@@ -1,96 +1,188 @@
 @import "tailwindcss";
 
 .layoutContainer {
-    @apply flex min-h-screen bg-slate-50 font-sans text-slate-800;
+    @apply flex h-screen w-full bg-slate-50 font-sans text-slate-800 overflow-hidden;
 }
 
+/* ================= SIDEBAR ================= */
+/* Quitamos el w-64 de aquí para que no pelee con el colapsado */
 .sidebar {
-    @apply w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-10 transition-all duration-300;
+    @apply flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out z-30 relative shrink-0 h-full;
 }
 
+.sidebarExpanded {
+    @apply w-64;
+}
+
+.sidebarCollapsed {
+    @apply w-[84px] items-center;
+}
+
+/* Sidebar Header (Logo y Título) */
 .sidebarHeader {
-    @apply p-6 text-xl font-bold text-white border-b border-slate-800 text-center tracking-wide flex items-center justify-center gap-3;
+    @apply h-20 flex items-center px-5 border-b border-slate-100 shrink-0 w-full overflow-hidden justify-between transition-all duration-300;
 }
 
-.logoImage {
-    @apply w-8 h-8 object-contain bg-white rounded p-1;
+.sidebarCollapsed .sidebarHeader {
+    @apply justify-center px-0 flex-col py-2;
 }
 
-.navLinks {
-    @apply flex flex-col py-6 gap-1 flex-1 overflow-y-auto;
+.brandContainer {
+    @apply flex items-center gap-3 overflow-hidden whitespace-nowrap;
+}
+
+.sidebarCollapsed .brandContainer {
+    @apply mb-2;
+}
+
+.logoBox {
+    @apply w-9 h-9 bg-emerald-500 text-white rounded-xl flex items-center justify-center font-extrabold text-lg shrink-0 shadow-sm shadow-emerald-500/30;
+}
+
+.brandName {
+    @apply font-bold text-slate-800 tracking-tight text-base transition-all duration-300;
+}
+
+.sidebarCollapsed .brandName {
+    @apply hidden;
+}
+
+/* Botón para esconder el sidebar CORREGIDO (Ya no se oculta) */
+.collapseBtn {
+    @apply text-slate-400 hover:text-emerald-600 p-1.5 rounded-lg hover:bg-emerald-50 transition-colors shrink-0 cursor-pointer border-none bg-transparent flex items-center justify-center;
+}
+
+/* Nav Links y Áreas de Scroll */
+.scrollArea {
+    @apply flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-1 w-full overflow-x-hidden;
+}
+
+.sidebarCollapsed .scrollArea {
+    @apply px-3 items-center;
+}
+
+/* Títulos de Categorías (DASHBOARD, SETTINGS) */
+.navCategory {
+    @apply text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 mt-5 px-3 whitespace-nowrap transition-all duration-300;
+}
+
+.sidebarCollapsed .navCategory {
+    @apply hidden;
 }
 
 .link {
-    @apply flex items-center gap-3 px-6 py-3 text-sm font-medium no-underline transition-all duration-200 border-r-4 border-transparent hover:bg-slate-800 hover:text-white hover:border-blue-500;
+    @apply flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm font-semibold text-slate-500 no-underline transition-all duration-200 hover:bg-emerald-50/50 hover:text-slate-800 overflow-hidden whitespace-nowrap outline-none;
+}
+
+.sidebarCollapsed .link {
+    @apply justify-center px-0 w-12 h-12 rounded-xl mb-1;
 }
 
 .activeLink {
-    @apply bg-slate-800 text-white border-blue-500;
+    @apply bg-emerald-50 text-emerald-700 font-bold pointer-events-none;
 }
 
+.linkIcon {
+    @apply w-[22px] h-[22px] shrink-0 transition-colors duration-200 text-slate-400;
+}
+
+.link:hover .linkIcon {
+    @apply text-emerald-500;
+}
+
+.activeLink .linkIcon {
+    @apply text-emerald-600;
+}
+
+.linkText {
+    @apply transition-all duration-300 truncate;
+}
+
+.sidebarCollapsed .linkText {
+    @apply hidden;
+}
+
+/* Sidebar Footer (Cerrar Sesión, Ayuda) */
+.sidebarFooter {
+    @apply p-4 border-t border-slate-100 flex flex-col gap-1 shrink-0 w-full overflow-hidden;
+}
+
+.sidebarCollapsed .sidebarFooter {
+    @apply px-3 items-center;
+}
+
+.logoutBtn {
+    @apply flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm font-semibold text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all cursor-pointer border-none bg-transparent whitespace-nowrap;
+}
+
+.sidebarCollapsed .logoutBtn {
+    @apply justify-center px-0 w-12 h-12;
+}
+
+.logoutBtn:hover .linkIcon {
+    @apply text-rose-500;
+}
+
+/* ================= MAIN CONTENT Y TOPBAR ================= */
 .mainContent {
-    @apply flex-1 flex flex-col overflow-hidden relative;
+    @apply flex-1 flex flex-col min-w-0 transition-all duration-300 bg-slate-50/50;
 }
 
-/* ================= TOPBAR (CABECERA) ================= */
 .topbar {
-    @apply bg-white h-20 flex items-center justify-between px-8 shadow-sm border-b border-slate-200 sticky top-0 z-20;
+    @apply bg-white h-20 flex items-center justify-between px-8 shadow-sm border-b border-slate-200 shrink-0 sticky top-0 z-20;
 }
 
 .topbarLeft {
     @apply flex items-center gap-4;
 }
 
-/* --- DISEÑO DEL COMBO BOX DE SUCURSAL --- */
+.mobileExpandBtn {
+    @apply text-slate-400 hover:text-emerald-600 mr-4 md:hidden bg-transparent border-none cursor-pointer p-1;
+}
+
 .branchSelectorContainer {
-    @apply flex items-center gap-3 bg-slate-100 hover:bg-slate-200 border border-slate-300 hover:border-blue-400 rounded-xl px-4 py-2.5 transition-all shadow-inner focus-within:ring-4 focus-within:ring-blue-500/20 focus-within:border-blue-500 cursor-pointer;
+    @apply flex items-center gap-3 bg-white hover:bg-slate-50 border border-slate-200 hover:border-emerald-400 rounded-xl px-4 py-2.5 transition-all shadow-sm focus-within:ring-4 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 cursor-pointer;
 }
 
 .branchIcon {
-    @apply w-5 h-5 text-blue-600 shrink-0;
+    @apply w-5 h-5 text-emerald-600 shrink-0;
 }
 
 .branchSelect {
-    @apply bg-transparent text-sm font-extrabold text-slate-800 outline-none cursor-pointer pr-4 w-full truncate;
+    @apply bg-transparent text-sm font-extrabold text-slate-800 outline-none cursor-pointer pr-4 w-full truncate min-w-[160px];
 }
 
 .branchSelect option {
     @apply font-semibold text-slate-800 bg-white p-2;
 }
 
-/* ---------------------------------------- */
-
 .topbarRight {
     @apply flex items-center gap-6;
 }
 
-/* Perfil de Usuario */
+/* ================= PERFIL DE USUARIO (TOPBAR) ================= */
 .userProfile {
-    @apply flex items-center gap-3 cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200;
-}
-
-.avatarCircle {
-    @apply w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg border-2 border-blue-200;
+    @apply flex items-center gap-3 bg-white border border-slate-200 rounded-full pl-5 pr-1.5 py-1.5 cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all select-none;
 }
 
 .userInfo {
-    @apply flex flex-col text-right hidden md:flex;
+    @apply flex flex-col justify-center items-start;
 }
 
 .userName {
-    @apply text-sm font-bold text-slate-800 leading-tight;
+    @apply text-sm font-black text-slate-800 leading-none mb-1.5;
 }
 
 .userRole {
-    @apply text-xs font-semibold text-blue-600 uppercase tracking-wider;
+    @apply text-[10px] font-extrabold text-emerald-600 uppercase tracking-widest leading-none;
 }
 
-.logoutBtn {
-    @apply flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 py-2 px-4 rounded-xl cursor-pointer text-sm font-bold transition-all duration-200 hover:bg-red-600 hover:text-white hover:shadow-md hover:-translate-y-0.5;
+.avatarCircle {
+    @apply flex justify-center items-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-black text-lg shrink-0;
 }
 
 .pageContent {
-    @apply p-8 flex-1 overflow-y-auto;
+    @apply p-8 flex-1 overflow-y-auto relative;
 }
 
 /* ================= MODAL CIERRE SESIÓN ================= */
@@ -99,11 +191,11 @@
 }
 
 .modalContent {
-    @apply bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col p-8 text-center;
+    @apply bg-white rounded-3xl shadow-2xl w-full max-w-sm flex flex-col p-8 text-center duration-200;
 }
 
 .modalIconWrapper {
-    @apply w-20 h-20 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner;
+    @apply w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner;
 }
 
 .modalIcon {
@@ -119,13 +211,27 @@
 }
 
 .modalActionRow {
-    @apply flex justify-center gap-4;
+    @apply flex flex-col gap-3;
 }
 
 .btnCancel {
-    @apply px-5 py-2.5 border-2 border-slate-200 rounded-xl text-slate-700 font-bold hover:border-slate-300 hover:bg-slate-50 transition-all cursor-pointer;
+    @apply px-5 py-3.5 border-2 border-slate-200 rounded-xl text-slate-700 font-bold hover:border-slate-300 hover:bg-slate-50 transition-all cursor-pointer w-full;
 }
 
-.btnLogout {
-    @apply px-5 py-2.5 bg-orange-600 rounded-xl text-white font-bold hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/30 transition-all cursor-pointer active:scale-95;
+.btnLogoutConfirm {
+    @apply px-5 py-3.5 bg-rose-600 rounded-xl text-white font-bold hover:bg-rose-700 hover:shadow-lg hover:shadow-rose-500/30 transition-all cursor-pointer active:scale-95 w-full border-none;
+}
+
+/* ================= MODAL EN CONSTRUCCIÓN ================= */
+.constructionIconWrapper {
+    @apply w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-blue-100;
+}
+
+.btnPrimaryInfo {
+    @apply px-5 py-3.5 bg-blue-600 rounded-xl text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer active:scale-95 w-full border-none mt-2;
+}
+
+/* Modificador para botones en el sidebar que actúan como links */
+.sidebarButtonLink {
+    @apply w-full text-left bg-transparent border-none appearance-none;
 }
