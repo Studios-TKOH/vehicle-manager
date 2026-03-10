@@ -7,6 +7,8 @@ import {
   Trash2,
   Plus,
   Minus,
+  Search,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
@@ -44,7 +46,9 @@ export const Sales = () => {
     updateQuantity,
     processSale,
     saleError,
-    setSaleError
+    setSaleError,
+    isSearchingApi,
+    handleSearchApiCustomer,
   } = useSales();
 
   const [customerSearch, setCustomerSearch] = useState("");
@@ -61,6 +65,13 @@ export const Sales = () => {
       p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
       (p.code && p.code.toLowerCase().includes(productSearch.toLowerCase())),
   );
+
+  const onSearchApi = async () => {
+    const wasFound = await handleSearchApiCustomer(customerSearch);
+    if (wasFound) {
+      setCustomerSearch("");
+    }
+  };
 
   const handleProcessSale = async () => {
     const saleResult = await processSale();
@@ -105,28 +116,60 @@ export const Sales = () => {
         {/* FILA 1: CLIENTE Y FECHAS */}
         <div className={styles.grid4}>
           <FormField label="Cliente" className={styles.autocompleteContainer}>
-            <Autocomplete
-              placeholder="Escribe para buscar un cliente..."
-              searchValue={customerSearch}
-              onSearchChange={setCustomerSearch}
-              selectedItem={selectedCustomer}
-              options={filteredCustomers}
-              getDisplayValue={(c) => c.name}
-              onSelect={(c) => setSelectedCustomer(c)}
-              onClear={() => {
-                setSelectedCustomer(null);
-                setCustomerSearch("");
-              }}
-              renderOption={(c) => (
-                <>
-                  <div className={styles.autocompleteItemName}>{c.name}</div>
-                  <div className={styles.autocompleteItemDoc}>
-                    {c.identityDocType === "6" ? "RUC" : "DNI"}:{" "}
-                    {c.identityDocNumber}
-                  </div>
-                </>
+            <div className={styles.customerSearchRow}>
+              <div className={styles.customerSearchInputWrapper}>
+                <Autocomplete
+                  placeholder="Escribe Nombre, o digita RUC/DNI..."
+                  searchValue={customerSearch}
+                  onSearchChange={setCustomerSearch}
+                  selectedItem={selectedCustomer}
+                  options={filteredCustomers}
+                  getDisplayValue={(c) => `${c.identityDocNumber} - ${c.name}`}
+                  onSelect={(c) => {
+                    setSelectedCustomer(c);
+                    setCustomerSearch("");
+                  }}
+                  onClear={() => {
+                    setSelectedCustomer(null);
+                    setCustomerSearch("");
+                  }}
+                  renderOption={(c) => (
+                    <>
+                      <div className={styles.autocompleteItemName}>
+                        {c.name}
+                      </div>
+                      <div className={styles.autocompleteItemDoc}>
+                        {c.identityDocType === "6" ? "RUC" : "DNI"}:{" "}
+                        {c.identityDocNumber}
+                      </div>
+                    </>
+                  )}
+                />
+              </div>
+
+              {/* Botón de SUNAT/RENIEC que solo aparece si no hay cliente seleccionado */}
+              {!selectedCustomer && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className={styles.btnApiSearch}
+                  onClick={onSearchApi}
+                  // Deshabilitar si no son 8 u 11 digitos, o si está buscando
+                  disabled={
+                    isSearchingApi ||
+                    (customerSearch.trim().length !== 8 &&
+                      customerSearch.trim().length !== 11)
+                  }
+                  title="Buscar en SUNAT/RENIEC"
+                >
+                  {isSearchingApi ? (
+                    <Loader2 className={styles.apiSearchIconSpin} size={18} />
+                  ) : (
+                    <Search className={styles.apiSearchIcon} size={18} />
+                  )}
+                </Button>
               )}
-            />
+            </div>
           </FormField>
 
           <FormField label="Fecha de emisión">
@@ -388,7 +431,7 @@ export const Sales = () => {
         onDownloadPdf={() => alert("Simulando PDF...")}
       />
 
-      {/* NUEVO: MODAL DE ERROR */}
+      {/* MODAL DE ERROR */}
       <SaleErrorModal
         isOpen={!!saleError}
         errorMessage={saleError}
