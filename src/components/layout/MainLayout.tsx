@@ -53,7 +53,6 @@ export const MainLayout = () => {
         {/* Header del Sidebar */}
         <div className={styles.sidebarHeader}>
           <div className={styles.brandContainer}>
-            {/* Logo estilo cuadrado limpio como en el diseño */}
             <div className={styles.logoBox}>MD</div>
             <span className={styles.brandName}>MotorDesk</span>
           </div>
@@ -96,6 +95,15 @@ export const MainLayout = () => {
           </Link>
 
           <Link
+            to="/sales-history"
+            className={`${styles.link} ${isActive("/sales-history")}`}
+            title="Historial de Ventas"
+          >
+            <Receipt className={styles.linkIcon} />
+            <span className={styles.linkText}>Historial de Ventas</span>
+          </Link>
+
+          <Link
             to="/clients"
             className={`${styles.link} ${isActive("/clients")}`}
             title="Clientes"
@@ -131,17 +139,7 @@ export const MainLayout = () => {
             <span className={styles.linkText}>Reportes</span>
           </Link>
 
-          {/* NUEVO: Historial de Ventas (En construcción) */}
-          <button
-            className={`${styles.sidebarButtonLink} ${styles.link}`}
-            title="Historial de Ventas"
-            onClick={() => openConstructionModal("Historial de Ventas")}
-          >
-            <Receipt className={styles.linkIcon} />
-            <span className={styles.linkText}>Historial de Ventas</span>
-          </button>
-
-          {/* NUEVO: Guías de Remisión (En construcción) */}
+          {/* Guías de Remisión (Aún En construcción) */}
           <button
             className={`${styles.sidebarButtonLink} ${styles.link}`}
             title="Guías de Remisión"
