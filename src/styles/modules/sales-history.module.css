@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/* Contenedor Principal */
+.container {
+    @apply flex flex-col bg-white shadow-sm border border-slate-200 rounded-xl w-full h-[calc(100vh-6rem)] overflow-hidden;
+}
+
+/* Header Superior (Navegación y Búsqueda) */
+.headerArea {
+    @apply flex flex-col md:flex-row justify-between items-center gap-4 px-6 py-5 border-b border-slate-200 bg-slate-50;
+}
+
+.dateNavigator {
+    @apply flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-1 shadow-sm;
+}
+
+.arrowBtn {
+    @apply p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer;
+}
+
+.dateTextWrapper {
+    @apply flex items-center justify-center min-w-[240px] gap-2;
+}
+
+.dateIcon {
+    @apply text-blue-500 w-5 h-5;
+}
+
+.dateText {
+    @apply font-bold text-slate-700 text-sm capitalize;
+}
+
+.searchBox {
+    @apply relative w-full md:w-80 flex items-center;
+}
+
+.searchIcon {
+    @apply absolute left-3 text-slate-400 w-4 h-4;
+}
+
+.searchInput {
+    @apply w-full pl-9 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all;
+}
+
+/* Área de la Tabla */
+.tableContainer {
+    @apply flex-1 overflow-y-auto bg-white;
+}
+
+.historyTable {
+    @apply w-full text-left border-collapse;
+}
+
+.tableHead {
+    @apply sticky top-0 bg-slate-100 border-b border-slate-200 z-10;
+}
+
+.thBase {
+    @apply px-6 py-4 font-bold text-[11px] text-slate-500 uppercase tracking-wider whitespace-nowrap;
+}
+
+.tableRow {
+    @apply border-b border-slate-100 hover:bg-slate-50 transition-colors;
+}
+
+.tdBase {
+    @apply px-6 py-4 text-sm text-slate-700 font-medium;
+}
+
+.documentText {
+    @apply font-bold text-slate-900;
+}
+
+.docTypeBadge {
+    @apply text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 mt-1 inline-block;
+}
+
+.clientText {
+    @apply block font-semibold text-slate-800 truncate max-w-[200px];
+}
+
+.plateBadge {
+    @apply inline-flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-bold text-slate-600;
+}
+
+.totalText {
+    @apply font-black text-slate-800;
+}
+
+/* Badges de Estado SUNAT */
+.badgeStatus {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border;
+}
+
+.statusAccepted {
+    @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+}
+
+.statusSent {
+    @apply bg-blue-50 text-blue-700 border-blue-200;
+}
+
+.statusPending {
+    @apply bg-amber-50 text-amber-700 border-amber-200;
+}
+
+.statusRejected {
+    @apply bg-rose-50 text-rose-700 border-rose-200;
+}
+
+/* Footer (Paginación) */
+.paginationArea {
+    @apply flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-white;
+}
+
+.paginationInfo {
+    @apply text-sm text-slate-500 font-medium;
+}
+
+.paginationControls {
+    @apply flex gap-2;
+}
+
+.pageBtn {
+    @apply px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all;
+}
+
+.emptyState {
+    @apply flex flex-col items-center justify-center h-full text-slate-400 gap-4;
+}
+
+.emptyStateIcon {
+    @apply w-16 h-16 opacity-50;
+}
