@@ -16,7 +16,6 @@ export const useMainLayout = () => {
     const [selectedBranchId, setSelectedBranchId] = useState<string>("");
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-    // NUEVO: Estado para el modal de "En Construcción"
     const [constructionModal, setConstructionModal] = useState({ isOpen: false, moduleName: '' });
 
     // 1. Extraemos los datos reales de IndexedDB
@@ -30,7 +29,6 @@ export const useMainLayout = () => {
     const availableBranches = useMemo(() => {
         if (!user) return [];
 
-        // Usamos los strings exactos definidos en tu Enum/Type UserRole
         if (user.rol === 'OWNER' || user.rol === 'ADMIN') {
             return dbData.branches;
         } else {
@@ -69,7 +67,6 @@ export const useMainLayout = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    // NUEVO: Funciones para controlar el modal de construcción
     const openConstructionModal = (moduleName: string) => {
         setConstructionModal({ isOpen: true, moduleName });
     };
@@ -91,7 +88,6 @@ export const useMainLayout = () => {
         handleProfileClick,
         isSidebarCollapsed,
         toggleSidebar,
-        // Exponemos las nuevas funciones y el estado
         constructionModal,
         openConstructionModal,
         closeConstructionModal
