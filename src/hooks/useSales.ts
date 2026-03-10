@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { db, type CustomerEntity, type ProductEntity, type DocumentSeriesEntity, type SaleEntity } from '@data/LocalDB';
 import { useAuth } from '@hooks/useAuth';
+import { getDecolectaData } from '@services/decolectaService';
 
 export type DocType = '01' | '03' | 'PR';
 
@@ -15,12 +16,15 @@ export interface CartItem extends ProductEntity {
 
 export const useSales = () => {
     const location = useLocation();
-    const { deviceId } = useAuth();
+    // 1. Extraemos tanto deviceId como user de la sesión
+    const { deviceId, user } = useAuth();
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
+    const currentCompanyId = user?.companyId;
 
     const prefill = location.state?.prefillData;
 
     const [saleError, setSaleError] = useState<string | null>(null);
+    const [isSearchingApi, setIsSearchingApi] = useState(false);
 
     const dbData = useLiveQuery(async () => {
         const customers = await db.customers.filter(c => c.deletedAt === null).toArray();
@@ -29,9 +33,9 @@ export const useSales = () => {
         return { customers, products, series };
     }, []) || { customers: [], products: [], series: [] };
 
-    const [docType, setDocType] = useState<DocType>(prefill?.docType || '03');
+    const [docTypeState, setDocTypeState] = useState<DocType>(prefill?.docType || '03');
     const [selectedSeries, setSelectedSeries] = useState<DocumentSeriesEntity | null>(null);
-    const [selectedCustomer, setSelectedCustomer] = useState<CustomerEntity | null>(null);
+    const [selectedCustomerInternal, setSelectedCustomerInternal] = useState<CustomerEntity | null>(null);
 
     const [extras, setExtras] = useState({
         vehicleId: prefill?.vehicleId || "",
@@ -48,9 +52,9 @@ export const useSales = () => {
 
     useEffect(() => {
         if (prefill && dbData.customers.length > 0) {
-            if (prefill.customerId && !selectedCustomer) {
+            if (prefill.customerId && !selectedCustomerInternal) {
                 const customer = dbData.customers.find(c => c.id === prefill.customerId);
-                if (customer) setSelectedCustomer(customer);
+                if (customer) handleSelectCustomer(customer);
             }
 
             if (prefill.cartItems && cart.length === 0) {
@@ -64,25 +68,124 @@ export const useSales = () => {
         }
     }, [prefill, dbData.customers]);
 
-    // Reglas de Negocio SUNAT: Cambio de Tipo de Documento
+    // ==========================================
+    // MAGIA 1: Auto-asignación de Factura/Boleta
+    // ==========================================
+    const handleSelectCustomer = (customer: CustomerEntity | null) => {
+        setSelectedCustomerInternal(customer);
+        if (customer && docTypeState !== 'PR') {
+            // Si eligen RUC (6), auto-cambiamos a Factura (01)
+            if (customer.identityDocType === '6') {
+                setDocTypeState('01');
+            }
+            // Si eligen DNI/CE, auto-cambiamos a Boleta (03)
+            else {
+                setDocTypeState('03');
+            }
+        }
+    };
+
+    // ==========================================
+    // MAGIA 2: Validación al cambiar DocType manual
+    // ==========================================
+    const handleSetDocType = (type: DocType) => {
+        if (selectedCustomerInternal && type !== 'PR') {
+            if (type === '01' && selectedCustomerInternal.identityDocType !== '6') {
+                setSaleError("Las facturas (01) exigen que el cliente tenga un RUC. Se ha deseleccionado al cliente actual.");
+                setSelectedCustomerInternal(null);
+            } else if (type === '03' && selectedCustomerInternal.identityDocType === '6') {
+                setSaleError("Por regulación, las empresas con RUC deben recibir Factura (01), no Boleta. Se ha deseleccionado al cliente.");
+                setSelectedCustomerInternal(null);
+            }
+        }
+        setDocTypeState(type);
+    };
+
+    // Efecto para asignar serie basado en el tipo de documento
     useEffect(() => {
-        const availableSeries = dbData.series.filter(s => s.docType === docType);
+        const availableSeries = dbData.series.filter(s => s.docType === docTypeState);
         if (availableSeries.length > 0) {
             setSelectedSeries(availableSeries[0]);
         } else {
             setSelectedSeries(null);
         }
+    }, [docTypeState, dbData.series]);
 
-        if (selectedCustomer) {
-            if (docType === '01' && selectedCustomer.identityDocType !== '6') {
-                setSelectedCustomer(null);
-                setSaleError("Las facturas (01) requieren que el cliente tenga un RUC registrado.");
-            } else if (docType === '03' && selectedCustomer.identityDocType === '6') {
-                setSelectedCustomer(null);
-                setSaleError("Las empresas con RUC deben requerir Factura (01), no Boleta.");
-            }
+
+    // ==========================================
+    // MAGIA 3: Buscar en SUNAT/RENIEC y Guardar
+    // ==========================================
+    const handleSearchApiCustomer = async (documentNumber: string) => {
+        const cleanDoc = documentNumber.trim();
+        if (cleanDoc.length !== 8 && cleanDoc.length !== 11) {
+            setSaleError("El documento debe tener 8 (DNI) u 11 (RUC) dígitos para la búsqueda.");
+            return false;
         }
-    }, [docType, dbData.series]);
+
+        if (!currentDeviceId || !currentCompanyId) {
+            setSaleError("Error de sesión. No se puede guardar el cliente localmente.");
+            return false;
+        }
+
+        const tipoDoc = cleanDoc.length === 11 ? '6' : '1';
+        setIsSearchingApi(true);
+
+        try {
+            // 1. Verificamos si ya existe en la base de datos local (Para no llamar a la API en vano)
+            const localCustomer = await db.customers
+                .filter(c => c.identityDocNumber === cleanDoc && c.deletedAt === null)
+                .first();
+
+            if (localCustomer) {
+                handleSelectCustomer(localCustomer);
+                return true;
+            }
+
+            // 2. Si no existe, Consultamos Decolecta
+            const data = await getDecolectaData(tipoDoc, cleanDoc);
+
+            if (data) {
+                const now = new Date().toISOString();
+                const newCustomer: CustomerEntity = {
+                    id: uuidv4(),
+                    companyId: currentCompanyId,
+                    identityDocType: tipoDoc,
+                    identityDocNumber: cleanDoc,
+                    name: data.name,
+                    address: data.address || null,
+                    phone: null,
+                    email: null,
+                    isActive: true,
+                    createdAt: now,
+                    updatedAt: now,
+                    deletedAt: null,
+                    version: 1
+                };
+
+                // Guardar en Dexie y encolar en el Outbox para subirse a la nube
+                await db.transaction('rw', db.customers, db.outboxEvents, async () => {
+                    await db.customers.add(newCustomer);
+                    await db.outboxEvents.add({
+                        id: uuidv4(), deviceId: currentDeviceId, entityType: 'customer', entityId: newCustomer.id,
+                        operation: 'UPSERT', payloadJson: JSON.stringify(newCustomer), clientUpdatedAt: now, entityVersion: 1, status: 'PENDING', createdAt: now
+                    });
+                });
+
+                // Lo seleccionamos automáticamente (lo que disparará el cambio a Factura/Boleta)
+                handleSelectCustomer(newCustomer);
+                return true;
+            } else {
+                setSaleError("No se encontraron resultados en SUNAT/RENIEC para este documento.");
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            setSaleError("Error de red al consultar el documento.");
+            return false;
+        } finally {
+            setIsSearchingApi(false);
+        }
+    };
 
     const addItem = (product: ProductEntity) => {
         const existing = cart.find(item => item.id === product.id);
@@ -127,12 +230,11 @@ export const useSales = () => {
     const blurInlineInput = (key: string) => setInlineInputs(prev => ({ ...prev, [key]: false }));
 
     const processSale = async () => {
-        // Validación con Modales
-        if (!currentDeviceId) {
+        if (!currentDeviceId || !currentCompanyId) {
             setSaleError("Error de seguridad: Sesión de dispositivo no válida.");
             return null;
         }
-        if (!selectedCustomer && docType !== 'PR') {
+        if (!selectedCustomerInternal && docTypeState !== 'PR') {
             setSaleError("Para emitir un comprobante válido para SUNAT, debes seleccionar un cliente.");
             return null;
         }
@@ -140,7 +242,7 @@ export const useSales = () => {
             setSaleError("El carrito está vacío. Añade al menos un producto para facturar.");
             return null;
         }
-        if (docType !== 'PR' && !selectedSeries) {
+        if (docTypeState !== 'PR' && !selectedSeries) {
             setSaleError("No tienes una serie de facturación configurada para este tipo de documento en esta sucursal.");
             return null;
         }
@@ -148,15 +250,15 @@ export const useSales = () => {
         const now = new Date().toISOString();
         const saleId = uuidv4();
 
-        const finalCustomerId = selectedCustomer?.id || 'CLIENTE_GENERICO_ID';
+        const finalCustomerId = selectedCustomerInternal?.id || 'CLIENTE_GENERICO_ID';
 
         const saleToSave: SaleEntity = {
             id: saleId,
-            companyId: cart[0]?.companyId || 'DEFAULT_COMPANY',
+            companyId: currentCompanyId, // <-- Ya aseguramos que proviene de la sesión real
             branchId: selectedSeries?.branchId || 'DEFAULT_BRANCH',
             customerId: finalCustomerId,
             vehicleId: extras.vehicleId || null,
-            docType: docType,
+            docType: docTypeState,
             series: selectedSeries?.series || 'P001',
             correlativeNumber: selectedSeries ? selectedSeries.nextCorrelative : Date.now(),
             issueDate: now,
@@ -167,7 +269,7 @@ export const useSales = () => {
             currentMileage: extras.kilometrajeActual ? Number(extras.kilometrajeActual) : null,
             nextMaintenanceMileage: extras.proximoCambioKm ? Number(extras.proximoCambioKm) : null,
             notes: extras.observaciones || null,
-            status: docType === 'PR' ? 'DRAFT' : 'CONFIRMED',
+            status: docTypeState === 'PR' ? 'DRAFT' : 'CONFIRMED',
             sunatStatus: 'NOT_SENT',
             createdAt: now,
             updatedAt: now,
@@ -214,17 +316,17 @@ export const useSales = () => {
                     });
                 }
 
-                if (selectedSeries && docType !== 'PR') {
+                if (selectedSeries && docTypeState !== 'PR') {
                     const updatedSeries = { ...selectedSeries, nextCorrelative: selectedSeries.nextCorrelative + 1, updatedAt: now };
                     await db.documentSeries.put(updatedSeries);
                 }
             });
 
             return {
-                docType: docType,
+                docType: docTypeState,
                 series: saleToSave.series,
                 correlativeNumber: saleToSave.correlativeNumber,
-                customerName: selectedCustomer ? selectedCustomer.name : 'Público en General',
+                customerName: selectedCustomerInternal ? selectedCustomerInternal.name : 'Público en General',
                 totalAmount: saleToSave.totalAmount
             };
         } catch (error) {
@@ -237,11 +339,11 @@ export const useSales = () => {
     return {
         customers: dbData.customers,
         products: dbData.products,
-        docType,
-        setDocType,
+        docType: docTypeState,
+        setDocType: handleSetDocType,
         selectedSeries,
-        selectedCustomer,
-        setSelectedCustomer,
+        selectedCustomer: selectedCustomerInternal,
+        setSelectedCustomer: handleSelectCustomer,
         extras,
         handleExtraChange,
         inlineInputs,
@@ -256,6 +358,8 @@ export const useSales = () => {
         updateQuantity,
         processSale,
         saleError,
-        setSaleError
+        setSaleError,
+        isSearchingApi,
+        handleSearchApiCustomer
     };
 };
