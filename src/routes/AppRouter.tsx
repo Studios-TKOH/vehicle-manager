@@ -12,6 +12,7 @@ import { Sales } from "@pages/Sales";
 import { Reports } from "@pages/Reports";
 import { Login } from "@pages/Login";
 import { Settings } from "@pages/Settings";
+import { SalesHistory } from "@/pages/SalesHistory";
 
 
 export const AppRouter = () => {
@@ -42,6 +43,7 @@ export const AppRouter = () => {
           <Route path="/clients" element={<Customers />} />
           <Route path="/products" element={<Products />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/sales-history" element={<SalesHistory />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />{" "}
         </Route>
