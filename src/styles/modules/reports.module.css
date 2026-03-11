@@ -12,6 +12,22 @@
     @apply m-0 font-extrabold text-slate-800 text-3xl tracking-tight;
 }
 
+.tabsWrapper {
+    @apply flex gap-4 mt-6 border-slate-200 border-b;
+}
+
+.tabItem {
+    @apply px-1 pb-2 border-b-2 outline-none font-bold text-sm transition-all cursor-pointer;
+}
+
+.tabItem.active {
+    @apply border-blue-600 text-blue-600;
+}
+
+.tabItem:not(.active) {
+    @apply border-transparent text-slate-400 hover:text-slate-600;
+}
+
 .reportsGrid {
     @apply gap-6 grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -34,15 +50,15 @@
 }
 
 .cardFilters {
-    @apply flex gap-3 bg-slate-50 mt-auto p-3 border border-slate-100 rounded-lg w-full;
+    @apply flex flex-wrap gap-4 bg-slate-100/50 p-4 border border-slate-200 rounded-xl w-full mb-4;
 }
 
 .noFiltersMessage {
-    @apply flex justify-center items-center bg-slate-50 mt-auto p-3 border border-slate-100 rounded-lg h-[66px] font-bold text-[11px] text-slate-400 text-center uppercase;
+    @apply flex justify-center items-center bg-white/50 px-4 py-2 border border-slate-200 border-dashed rounded-lg font-bold text-[10px] text-slate-400 uppercase tracking-widest;
 }
 
 .dateGroup {
-    @apply flex flex-col flex-1 gap-1;
+    @apply flex flex-col flex-1 gap-1 min-w-[200px];
 }
 
 .dateGroup label {
@@ -50,7 +66,7 @@
 }
 
 .dateBox {
-    @apply flex items-center gap-2 bg-white shadow-sm px-2 py-2 border border-slate-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-400 transition-all;
+    @apply flex items-center gap-2 bg-white shadow-sm px-3 py-2 border border-slate-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-400 transition-all;
 }
 
 .dateInput {
@@ -62,18 +78,59 @@
 }
 
 .cardActions {
-    @apply flex gap-3 mt-2 w-full;
+    @apply flex gap-3 mb-6 w-full;
 }
 
 .btnPreview,
 .btnDownload {
-    @apply flex flex-1 justify-center items-center gap-2 shadow-sm py-3 border rounded-lg font-bold text-xs transition-all;
+    @apply flex flex-1 justify-center items-center gap-2 shadow-sm py-2.5 border rounded-lg font-bold text-xs transition-all cursor-pointer;
 }
 
 .btnPreview {
-    @apply bg-white hover:bg-slate-100 border-slate-300 text-slate-700;
+    @apply bg-white hover:bg-slate-50 border-slate-300 text-slate-700;
 }
 
 .btnDownload {
     @apply bg-emerald-600 hover:bg-emerald-700 shadow-md border-emerald-700 text-white hover:-translate-y-0.5;
+}
+
+.tableWrapper {
+    @apply bg-white shadow-sm border border-slate-200 rounded-xl overflow-x-auto;
+}
+
+.excelTable {
+    @apply w-full text-sm text-left border-collapse;
+}
+
+.excelTable thead th {
+    @apply top-0 z-10 sticky bg-slate-50 p-4 border-slate-200 border-b font-bold text-slate-500 uppercase tracking-wider;
+    font-size: 0.7rem;
+}
+
+.excelTable tbody td {
+    @apply p-4 border-slate-100 border-b text-slate-700 transition-colors;
+}
+
+.excelTable span{
+    @apply inline-block px-2 py-1 rounded-full font-bold text-blue-800 text-xs;
+}
+
+.excelTable tbody tr:nth-child(even) {
+    @apply bg-slate-50/50;
+}
+
+.excelTable tbody tr:hover {
+    @apply bg-blue-50/50;
+}
+
+.colAmount {
+    @apply font-mono font-bold text-slate-900;
+}
+
+.colStatus {
+    @apply text-center;
+}
+
+.colDate {
+    @apply font-medium text-slate-500 whitespace-nowrap;
 }
