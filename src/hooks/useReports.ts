@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@data/LocalDB'; // Asegúrate de que este path sea el correcto para tu LocalDB.ts
+import { db } from '@data/LocalDB';
 
 export const useReports = () => {
     const data = useLiveQuery(async () => {
