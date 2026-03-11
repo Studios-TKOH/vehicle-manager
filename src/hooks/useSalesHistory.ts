@@ -31,14 +31,27 @@ export const useSalesHistory = () => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }, [selectedDate]);
 
-    // 3. Consulta a Dexie (Uniendo Ventas, Clientes y Vehículos)
+    // 3. Consulta a Dexie (A Prueba de Zonas Horarias)
     const rawSalesData = useLiveQuery(async () => {
-        // Formato YYYY-MM-DD para filtrar localmente
-        const dateStr = selectedDate.toISOString().split('T')[0];
 
-        // Traemos las ventas de ese día que no estén eliminadas
+        // Extraemos el Año, Mes y Día exactos de la zona horaria del dispositivo (Perú)
+        const targetYear = selectedDate.getFullYear();
+        const targetMonth = selectedDate.getMonth();
+        const targetDate = selectedDate.getDate();
+
+        // Filtramos convirtiendo la fecha guardada (UTC) a la zona local
         const daySales = await db.sales
-            .filter(s => s.deletedAt === null && s.issueDate.startsWith(dateStr))
+            .filter(s => {
+                if (s.deletedAt !== null) return false;
+
+                // Convertimos el string ISO (Ej: 2026-03-10T04:57:00Z) a fecha local
+                const saleDate = new Date(s.issueDate);
+
+                // Comparamos los días en hora local (Perú)
+                return saleDate.getFullYear() === targetYear &&
+                    saleDate.getMonth() === targetMonth &&
+                    saleDate.getDate() === targetDate;
+            })
             .toArray();
 
         // Cruzamos datos manualmente (Join en cliente)
