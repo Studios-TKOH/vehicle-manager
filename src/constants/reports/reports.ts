@@ -1,4 +1,4 @@
-import type { ReportIconKey } from '../../ui/icons/reportIcons'
+import type { ReportIconKey } from '@icons/reportIcons'
 
 export type ReporteDisponible = {
     id: string

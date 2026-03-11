@@ -9,7 +9,7 @@ import { Vehicles } from "@pages/Vehicles";
 import { Customers } from "@pages/Customers";
 import { Products } from "@pages/Products";
 import { Sales } from "@pages/Sales";
-import { Reports } from "@pages/Reports";
+import Reports  from "@pages/Reports";
 import { Login } from "@pages/Login";
 import { Settings } from "@pages/Settings";
 import { SalesHistory } from "@/pages/SalesHistory";
