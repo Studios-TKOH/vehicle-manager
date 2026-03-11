@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSales } from "@hooks/useSales";
+import { useState, useRef, useEffect } from "react";
+import { useSales, type CartItem } from "@hooks/useSales";
 import {
   PackageSearch,
   FileText,
@@ -9,6 +9,7 @@ import {
   Minus,
   Search,
   Loader2,
+  Edit2,
 } from "lucide-react";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
@@ -20,8 +21,9 @@ import {
   SaleSuccessModal,
   type SaleSuccessData,
 } from "@components/sales/SaleSuccessModal";
-import styles from "@styles/modules/sales.module.css";
 import { SaleErrorModal } from "@components/sales/SaleErrorModal";
+import { EditCartItemModal } from "@components/sales/EditCartItemModal";
+import styles from "@styles/modules/sales.module.css";
 
 export const Sales = () => {
   const {
@@ -44,15 +46,42 @@ export const Sales = () => {
     addItem,
     removeItem,
     updateQuantity,
+    updateItemDetails,
     processSale,
     saleError,
     setSaleError,
     isSearchingApi,
     handleSearchApiCustomer,
+    issueDate,
+    setIssueDate,
+    minDate,
+    maxDate,
+    globalDiscount,
+    setGlobalDiscount,
+    resetForm,
+    isOtrosMenuOpen,
+    setIsOtrosMenuOpen,
   } = useSales();
 
   const [customerSearch, setCustomerSearch] = useState("");
   const [successData, setSuccessData] = useState<SaleSuccessData | null>(null);
+
+  const [itemToEdit, setItemToEdit] = useState<CartItem | null>(null);
+
+  const otrosMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        otrosMenuRef.current &&
+        !otrosMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsOtrosMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setIsOtrosMenuOpen]);
 
   const filteredCustomers = customers.filter(
     (c) =>
@@ -68,14 +97,11 @@ export const Sales = () => {
 
   const onSearchApi = async () => {
     const wasFound = await handleSearchApiCustomer(customerSearch);
-    if (wasFound) {
-      setCustomerSearch("");
-    }
+    if (wasFound) setCustomerSearch("");
   };
 
   const handleProcessSale = async () => {
     const saleResult = await processSale();
-
     if (saleResult) {
       setSuccessData({
         docType: saleResult.docType,
@@ -88,7 +114,18 @@ export const Sales = () => {
   };
 
   const handleNewSale = () => {
-    window.location.reload();
+    setSuccessData(null);
+    resetForm();
+  };
+
+  const handlePlateToggle = () => {
+    if (!selectedCustomer && docType !== "PR") {
+      setSaleError(
+        "Para ingresar un vehículo, primero debe seleccionar o registrar un cliente al que le pertenezca.",
+      );
+      return;
+    }
+    toggleInlineInput("placa");
   };
 
   return (
@@ -147,14 +184,12 @@ export const Sales = () => {
                 />
               </div>
 
-              {/* Botón de SUNAT/RENIEC que solo aparece si no hay cliente seleccionado */}
               {!selectedCustomer && (
                 <Button
                   type="button"
                   variant="secondary"
                   className={styles.btnApiSearch}
                   onClick={onSearchApi}
-                  // Deshabilitar si no son 8 u 11 digitos, o si está buscando
                   disabled={
                     isSearchingApi ||
                     (customerSearch.trim().length !== 8 &&
@@ -175,13 +210,16 @@ export const Sales = () => {
           <FormField label="Fecha de emisión">
             <Input
               type="date"
-              value={new Date().toISOString().split("T")[0]}
-              readOnly
+              value={issueDate}
+              min={minDate}
+              max={maxDate}
+              onChange={(e) => setIssueDate(e.target.value)}
+              title="Solo puede emitir comprobantes con ±3 días de diferencia a la fecha actual."
             />
           </FormField>
 
           <FormField label="Fecha de vencimiento">
-            <Input type="date" />
+            <Input type="date" min={issueDate} />
           </FormField>
         </div>
 
@@ -233,7 +271,14 @@ export const Sales = () => {
           </FormField>
 
           <FormField label="Dscto. global (%)">
-            <Input type="number" placeholder="0.00" />
+            <Input
+              type="number"
+              placeholder="0"
+              min="0"
+              max="100"
+              value={globalDiscount === 0 ? "" : globalDiscount}
+              onChange={(e) => setGlobalDiscount(Number(e.target.value))}
+            />
           </FormField>
         </div>
 
@@ -243,9 +288,9 @@ export const Sales = () => {
             label="PLACA"
             value={extras.placa?.toString() || ""}
             isEditing={inlineInputs.placa}
-            onToggle={() => toggleInlineInput("placa")}
+            onToggle={handlePlateToggle}
             onBlur={() => blurInlineInput("placa")}
-            onChange={(val) => handleExtraChange("placa", val)}
+            onChange={(val) => handleExtraChange("placa", val.toUpperCase())}
           />
 
           <InlineActionButton
@@ -275,9 +320,70 @@ export const Sales = () => {
             onChange={(val) => handleExtraChange("observaciones", val)}
           />
 
-          <Button variant="primary" className={styles.btnOtros} fullWidth>
-            OTROS <MenuIcon className={styles.btnOtrosIcon} />
-          </Button>
+          <div className={styles.otrosMenuContainer} ref={otrosMenuRef}>
+            <Button
+              variant={isOtrosMenuOpen ? "primary" : "secondary"}
+              className={styles.btnOtros}
+              fullWidth
+              onClick={() => setIsOtrosMenuOpen(!isOtrosMenuOpen)}
+            >
+              OTROS <MenuIcon className={styles.btnOtrosIcon} />
+            </Button>
+
+            <div
+              className={
+                isOtrosMenuOpen
+                  ? styles.otrosDropdown
+                  : styles.otrosDropdownHidden
+              }
+            >
+              <div className={styles.otrosDropdownHeader}>
+                Datos Adicionales
+              </div>
+
+              <div className={styles.otrosInputGroup}>
+                <label className={styles.otrosLabel}>Condición de Pago</label>
+                <Select
+                  value={extras.condicionPago}
+                  onChange={(e) =>
+                    handleExtraChange("condicionPago", e.target.value)
+                  }
+                >
+                  <option value="CONTADO">CONTADO</option>
+                  <option value="CRÉDITO A 15 DÍAS">CRÉDITO 15 DÍAS</option>
+                  <option value="CRÉDITO A 30 DÍAS">CRÉDITO 30 DÍAS</option>
+                  <option value="YAPE / PLIN">YAPE / PLIN</option>
+                  <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                </Select>
+              </div>
+
+              <div className={styles.otrosInputGroup}>
+                <label className={styles.otrosLabel}>
+                  Orden de Compra (Opcional)
+                </label>
+                <Input
+                  placeholder="Ej: OC-2026-001"
+                  value={extras.ordenCompra}
+                  onChange={(e) =>
+                    handleExtraChange("ordenCompra", e.target.value)
+                  }
+                />
+              </div>
+
+              <div className={styles.otrosInputGroup}>
+                <label className={styles.otrosLabel}>
+                  Guía de Remisión (Opcional)
+                </label>
+                <Input
+                  placeholder="Ej: T001-00045"
+                  value={extras.guiaRemision}
+                  onChange={(e) =>
+                    handleExtraChange("guiaRemision", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -295,7 +401,7 @@ export const Sales = () => {
                 <th className={styles.thCenter}>Precio Unit.</th>
                 <th className={styles.thCenter}>Total</th>
                 <th className={styles.thQty}>Cantidad</th>
-                <th className={styles.thAction}></th>
+                <th className={styles.thAction}>Acciones</th>
               </tr>
             </thead>
             <tbody className={styles.cartTableBody}>
@@ -305,11 +411,6 @@ export const Sales = () => {
                     <span className={styles.cartItemName}>
                       {item.name || (item as any).nombre}
                     </span>
-                    {item.notaItem && (
-                      <span className={styles.cartItemNote}>
-                        Nota: {item.notaItem}
-                      </span>
-                    )}
                   </td>
                   <td className={styles.cartItemPrice}>
                     S/ {item.price.toFixed(2)}
@@ -339,13 +440,23 @@ export const Sales = () => {
                     </div>
                   </td>
                   <td className={styles.tdCenter}>
-                    <button
-                      onClick={() => removeItem(item.tempId)}
-                      className={styles.btnRemoveItem}
-                      title="Eliminar línea"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {/* Grupo de botones de acción */}
+                    <div className={styles.actionButtonsGroup}>
+                      <button
+                        onClick={() => setItemToEdit(item)}
+                        className={styles.btnEditProduct}
+                        title="Editar Precio/Nombre Temporalmente"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => removeItem(item.tempId)}
+                        className={styles.btnRemoveItem}
+                        title="Eliminar línea"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -395,6 +506,11 @@ export const Sales = () => {
               <span className={styles.totalBigTextValue}>
                 S/ {totals.total.toFixed(2)}
               </span>
+              {globalDiscount > 0 && (
+                <span className={styles.discountSign}>
+                  (-{globalDiscount}%)
+                </span>
+              )}
             </p>
             <p className={styles.subtotalsText}>
               Subtotal: S/ {totals.subtotal.toFixed(2)} &nbsp;&bull;&nbsp; IGV:
@@ -407,6 +523,7 @@ export const Sales = () => {
               variant="secondary"
               size="xl"
               className={styles.btnTotalsAction}
+              onClick={() => alert("Vista PDF en construcción...")}
             >
               VISTA PREVIA
             </Button>
@@ -422,7 +539,14 @@ export const Sales = () => {
         </div>
       </div>
 
-      {/* MODAL DE ÉXITO */}
+      {/* Modales */}
+      <EditCartItemModal
+        isOpen={!!itemToEdit}
+        item={itemToEdit}
+        onClose={() => setItemToEdit(null)}
+        onSave={updateItemDetails}
+      />
+
       <SaleSuccessModal
         isOpen={!!successData}
         saleData={successData}
@@ -431,7 +555,6 @@ export const Sales = () => {
         onDownloadPdf={() => alert("Simulando PDF...")}
       />
 
-      {/* MODAL DE ERROR */}
       <SaleErrorModal
         isOpen={!!saleError}
         errorMessage={saleError}
