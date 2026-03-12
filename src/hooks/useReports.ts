@@ -7,6 +7,7 @@ export const useReports = () => {
         const allDetails = await db.saleDetails.toArray();
         const allProducts = await db.products.toArray();
         const allCustomers = await db.customers.toArray();
+        const allVehicles = await db.vehicles.toArray();
 
         const ventasActivas = allSales.filter(s => s.deletedAt === null);
         const ventasConfirmadas = ventasActivas.filter(s => s.status === 'CONFIRMED');
@@ -44,27 +45,32 @@ export const useReports = () => {
                     ...stats
                 };
             })
-            .sort((a, b) => b.ingresos - a. ingresos)
+            .sort((a, b) => b.ingresos - a.ingresos)
             .slice(0, 5);
 
-        const ventasRecientes = ventasConfirmadas
+        const historialVentas = ventasConfirmadas
             .sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime())
-            .slice(0, 5)
             .map(sale => {
                 const cliente = allCustomers.find(c => c.id === sale.customerId);
+                const vehiculo = allVehicles.find(v => v.id === sale.vehicleId);
+
                 return {
                     ...sale,
-                    clienteNombre: cliente?.name || 'Cliente Desconocido'
+                    clienteNombre: cliente?.name || 'Cliente Desconocido',
+                    vehiclePlate: vehiculo?.licensePlate || null
                 };
             });
 
-        return { kpis, topProductos, ventasRecientes };
+        const ventasRecientes = historialVentas.slice(0, 5);
+
+        return { kpis, topProductos, ventasRecientes, historialVentas };
     }, []);
 
     return {
         kpis: data?.kpis || { totalVentas: 0, ingresosTotales: 0, ticketPromedio: 0, clientesUnicos: 0 },
         topProductos: data?.topProductos || [],
         ventasRecientes: data?.ventasRecientes || [],
+        historialVentas: data?.historialVentas || [],
         isLoading: data === undefined
     };
 };
