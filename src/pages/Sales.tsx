@@ -102,13 +102,17 @@ export const Sales = () => {
 
   const handleProcessSale = async () => {
     const saleResult = await processSale();
+
     if (saleResult) {
       setSuccessData({
         docType: saleResult.docType,
         series: saleResult.series,
         correlativeNumber: saleResult.correlativeNumber,
         customerName: saleResult.customerName,
+        customerDocument: saleResult.customerDocument,
         totalAmount: saleResult.totalAmount,
+        issueDate: saleResult.issueDate,
+        sunatStatus: saleResult.sunatStatus,
       });
     }
   };
