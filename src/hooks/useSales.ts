@@ -46,7 +46,7 @@ export const useSales = () => {
     const [selectedSeries, setSelectedSeries] = useState<DocumentSeriesEntity | null>(null);
     const [selectedCustomerInternal, setSelectedCustomerInternal] = useState<CustomerEntity | null>(null);
 
-    // FASE 2: Añadimos campos para el menú "Otros"
+    // Añadimos campos para el menú "Otros"
     const initialExtras = {
         vehicleId: prefill?.vehicleId || "",
         placa: prefill?.placa || "",
@@ -386,7 +386,10 @@ export const useSales = () => {
                 series: selectedSeries?.series || 'P001',
                 correlativeNumber: selectedSeries ? selectedSeries.nextCorrelative : 0,
                 customerName: selectedCustomerInternal ? selectedCustomerInternal.name : 'Público en General',
-                totalAmount: totals.total
+                customerDocument: selectedCustomerInternal ? selectedCustomerInternal.identityDocNumber : 'S/N',
+                totalAmount: totals.total,
+                issueDate: finalIssueDate,
+                sunatStatus: 'NOT_SENT'
             };
         } catch (error) {
             console.error("Error al procesar la venta:", error);
@@ -415,7 +418,7 @@ export const useSales = () => {
         addItem,
         removeItem,
         updateQuantity,
-        updateItemDetails, // FASE 2
+        updateItemDetails,
         processSale,
         saleError,
         setSaleError,
@@ -428,7 +431,7 @@ export const useSales = () => {
         globalDiscount,
         setGlobalDiscount,
         resetForm,
-        isOtrosMenuOpen, // FASE 2
-        setIsOtrosMenuOpen // FASE 2
+        isOtrosMenuOpen,
+        setIsOtrosMenuOpen
     };
 };
