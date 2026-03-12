@@ -51,7 +51,11 @@ export const SeriesFormModal: React.FC<Props> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    const finalValue = name === "series" ? value.toUpperCase() : value;
+
+    setFormData({ ...formData, [name]: finalValue });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
