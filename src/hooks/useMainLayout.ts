@@ -5,6 +5,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@data/LocalDB";
 import { logout } from "@store/slices/authSlice";
 import { type RootState } from "@store/index";
+import { useActiveBranch } from "@hooks/useActiveBranch";
 
 export const useMainLayout = () => {
     const dispatch = useDispatch();
@@ -12,20 +13,18 @@ export const useMainLayout = () => {
 
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-    const [selectedBranchId, setSelectedBranchId] = useState<string>("");
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const { activeBranchId, setBranch } = useActiveBranch();
 
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [constructionModal, setConstructionModal] = useState({ isOpen: false, moduleName: '' });
 
-    // 1. Extraemos los datos reales de IndexedDB
     const dbData = useLiveQuery(async () => {
         const company = await db.company.toCollection().first();
         const branches = await db.branches.filter(b => b.deletedAt === null).toArray();
         return { company, branches };
     }, []) || { company: undefined, branches: [] };
 
-    // 2. Filtramos sucursales corrigiendo el error estricto de TypeScript
     const availableBranches = useMemo(() => {
         if (!user) return [];
 
@@ -36,18 +35,16 @@ export const useMainLayout = () => {
         }
     }, [user, dbData.branches]);
 
-    // Autoseleccionar la primera sucursal si no hay una seleccionada
     useEffect(() => {
-        if (!selectedBranchId && availableBranches.length > 0) {
-            setSelectedBranchId(availableBranches[0].id);
+        if (!activeBranchId && availableBranches.length > 0) {
+            setBranch(availableBranches[0].id);
         }
-    }, [availableBranches, selectedBranchId]);
+    }, [availableBranches, activeBranchId, setBranch]);
 
     const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newBranchId = e.target.value;
-        setSelectedBranchId(newBranchId);
-        console.log("Cambiando a sucursal activa:", newBranchId);
-        // TODO: Despachar acción a Redux para el estado global operativo
+        setBranch(newBranchId);
+        // console.log("Cambiando a sucursal activa GLOBAL:", newBranchId);
     };
 
     const requestLogout = () => setIsLogoutModalOpen(true);
@@ -55,6 +52,7 @@ export const useMainLayout = () => {
 
     const confirmLogout = () => {
         setIsLogoutModalOpen(false);
+        localStorage.removeItem('activeBranchId');
         dispatch(logout());
         navigate("/login");
     };
@@ -79,7 +77,7 @@ export const useMainLayout = () => {
         user,
         companyInfo: dbData.company,
         availableBranches,
-        selectedBranchId,
+        selectedBranchId: activeBranchId,
         handleBranchChange,
         isLogoutModalOpen,
         requestLogout,

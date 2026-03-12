@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, type CustomerEntity, type ProductEntity, type DocumentSeriesEntity, type SaleEntity, type VehicleEntity } from '@data/LocalDB';
 import { useAuth } from '@hooks/useAuth';
 import { getDecolectaData } from '@services/decolectaService';
+import { useActiveBranch } from '@hooks/useActiveBranch';
 
 export type DocType = '01' | '03' | 'PR';
 
@@ -19,6 +20,8 @@ export const useSales = () => {
     const { deviceId, user } = useAuth();
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
     const currentCompanyId = user?.companyId;
+
+    const { activeBranchId } = useActiveBranch();
 
     const prefill = location.state?.prefillData;
 
@@ -36,17 +39,24 @@ export const useSales = () => {
     const maxDate = maxD.toISOString().split('T')[0];
 
     const dbData = useLiveQuery(async () => {
+        if (!activeBranchId) return { customers: [], products: [], series: [] };
+
         const customers = await db.customers.filter(c => c.deletedAt === null).toArray();
         const products = await db.products.filter(p => p.deletedAt === null && p.isActive).toArray();
-        const series = await db.documentSeries.filter(s => s.deletedAt === null && s.active).toArray();
+
+        const series = await db.documentSeries.filter(s =>
+            s.deletedAt === null &&
+            s.active &&
+            s.branchId === activeBranchId
+        ).toArray();
+
         return { customers, products, series };
-    }, []) || { customers: [], products: [], series: [] };
+    }, [activeBranchId]) || { customers: [], products: [], series: [] };
 
     const [docTypeState, setDocTypeState] = useState<DocType>(prefill?.docType || '03');
     const [selectedSeries, setSelectedSeries] = useState<DocumentSeriesEntity | null>(null);
     const [selectedCustomerInternal, setSelectedCustomerInternal] = useState<CustomerEntity | null>(null);
 
-    // Añadimos campos para el menú "Otros"
     const initialExtras = {
         vehicleId: prefill?.vehicleId || "",
         placa: prefill?.placa || "",
@@ -63,7 +73,6 @@ export const useSales = () => {
     const [productSearch, setProductSearch] = useState("");
     const [inlineInputs, setInlineInputs] = useState<Record<string, boolean>>({});
 
-    // Estado para el menú Otros
     const [isOtrosMenuOpen, setIsOtrosMenuOpen] = useState(false);
 
     useEffect(() => {
@@ -203,7 +212,6 @@ export const useSales = () => {
         setCart(cart.map(item => item.tempId === tempId ? { ...item, cantidad: Math.max(1, qty) } : item));
     };
 
-    // Función para actualizar detalles temporalmente
     const updateItemDetails = (tempId: string, newName: string, newPrice: number) => {
         setCart(cart.map(item =>
             item.tempId === tempId
@@ -244,8 +252,9 @@ export const useSales = () => {
     };
 
     const processSale = async () => {
-        if (!currentDeviceId || !currentCompanyId) {
-            setSaleError("Error de seguridad: Sesión de dispositivo no válida.");
+        // 3. Validación estricta: No permite facturar si no hay una sucursal en el estado global
+        if (!currentDeviceId || !currentCompanyId || !activeBranchId) {
+            setSaleError("Error de seguridad: No se ha detectado una sucursal activa en la sesión.");
             return null;
         }
         if (!selectedCustomerInternal && docTypeState !== 'PR') {
@@ -257,7 +266,7 @@ export const useSales = () => {
             return null;
         }
         if (docTypeState !== 'PR' && !selectedSeries) {
-            setSaleError("No tienes una serie de facturación configurada para este documento.");
+            setSaleError("No tienes una serie de facturación configurada para este documento en esta sucursal.");
             return null;
         }
 
@@ -268,7 +277,6 @@ export const useSales = () => {
 
         let finalVehicleId = extras.vehicleId || null;
 
-        // Construimos las notas concatenando los campos extras
         let finalNotes = extras.observaciones || "";
         if (extras.ordenCompra) finalNotes += ` | O/C: ${extras.ordenCompra}`;
         if (extras.guiaRemision) finalNotes += ` | Guía: ${extras.guiaRemision}`;
@@ -316,7 +324,7 @@ export const useSales = () => {
                 const saleToSave: SaleEntity = {
                     id: saleId,
                     companyId: currentCompanyId,
-                    branchId: selectedSeries?.branchId || 'DEFAULT_BRANCH',
+                    branchId: activeBranchId,
                     customerId: finalCustomerId,
                     vehicleId: finalVehicleId,
                     docType: docTypeState,

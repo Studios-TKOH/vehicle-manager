@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { db, type DocumentSeriesEntity } from '@data/LocalDB';
 import { useAuth } from '@hooks/useAuth';
+import { useActiveBranch } from '@hooks/useActiveBranch';
 
 export type SeriesModalType = 'add' | 'edit' | 'delete' | 'warning' | null;
 
@@ -10,21 +11,28 @@ export const useSeriesSettings = () => {
     const { deviceId } = useAuth();
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
 
+    const { activeBranchId } = useActiveBranch();
+
     const [activeModal, setActiveModal] = useState<SeriesModalType>(null);
     const [selectedSeries, setSelectedSeries] = useState<DocumentSeriesEntity | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // Consulta reactiva: Necesitamos tanto series como sucursales
     const dbData = useLiveQuery(async () => {
-        const series = await db.documentSeries.filter(s => s.deletedAt === null).toArray();
         const branches = await db.branches.filter(b => b.deletedAt === null).toArray();
+
+        if (!activeBranchId) return { series: [], branches };
+
+        const series = await db.documentSeries.filter(s =>
+            s.deletedAt === null &&
+            s.branchId === activeBranchId
+        ).toArray();
+
         return { series, branches };
-    }, []) || { series: [], branches: [] };
+    }, [activeBranchId]) || { series: [], branches: [] };
 
     const { series, branches } = dbData;
 
     const openModal = (type: SeriesModalType, seriesItem?: DocumentSeriesEntity) => {
-        // Validación: Si intenta agregar pero no hay sucursales, mostramos la advertencia
         if (type === 'add' && branches.length === 0) {
             setActiveModal('warning');
             return;
@@ -131,6 +139,7 @@ export const useSeriesSettings = () => {
     return {
         series,
         branches,
+        activeBranchId,
         activeModal,
         selectedSeries,
         loading,
