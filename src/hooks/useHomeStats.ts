@@ -34,12 +34,24 @@ export const useHomeStats = (): HomeStats => {
         const totalVehicles = vehicles.length;
 
         // B. Facturación de Hoy
-        const todayStr = new Date().toISOString().split('T')[0]; // Fecha formato YYYY-MM-DD
+        const today = new Date();
+        const targetYear = today.getFullYear();
+        const targetMonth = today.getMonth();
+        const targetDate = today.getDate();
+
         const todaySales = sales
-            .filter(s => s.issueDate.startsWith(todayStr))
+            .filter(s => {
+                // Convertimos el string ISO (UTC) guardado en la BD a la zona horaria local (Perú)
+                const saleDate = new Date(s.issueDate);
+
+                // Comparamos usando los métodos locales, NO los UTC
+                return saleDate.getFullYear() === targetYear &&
+                    saleDate.getMonth() === targetMonth &&
+                    saleDate.getDate() === targetDate;
+            })
             .reduce((acc, sale) => acc + sale.totalAmount, 0);
 
-        // C. Mantenimientos Pendientes (Alertas a 500km de vencerse)
+        // C. Mantenimientos Pendientes
         let pendingMaintenances = 0;
 
         vehicles.forEach(vehicle => {
