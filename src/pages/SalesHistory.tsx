@@ -9,12 +9,16 @@ import {
   AlertCircle,
   XCircle,
   FileText,
+  Eye,
 } from "lucide-react";
 import { useSalesHistory } from "@hooks/useSalesHistory";
 import styles from "@styles/modules/sales-history.module.css";
+import { SaleSuccessModal } from "@components/sales/SaleSuccessModal";
 
 export const SalesHistory = () => {
   const {
+    selectedDateString,
+    handleDateChange,
     formattedDateText,
     handlePrevDay,
     handleNextDay,
@@ -27,6 +31,9 @@ export const SalesHistory = () => {
     handleNextPage,
     handlePrevPage,
     isLoading,
+    selectedSale,
+    handleOpenDetails,
+    handleCloseDetails,
   } = useSalesHistory();
 
   const getDocTypeName = (type: string) => {
@@ -72,16 +79,24 @@ export const SalesHistory = () => {
 
   return (
     <div className={styles.container}>
-      {/* HEADER: Navegador de Fecha y Buscador */}
       <div className={styles.headerArea}>
         <div className={styles.dateNavigator}>
           <button className={styles.arrowBtn} onClick={handlePrevDay}>
             <ChevronLeft size={20} />
           </button>
 
-          <div className={styles.dateTextWrapper}>
+          <div
+            className={styles.dateTextWrapper}
+            title="Haz clic para elegir una fecha"
+          >
             <Calendar className={styles.dateIcon} />
             <span className={styles.dateText}>{formattedDateText}</span>
+            <input
+              type="date"
+              className={styles.hiddenDateInput}
+              value={selectedDateString}
+              onChange={handleDateChange}
+            />
           </div>
 
           <button className={styles.arrowBtn} onClick={handleNextDay}>
@@ -122,6 +137,7 @@ export const SalesHistory = () => {
                 <th className={styles.thBase}>Vehículo</th>
                 <th className={styles.thBase}>Total</th>
                 <th className={styles.thBase}>Estado SUNAT</th>
+                <th className={styles.thBase}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -168,6 +184,15 @@ export const SalesHistory = () => {
                     <td className={styles.tdBase}>
                       {renderSunatStatus(sale.sunatStatus)}
                     </td>
+                    <td className={styles.tdBase}>
+                      <button
+                        onClick={() => handleOpenDetails(sale)}
+                        className={styles.btnAction}
+                        title="Ver Detalles y Reimprimir"
+                      >
+                        <Eye size={20} />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -176,7 +201,6 @@ export const SalesHistory = () => {
         )}
       </div>
 
-      {/* FOOTER: Paginación */}
       <div className={styles.paginationArea}>
         <span className={styles.paginationInfo}>
           Mostrando página {totalItems === 0 ? 0 : currentPage} de {totalPages}{" "}
@@ -199,6 +223,15 @@ export const SalesHistory = () => {
           </button>
         </div>
       </div>
+
+      <SaleSuccessModal
+        isOpen={!!selectedSale}
+        mode="history"
+        saleData={selectedSale}
+        onClose={handleCloseDetails}
+        onPrintTicket={() => alert("Simulando impresión de ticket...")}
+        onDownloadPdf={() => alert("Simulando descarga de PDF...")}
+      />
     </div>
   );
 };
