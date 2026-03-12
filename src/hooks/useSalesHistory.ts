@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@data/LocalDB';
+import type { SaleSuccessData } from '@components/sales/SaleSuccessModal';
 
 export const useSalesHistory = () => {
     // 1. Estados
@@ -9,12 +10,15 @@ export const useSalesHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
+    // Estado para el Modal de Detalles
+    const [selectedSale, setSelectedSale] = useState<SaleSuccessData | null>(null);
+
     // 2. Control de Fecha
     const handlePrevDay = () => {
         const newDate = new Date(selectedDate);
         newDate.setDate(selectedDate.getDate() - 1);
         setSelectedDate(newDate);
-        setCurrentPage(1); // Resetear página al cambiar de día
+        setCurrentPage(1);
     };
 
     const handleNextDay = () => {
@@ -24,49 +28,55 @@ export const useSalesHistory = () => {
         setCurrentPage(1);
     };
 
-    // Formatear a "Lunes, 15 de marzo de 2026"
+    // Permite elegir la fecha directamente del calendario nativo
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const dateVal = e.target.value;
+        if (!dateVal) return;
+        // Parseamos la fecha evitando el desajuste de zona horaria
+        const [year, month, day] = dateVal.split('-').map(Number);
+        const newDate = new Date(year, month - 1, day);
+        setSelectedDate(newDate);
+        setCurrentPage(1);
+    };
+
+    // Formatear a "Lunes, 15 de marzo de 2026" (Para mostrar al usuario)
     const formattedDateText = useMemo(() => {
         const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         const text = selectedDate.toLocaleDateString('es-PE', options);
         return text.charAt(0).toUpperCase() + text.slice(1);
     }, [selectedDate]);
 
+    // Formato YYYY-MM-DD para inyectar en el <input type="date">
+    const selectedDateString = useMemo(() => {
+        const y = selectedDate.getFullYear();
+        const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const d = String(selectedDate.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }, [selectedDate]);
+
+
     // 3. Consulta a Dexie (A Prueba de Zonas Horarias)
     const rawSalesData = useLiveQuery(async () => {
-
-        // Extraemos el Año, Mes y Día exactos de la zona horaria del dispositivo (Perú)
         const targetYear = selectedDate.getFullYear();
         const targetMonth = selectedDate.getMonth();
         const targetDate = selectedDate.getDate();
 
-        // Filtramos convirtiendo la fecha guardada (UTC) a la zona local
         const daySales = await db.sales
             .filter(s => {
                 if (s.deletedAt !== null) return false;
-
-                // Convertimos el string ISO (Ej: 2026-03-10T04:57:00Z) a fecha local
                 const saleDate = new Date(s.issueDate);
-
-                // Comparamos los días en hora local (Perú)
                 return saleDate.getFullYear() === targetYear &&
                     saleDate.getMonth() === targetMonth &&
                     saleDate.getDate() === targetDate;
             })
             .toArray();
 
-        // Cruzamos datos manualmente (Join en cliente)
         const populatedSales = await Promise.all(daySales.map(async (sale) => {
             const customer = await db.customers.get(sale.customerId);
             const vehicle = sale.vehicleId ? await db.vehicles.get(sale.vehicleId) : null;
-
-            return {
-                ...sale,
-                customer,
-                vehicle
-            };
+            return { ...sale, customer, vehicle };
         }));
 
-        // Ordenar de la más reciente a la más antigua
         return populatedSales.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
     }, [selectedDate]);
 
@@ -92,8 +102,24 @@ export const useSalesHistory = () => {
     const handleNextPage = () => setCurrentPage(p => Math.min(p + 1, totalPages));
     const handlePrevPage = () => setCurrentPage(p => Math.max(p - 1, 1));
 
+    // 6. Funciones del Modal de Detalles
+    const handleOpenDetails = (sale: any) => {
+        setSelectedSale({
+            docType: sale.docType,
+            series: sale.series,
+            correlativeNumber: sale.correlativeNumber,
+            customerName: sale.customer?.name || 'Público en General',
+            customerDocument: sale.customer?.identityDocNumber || 'S/N',
+            totalAmount: sale.totalAmount,
+            issueDate: sale.issueDate,
+            sunatStatus: sale.sunatStatus
+        });
+    };
+    const handleCloseDetails = () => setSelectedSale(null);
+
     return {
-        selectedDate,
+        selectedDateString,
+        handleDateChange,
         formattedDateText,
         handlePrevDay,
         handleNextDay,
@@ -105,6 +131,10 @@ export const useSalesHistory = () => {
         totalItems: filteredSales.length,
         handleNextPage,
         handlePrevPage,
-        isLoading: rawSalesData === undefined
+        isLoading: rawSalesData === undefined,
+
+        selectedSale,
+        handleOpenDetails,
+        handleCloseDetails
     };
 };
