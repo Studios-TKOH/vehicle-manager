@@ -14,6 +14,7 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
   const {
     series,
     branches,
+    activeBranchId,
     activeModal,
     selectedSeries,
     openModal,
@@ -48,13 +49,17 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
     }
   };
 
+  const activeBranch = branches.find((b) => b.id === activeBranchId);
+  const branchesForModal = activeBranch ? [activeBranch] : [];
+
   return (
     <div className={styles.tabContent}>
       <h2 className={styles.sectionTitle}>
         <FileText className={styles.iconBlue} /> Series de Comprobantes
       </h2>
       <p className={styles.sectionSubtitle}>
-        Control de correlativos para la emisión electrónica por sucursal.
+        Control de correlativos para la emisión electrónica de la sucursal
+        seleccionada.
       </p>
 
       <div className={styles.cardGrid}>
@@ -80,14 +85,8 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
                 </strong>
               </p>
 
-              <div
-                className={styles.cardFooter}
-                style={{ marginTop: "1rem", paddingTop: "1rem" }}
-              >
-                <span
-                  className={styles.cardText}
-                  style={{ fontSize: "0.75rem", color: "#94a3b8" }}
-                >
+              <div className={styles.cardFooter}>
+                <span className={styles.cardSubFooter}>
                   {branchName}
                 </span>
                 <div className={styles.cardActionGroup}>
@@ -111,11 +110,12 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
           );
         })}
 
-        {/* Botón de Agregar */}
-        <div className={styles.addCardBtn} onClick={() => openModal("add")}>
-          <span className={styles.addCardIcon}>+</span>
-          <span className={styles.addCardText}>Añadir Serie</span>
-        </div>
+        {activeBranchId && (
+          <div className={styles.addCardBtn} onClick={() => openModal("add")}>
+            <span className={styles.addCardIcon}>+</span>
+            <span className={styles.addCardText}>Añadir Serie</span>
+          </div>
+        )}
       </div>
 
       {/* Modales */}
@@ -124,7 +124,7 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
         onClose={closeModal}
         onNavigateToBranches={() => {
           closeModal();
-          changeTab("sucursales"); // Cambia a la pestaña de sucursales
+          changeTab("sucursales");
         }}
       />
 
@@ -132,7 +132,7 @@ export const SeriesTab: React.FC<Props> = ({ changeTab }) => {
         isOpen={activeModal === "add" || activeModal === "edit"}
         mode={activeModal as "add" | "edit"}
         seriesItem={selectedSeries}
-        branches={branches}
+        branches={branchesForModal}
         onClose={closeModal}
         onSave={handleSave}
       />
