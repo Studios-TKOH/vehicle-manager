@@ -4,6 +4,10 @@
     @apply flex flex-col gap-6 bg-slate-50 p-6 rounded-xl w-full h-full min-h-[85vh];
 }
 
+.tabContainer {
+    @apply flex flex-col gap-6 duration-300;
+}
+
 .header {
     @apply bg-white shadow-sm mb-2 p-6 border border-slate-200 rounded-xl;
 }
@@ -47,6 +51,10 @@
 
 .reportTitle {
     @apply m-0 font-bold text-slate-800 text-lg leading-tight;
+}
+
+.searchInput {
+    @apply w-full;
 }
 
 .cardFilters {
@@ -111,7 +119,7 @@
     @apply p-4 border-slate-100 border-b text-slate-700 transition-colors;
 }
 
-.excelTable span{
+.excelTable span {
     @apply inline-block px-2 py-1 rounded-full font-bold text-blue-800 text-xs;
 }
 
@@ -133,4 +141,41 @@
 
 .colDate {
     @apply font-medium text-slate-500 whitespace-nowrap;
+}
+
+.tableHead {
+    @apply bg-slate-50 border-b border-slate-200;
+}
+
+.thBase {
+    @apply px-6 py-4 font-bold text-[11px] text-slate-500 uppercase tracking-wider;
+}
+
+.tableBody {
+    @apply divide-y divide-slate-100;
+}
+
+.tableRow {
+    @apply hover:bg-slate-50 transition-colors;
+}
+
+.tdBase {
+    @apply px-6 py-4 text-sm text-slate-700 font-medium;
+}
+
+.tdTotal {
+    @apply px-6 py-4 text-sm font-black text-emerald-700;
+}
+
+/* Badges visuales dentro de la tabla */
+.plateBadge {
+    @apply inline-flex items-center justify-center bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md text-xs font-black text-slate-700 tracking-wide;
+}
+
+.docBadge {
+    @apply text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded-md border border-slate-200 shadow-sm;
+}
+
+.emptyState {
+    @apply px-6 py-12 text-center text-sm font-medium text-slate-400 bg-slate-50/50;
 }

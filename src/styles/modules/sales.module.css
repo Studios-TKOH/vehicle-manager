@@ -20,6 +20,10 @@
     @apply block mb-1.5 font-semibold text-slate-500 text-xs;
 }
 
+.formSucessSpace {
+    @apply flex gap-3;
+}
+
 .actionRow {
     @apply flex sm:flex-row flex-col items-center gap-3 mb-6;
 }
@@ -40,7 +44,7 @@
     @apply flex justify-between items-center hover:bg-blue-50 p-3 border-slate-100 border-b last:border-none transition-colors cursor-pointer;
 }
 
-/* ================= MODAL DE ÉXITO DE VENTA ================= */
+/* ================= MODAL DE ÉXITO Y DETALLE DE VENTA ================= */
 .successModalOverlay {
     @apply fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity;
 }
@@ -50,7 +54,12 @@
 }
 
 .successHeader {
-    @apply bg-emerald-500 p-8 flex flex-col items-center text-center text-white;
+    @apply bg-emerald-500 p-8 flex flex-col items-center text-center text-white transition-colors;
+}
+
+/* NUEVO: Header oscuro para modo Historial */
+.historyHeaderModal {
+    @apply bg-slate-800 p-8 flex flex-col items-center text-center text-white transition-colors;
 }
 
 .successIconBox {
@@ -62,7 +71,7 @@
 }
 
 .successSubtitle {
-    @apply text-emerald-100 font-medium;
+    @apply text-white/80 font-medium;
 }
 
 .successBody {
@@ -70,7 +79,7 @@
 }
 
 .receiptPreview {
-    @apply bg-white border border-slate-200 border-dashed rounded-2xl p-6 flex flex-col gap-4 text-center shadow-sm relative overflow-hidden;
+    @apply bg-white border border-slate-200 border-dashed rounded-2xl p-6 flex flex-col gap-4 shadow-sm relative overflow-hidden;
 }
 
 /* Efecto de borde dentado de ticket */
@@ -81,20 +90,32 @@
     background-size: 12px 10px;
 }
 
+.receiptTopRow {
+    @apply flex justify-between items-start;
+}
+
 .receiptLabel {
-    @apply text-slate-400 font-bold text-xs uppercase tracking-widest;
+    @apply text-slate-400 font-bold text-xs uppercase tracking-widest block;
 }
 
 .receiptDoc {
-    @apply text-slate-800 font-black text-xl tracking-wide;
+    @apply text-slate-800 font-black text-xl tracking-wide block;
 }
 
 .receiptCustomer {
-    @apply text-slate-600 font-medium text-sm truncate px-4;
+    @apply text-slate-800 font-bold text-sm bg-slate-50 p-3 rounded-lg border border-slate-100;
+}
+
+.receiptCustomerDoc {
+    @apply text-xs font-semibold text-slate-500 mt-1 block;
+}
+
+.receiptDate {
+    @apply text-xs font-medium text-slate-400 flex items-center gap-1.5 mt-1;
 }
 
 .receiptTotalBox {
-    @apply mt-2 pt-4 border-t border-slate-100;
+    @apply mt-2 pt-4 border-t border-slate-100 text-center;
 }
 
 .receiptTotal {
@@ -106,11 +127,48 @@
 }
 
 .btnActionOutline {
-    @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer active:scale-95;
+    @apply flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer active:scale-95;
 }
 
 .btnActionSolid {
     @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer active:scale-95;
+}
+
+/* Badges de Estado SUNAT para el Modal */
+.badgeStatusModal {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold border uppercase tracking-wider;
+}
+
+.statusAcceptedModal {
+    @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+}
+
+.statusSentModal {
+    @apply bg-blue-50 text-blue-700 border-blue-200;
+}
+
+.statusPendingModal {
+    @apply bg-amber-50 text-amber-700 border-amber-200;
+}
+
+.statusRejectedModal {
+    @apply bg-rose-50 text-rose-700 border-rose-200;
+}
+
+.formSuccessModalGroup {
+    @apply flex flex-col gap-1;
+}
+
+.formSuccessWhiteText {
+    @apply text-white;
+}
+
+.formSuccessWideText {
+    @apply flex gap-3 w-full;
+}
+
+.btnSecondary {
+    @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-600 font-bold hover:border-rose-200 hover:bg-rose-100 hover:text-rose-700 transition-all cursor-pointer active:scale-95;
 }
 
 /* ================= EXTRAS Y CONTENEDOR PRINCIPAL ================= */
