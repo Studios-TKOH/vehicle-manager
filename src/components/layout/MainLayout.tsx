@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { useMainLayout } from "../../hooks/useMainLayout";
-import styles from "../../styles/modules/main-layout.module.css";
+import { useMainLayout } from "@hooks/useMainLayout";
+import styles from "@styles/modules/main-layout.module.css";
 import {
   Home,
   Truck,
@@ -17,7 +17,7 @@ import {
   Receipt,
   ClipboardType,
 } from "lucide-react";
-import { LogoutConfirmModal } from "../auth/LogoutConfirmModal";
+import { LogoutConfirmModal } from "@components/auth/LogoutConfirmModal";
 import { UnderConstructionModal } from "@components/ui/UnderConstructionModal";
 
 export const MainLayout = () => {
