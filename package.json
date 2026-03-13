@@ -15,6 +15,8 @@
     "@reduxjs/toolkit": "^2.11.2",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "localforage": "^1.10.0",
     "lucide-react": "^0.575.0",
     "react": "^18.2.0",
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tailwindcss/vite": "^4.2.1",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^24.10.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
