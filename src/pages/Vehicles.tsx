@@ -9,12 +9,10 @@ import {
   Edit2,
   Trash2,
   AlertTriangle,
-  ClipboardList,
 } from "lucide-react";
 import { VehicleDetailsModal } from "@components/vehicles/VehicleDetailsModal";
 import { VehicleFormModal } from "@components/vehicles/VehicleFormModal";
 import { VehicleDeleteModal } from "@components/vehicles/VehicleDeleteModal";
-import { VehicleUsualProductsModal } from "@components/vehicles/VehicleUsualProductsModal";
 
 export const Vehicles = () => {
   const {
@@ -41,15 +39,13 @@ export const Vehicles = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}>Flota de Vehículos</h1>
         <button className={styles.addButton} onClick={() => openModal("add")}>
-          <Plus className="w-5 h-5 shrink-0" /> Nuevo Vehículo
+          <Plus className={styles.iconLarge} /> Nuevo Vehículo
         </button>
       </div>
 
-      {/* Controles: Búsqueda y Paginación */}
       <div className={styles.controlsContainer}>
         <div className={styles.searchBox}>
           <Search className={styles.searchIcon} />
@@ -78,7 +74,6 @@ export const Vehicles = () => {
         </div>
       </div>
 
-      {/* Tabla Principal */}
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>
@@ -87,7 +82,7 @@ export const Vehicles = () => {
               <th>Cliente / Chofer</th>
               <th>Kilometraje</th>
               <th>Notas</th>
-              <th className="text-center">Acciones</th>
+              <th className={styles.tableCellCenter}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -95,7 +90,6 @@ export const Vehicles = () => {
               currentVehicles.map((vehicle) => (
                 <tr key={vehicle.id} className={styles.tableRow}>
                   <td>
-                    {/* Variables mapeadas a la BD (Inglés) */}
                     <strong className={styles.vehiclePlaca}>
                       {vehicle.licensePlate}
                     </strong>
@@ -105,7 +99,6 @@ export const Vehicles = () => {
                     </span>
                   </td>
                   <td>
-                    {/* Variables calculadas en useVehicles.ts */}
                     <span className={styles.customerInfo}>
                       <Building2 className={styles.customerIcon} />{" "}
                       {vehicle.clienteNombre}
@@ -139,22 +132,14 @@ export const Vehicles = () => {
                       {vehicle.notas || "-"}
                     </span>
                   </td>
-                  <td>
+                  <td className={styles.tableCellCenter}>
                     <div className={styles.actionGroup}>
                       <button
                         onClick={() => openModal("details", vehicle)}
                         className={`${styles.iconBtn} ${styles.iconBtnView}`}
-                        title="Ver Detalles e Historial"
+                        title="Ver Expediente / Ficha Técnica"
                       >
-                        <Eye className="w-5 h-5" />
-                      </button>
-
-                      <button
-                        onClick={() => openModal("usualProducts", vehicle)}
-                        className={`${styles.iconBtn} hover:bg-amber-50 text-amber-500`}
-                        title="Ficha Técnica / Productos Habituales"
-                      >
-                        <ClipboardList className="w-4 h-4" />
+                        <Eye className={styles.iconMedium} />
                       </button>
 
                       <button
@@ -162,14 +147,14 @@ export const Vehicles = () => {
                         className={`${styles.iconBtn} ${styles.iconBtnEdit}`}
                         title="Editar Datos"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className={styles.iconSmall} />
                       </button>
                       <button
                         onClick={() => openModal("delete", vehicle)}
                         className={`${styles.iconBtn} ${styles.iconBtnDelete}`}
                         title="Eliminar Vehículo"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className={styles.iconSmall} />
                       </button>
                     </div>
                   </td>
@@ -191,7 +176,6 @@ export const Vehicles = () => {
         </table>
       </div>
 
-      {/* Paginación Inferior */}
       <div className={styles.paginationContainer}>
         <span className={styles.paginationInfo}>
           Mostrando {currentVehicles.length} de {totalItems} registros
@@ -219,21 +203,13 @@ export const Vehicles = () => {
         </div>
       </div>
 
-      {/* ================= MODALES EXTERNALIZADOS ================= */}
       <VehicleDetailsModal
         isOpen={activeModal === "details"}
         onClose={closeModal}
         vehicle={selectedVehicle}
-        onEmitFactura={handleEmitirFactura}
-        onOpenUsualProducts={() => openModal("usualProducts", selectedVehicle)} // <-- Enviamos la acción
-      />
-
-      <VehicleUsualProductsModal
-        isOpen={activeModal === "usualProducts"}
-        onClose={closeModal}
-        vehicle={selectedVehicle}
         productsList={productsList}
-        onSave={saveUsualProducts}
+        onEmitFactura={handleEmitirFactura}
+        onSavePreferences={saveUsualProducts}
       />
 
       <VehicleFormModal

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Contenedor Principal */
 .container {
     @apply relative bg-white shadow-sm p-6 border border-slate-200 rounded-xl;
 }
@@ -147,6 +148,24 @@
     @apply hover:bg-red-50 hover:shadow-sm text-red-600;
 }
 
+/* Celdas específicas */
+.tableCellCenter {
+    @apply text-center;
+}
+
+/* Íconos Generales (usados en la tabla y botones) */
+.iconLarge {
+    @apply w-5 h-5 shrink-0;
+}
+
+.iconMedium {
+    @apply w-5 h-5;
+}
+
+.iconSmall {
+    @apply w-4 h-4;
+}
+
 /* ================= PAGINACIÓN INFERIOR ================= */
 .paginationContainer {
     @apply flex sm:flex-row flex-col justify-between items-center gap-6 mt-6;
@@ -166,7 +185,7 @@
 
 /* ================= MODAL STYLES (Mejorados y Espaciosos) ================= */
 .modalOverlay {
-    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity;
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-6 transition-opacity;
 }
 
 .modalContent {
@@ -469,27 +488,6 @@
     @apply flex flex-col sm:flex-row justify-end gap-4 p-8 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl;
 }
 
-.modalHeader {
-    @apply flex justify-between items-center p-6 md:p-8 border-b border-slate-100 bg-white/95 backdrop-blur z-10 rounded-t-2xl;
-}
-
-.modalTitle {
-    @apply flex items-center gap-3 font-bold text-slate-800 text-2xl tracking-tight;
-}
-
-.closeBtn {
-    @apply hover:bg-slate-100 p-2 rounded-full text-slate-400 hover:text-slate-700 transition-all cursor-pointer;
-}
-
-/* Permitimos scroll interno suave */
-.modalBody {
-    @apply flex-1 p-6 md:p-8 overflow-y-auto;
-}
-
-.modalFooter {
-    @apply p-6 md:p-8 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 rounded-b-2xl;
-}
-
 /* Formularios genéricos - Mucho más aireados */
 .formGrid {
     @apply gap-x-6 gap-y-6 grid grid-cols-1 md:grid-cols-2;
@@ -506,7 +504,6 @@
 .labelWithIcon {
     @apply font-bold text-slate-700 text-sm tracking-wide flex items-center gap-2;
 }
-
 
 .input {
     @apply border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 font-medium;
@@ -651,4 +648,238 @@
 
 .btnDanger {
     @apply px-5 py-2.5 bg-red-600 rounded-xl text-white font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all cursor-pointer active:scale-95;
+}
+
+/* ================= MODAL DETAILS EXTRA STYLES (Clean Code) ================= */
+.detailsModalContent {
+    @apply max-h-[90vh] overflow-y-auto;
+}
+
+.detailsUsualProductsSection {
+    @apply mt-8 bg-blue-50/50 p-6 rounded-xl border border-blue-100;
+}
+
+.detailsUsualProductsHeader {
+    @apply flex items-center justify-between mb-4;
+}
+
+.detailsUsualProductsTitle {
+    @apply font-bold text-slate-800 flex items-center gap-2 text-lg;
+}
+
+.detailsUsualProductsTitleIcon {
+    @apply text-blue-600;
+}
+
+.detailsAutocompleteWrapper {
+    @apply relative mb-4;
+}
+
+.detailsAutocompleteInputContainer {
+    @apply flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-400;
+}
+
+.detailsAutocompleteIcon {
+    @apply w-5 h-5 text-slate-400 ml-3;
+}
+
+.detailsAutocompleteInput {
+    @apply w-full px-3 py-2.5 outline-none text-sm text-slate-700 font-medium;
+}
+
+.detailsAutocompleteMenu {
+    @apply absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 shadow-xl rounded-xl max-h-60 overflow-y-auto z-50;
+}
+
+.detailsAutocompleteItem {
+    @apply p-3 hover:bg-slate-50 border-b border-slate-100 cursor-pointer;
+}
+
+.detailsAutocompleteItemName {
+    @apply font-bold text-slate-800 text-sm;
+}
+
+.detailsAutocompleteItemDoc {
+    @apply text-xs text-slate-500;
+}
+
+.detailsAutocompleteEmpty {
+    @apply p-4 text-center text-sm text-slate-500;
+}
+
+.detailsUsualProductsList {
+    @apply flex flex-col gap-3;
+}
+
+.detailsUsualProductItem {
+    @apply bg-white border border-slate-200 p-3 rounded-lg flex flex-col md:flex-row md:items-center gap-3 shadow-sm;
+}
+
+.detailsUsualProductInfo {
+    @apply flex-1;
+}
+
+.detailsUsualProductName {
+    @apply font-bold text-slate-800 text-sm block;
+}
+
+.detailsUsualProductSku {
+    @apply text-xs text-slate-500;
+}
+
+.detailsUsualProductControls {
+    @apply flex flex-wrap items-center gap-2;
+}
+
+.detailsUsualProductInputGroup {
+    @apply flex flex-col;
+}
+
+.detailsUsualProductInputLabel {
+    @apply text-[10px] font-bold text-slate-400 uppercase;
+}
+
+.detailsUsualProductInputQty {
+    @apply w-20 px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm font-bold;
+}
+
+.detailsUsualProductInputPrice {
+    @apply w-24 px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm font-bold text-emerald-600;
+}
+
+.detailsUsualProductInputNotesGroup {
+    @apply flex flex-col flex-1 min-w-[150px];
+}
+
+.detailsUsualProductInputNotes {
+    @apply w-full px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm;
+}
+
+.detailsUsualProductDeleteBtnWrapper {
+    @apply flex flex-col justify-end mt-4 md:mt-0;
+}
+
+.detailsUsualProductDeleteBtn {
+    @apply p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors;
+}
+
+.detailsUsualProductsSaveRow {
+    @apply flex justify-end mt-2;
+}
+
+.detailsUsualProductsSaveBtn {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-all;
+}
+
+.detailsUsualProductsSaveBtnSuccess {
+    @apply bg-emerald-500 text-white;
+}
+
+.detailsUsualProductsSaveBtnNormal {
+    @apply bg-slate-800 hover:bg-slate-900 text-white;
+}
+
+.detailsUsualProductsEmptyState {
+    @apply text-sm text-slate-500 text-center py-4;
+}
+
+.detailsHistorySection {
+    @apply mt-8;
+}
+
+.detailsHistoryCardDateWrapper {
+    @apply flex items-center gap-2;
+}
+
+.detailsHistoryCardType {
+    @apply inline-block bg-white shadow-sm mr-5 px-4 py-2 border border-slate-200 rounded-xl font-bold text-slate-700 text-sm;
+}
+
+/* Input para editar el nombre del producto directamente */
+.detailsUsualProductInputName {
+    @apply w-full px-2 py-1 -ml-2 border border-transparent hover:border-slate-300 focus:border-blue-500 rounded outline-none font-bold text-slate-800 text-sm transition-all bg-transparent focus:bg-white;
+}
+
+.detailsUsualProductName {
+    @apply font-bold text-slate-800 text-sm block;
+}
+
+.detailsUsualProductSku {
+    @apply text-xs text-slate-500 block px-2 -ml-2;
+}
+
+.detailsUsualProductSku {
+    @apply text-xs text-slate-500;
+}
+
+.detailsUsualProductControls {
+    @apply flex flex-wrap items-center gap-2;
+}
+
+.detailsUsualProductInputGroup {
+    @apply flex flex-col;
+}
+
+.detailsUsualProductInputLabel {
+    @apply text-[10px] font-bold text-slate-400 uppercase;
+}
+
+.detailsUsualProductInputQty {
+    @apply w-20 px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm font-bold;
+}
+
+.detailsUsualProductInputPrice {
+    @apply w-24 px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm font-bold text-emerald-600;
+}
+
+.detailsUsualProductInputNotesGroup {
+    @apply flex flex-col flex-1 min-w-[150px];
+}
+
+.detailsUsualProductInputNotes {
+    @apply w-full px-2 py-1.5 border border-slate-300 rounded outline-none focus:border-blue-500 text-sm;
+}
+
+.detailsUsualProductDeleteBtnWrapper {
+    @apply flex flex-col justify-end mt-4 md:mt-0;
+}
+
+.detailsUsualProductDeleteBtn {
+    @apply p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors;
+}
+
+.detailsUsualProductsSaveRow {
+    @apply flex justify-end mt-2;
+}
+
+.detailsUsualProductsSaveBtn {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-all;
+}
+
+.detailsUsualProductsSaveBtnSuccess {
+    @apply bg-emerald-500 text-white;
+}
+
+.detailsUsualProductsSaveBtnNormal {
+    @apply bg-slate-800 hover:bg-slate-900 text-white;
+}
+
+.detailsUsualProductsEmptyState {
+    @apply text-sm text-slate-500 text-center py-4;
+}
+
+.detailsHistorySection {
+    @apply mt-8;
+}
+
+.detailsHistoryCardDateWrapper {
+    @apply flex items-center gap-2;
+}
+
+.detailsHistoryCardType {
+    @apply inline-block bg-white shadow-sm mr-5 px-4 py-2 border border-slate-200 rounded-xl font-bold text-slate-700 text-sm;
+}
+
+.detailsHistoryList {
+    @apply max-h-96 overflow-y-auto pr-2 pb-4 space-y-6;
 }
