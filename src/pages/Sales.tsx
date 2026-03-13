@@ -112,6 +112,7 @@ export const Sales = () => {
         customerDocument: saleResult.customerDocument,
         totalAmount: saleResult.totalAmount,
         issueDate: saleResult.issueDate,
+        dueDate: saleResult.dueDate,
         sunatStatus: saleResult.sunatStatus,
       });
     }
@@ -223,7 +224,7 @@ export const Sales = () => {
           </FormField>
 
           <FormField label="Fecha de vencimiento">
-            <Input type="date" min={issueDate} />
+            <Input type="date" min={issueDate} value={extras.fechaVencimiento} onChange={(e) => handleExtraChange("fechaVencimiento", e.target.value)} />
           </FormField>
         </div>
 
@@ -349,15 +350,23 @@ export const Sales = () => {
                 <label className={styles.otrosLabel}>Condición de Pago</label>
                 <Select
                   value={extras.condicionPago}
-                  onChange={(e) =>
-                    handleExtraChange("condicionPago", e.target.value)
-                  }
+                  onChange={(e) => handleExtraChange("condicionPago", e.target.value)}
                 >
                   <option value="CONTADO">CONTADO</option>
-                  <option value="CRÉDITO A 15 DÍAS">CRÉDITO 15 DÍAS</option>
-                  <option value="CRÉDITO A 30 DÍAS">CRÉDITO 30 DÍAS</option>
+                  <option value="CRÉDITO">CRÉDITO</option>
+                </Select>
+              </div>
+
+              <div className={styles.otrosInputGroup}>
+                <label className={styles.otrosLabel}>Método de Pago</label>
+                <Select
+                  value={extras.metodoPago}
+                  onChange={(e) => handleExtraChange("metodoPago", e.target.value)}
+                >
+                  <option value="EFECTIVO">EFECTIVO</option>
                   <option value="YAPE / PLIN">YAPE / PLIN</option>
                   <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                  <option value="TARJETA">TARJETA</option>
                 </Select>
               </div>
 

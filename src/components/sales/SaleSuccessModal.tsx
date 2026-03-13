@@ -20,6 +20,7 @@ export interface SaleSuccessData {
   customerDocument?: string;
   totalAmount: number;
   issueDate: string;
+  dueDate?: string | null;
   sunatStatus: string;
 }
 

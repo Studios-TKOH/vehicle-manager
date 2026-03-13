@@ -17,9 +17,9 @@ export interface CartItem extends ProductEntity {
 
 export const useSales = () => {
     const location = useLocation();
-    const { deviceId, user } = useAuth();
+    const { deviceId, user: authUser} = useAuth();
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
-    const currentCompanyId = user?.companyId;
+    const currentCompanyId = authUser?.companyId;
 
     const { activeBranchId } = useActiveBranch();
 
@@ -64,6 +64,8 @@ export const useSales = () => {
         proximoCambioKm: prefill?.kmProximo || "",
         observaciones: prefill?.observacionSugerida || "",
         condicionPago: "CONTADO",
+        metodoPago: "EFECTIVO",
+        fechaVencimiento: "",
         ordenCompra: "",
         guiaRemision: ""
     };
@@ -227,13 +229,13 @@ export const useSales = () => {
             rawTotal += (item.price * item.cantidad);
         });
 
-        const discountMultiplier = 1 - (globalDiscount / 100);
-        const finalTotal = rawTotal * discountMultiplier;
+        const discountAmount = rawTotal * (globalDiscount / 100);
+        const finalTotal = rawTotal - discountAmount;
 
         const finalSubtotal = finalTotal / 1.18;
         const finalIgv = finalTotal - finalSubtotal;
 
-        return { subtotal: finalSubtotal, igv: finalIgv, total: finalTotal };
+        return { subtotal: finalSubtotal, igv: finalIgv, total: finalTotal,discount: discountAmount };
     }, [cart, globalDiscount]);
 
     const handleExtraChange = (key: string, value: string) => setExtras(prev => ({ ...prev, [key]: value }));
@@ -326,18 +328,24 @@ export const useSales = () => {
                     companyId: currentCompanyId,
                     branchId: activeBranchId,
                     customerId: finalCustomerId,
+                    userId: authUser?.id,
+                    userName: authUser?.nombre,
                     vehicleId: finalVehicleId,
                     docType: docTypeState,
                     series: selectedSeries?.series || 'P001',
                     correlativeNumber: selectedSeries ? selectedSeries.nextCorrelative : Date.now(),
                     issueDate: finalIssueDate,
+                    dueDate: (extras as any).fechaVencimiento || null,
                     currency: 'PEN',
                     subtotalAmount: Number(totals.subtotal.toFixed(2)),
+                    totalDiscount: Number(totals.discount.toFixed(2)),
                     igvAmount: Number(totals.igv.toFixed(2)),
                     totalAmount: Number(totals.total.toFixed(2)),
                     currentMileage: extras.kilometrajeActual ? Number(extras.kilometrajeActual) : null,
                     nextMaintenanceMileage: extras.proximoCambioKm ? Number(extras.proximoCambioKm) : null,
-                    notes: finalNotes || null,
+                    paymentCondition: extras.condicionPago,
+                    paymentMethod: (extras as any).metodoPago,
+                    notes: extras.observaciones || null,
                     status: docTypeState === 'PR' ? 'DRAFT' : 'CONFIRMED',
                     sunatStatus: 'NOT_SENT',
                     createdAt: now,
@@ -397,6 +405,7 @@ export const useSales = () => {
                 customerDocument: selectedCustomerInternal ? selectedCustomerInternal.identityDocNumber : 'S/N',
                 totalAmount: totals.total,
                 issueDate: finalIssueDate,
+                dueDate: (extras as any).fechaVencimiento || null,
                 sunatStatus: 'NOT_SENT'
             };
         } catch (error) {
