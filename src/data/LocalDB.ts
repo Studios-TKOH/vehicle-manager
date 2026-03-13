@@ -77,17 +77,23 @@ export interface SaleEntity extends SyncMetadata {
     companyId: string;
     branchId: string;
     customerId: string;
+    userId: string;
+    userName: string;
     vehicleId: string | null;
     docType: string; // '01', '03', 'PR'
     series: string;
     correlativeNumber: number;
     issueDate: string;
+    dueDate?: string | null;
     currency: string;
+    totalDiscount: number;
     subtotalAmount: number;
     igvAmount: number;
     totalAmount: number;
     currentMileage?: number | null;
     nextMaintenanceMileage?: number | null;
+    paymentCondition: string;
+    paymentMethod: string;
     notes?: string | null;
     status: 'DRAFT' | 'CONFIRMED' | 'VOIDED';
     sunatStatus: 'NOT_SENT' | 'SENT' | 'ACCEPTED' | 'REJECTED' | 'VOIDED';
