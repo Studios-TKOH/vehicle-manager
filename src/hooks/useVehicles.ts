@@ -1,7 +1,4 @@
-import {
-    useState, useMemo,
-    // useCallback 
-} from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +6,7 @@ import { db, type VehicleEntity } from '@data/LocalDB';
 import { useAuth } from '@hooks/useAuth';
 import type { VehicleFormData } from '@/types/vehicles';
 
-export type ModalType = 'details' | 'add' | 'edit' | 'delete' | 'usualProducts' | null;
+export type ModalType = 'details' | 'add' | 'edit' | 'delete' | null;
 
 export const useVehicles = () => {
     const navigate = useNavigate();
@@ -26,13 +23,11 @@ export const useVehicles = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // 1. Lectura Reactiva Múltiple con Productos Habituales
     const dbData = useLiveQuery(async () => {
         const vehicles = await db.vehicles.filter(v => v.deletedAt === null).toArray();
         const customers = await db.customers.filter(c => c.deletedAt === null).toArray();
         const products = await db.products.filter(p => p.deletedAt === null).toArray();
 
-        // Filtramos ventas offline a los últimos 60 días
         const dateThreshold = new Date();
         dateThreshold.setDate(dateThreshold.getDate() - 60);
 
@@ -40,16 +35,14 @@ export const useVehicles = () => {
         const saleIds = sales.map(s => s.id);
         const saleDetails = db.tables.find(t => t.name === 'saleDetails') ? await db.table('saleDetails').filter((sd: any) => sd.deletedAt === null && saleIds.includes(sd.saleId)).toArray() : [];
 
-        // NUEVO: Cargamos los productos habituales
         const usualProducts = db.tables.find(t => t.name === 'vehicleUsualProducts') ? await db.table('vehicleUsualProducts').filter((vp: any) => vp.deletedAt === null).toArray() : [];
 
         return { vehicles, customers, sales, saleDetails, products, usualProducts };
     }, []) || { vehicles: [], customers: [], sales: [], saleDetails: [], products: [], usualProducts: [] };
 
     const customersList = dbData.customers;
-    const productsList = dbData.products; // Para usar en el futuro selector
+    const productsList = dbData.products;
 
-    // 2. Mapear datos relacionales
     const mappedVehicles = useMemo(() => {
         const { vehicles, customers, sales, saleDetails, products, usualProducts } = dbData;
 
@@ -57,7 +50,6 @@ export const useVehicles = () => {
             const cliente = customers.find(c => c.id === v.customerId);
             const chofer = customers.find(c => c.id === v.conductorHabitualId);
 
-            // Armar Ficha Técnica Independiente (Productos Habituales)
             const fichaTecnica = usualProducts
                 .filter((up: any) => up.vehicleId === v.id)
                 .map((up: any) => {
@@ -65,9 +57,11 @@ export const useVehicles = () => {
                     return {
                         id: up.id,
                         productId: up.productId,
-                        productName: prod?.name || 'Producto Desconocido',
+                        productName: up.productNameOverride || prod?.name || 'Producto Desconocido', // Usa el override si existe
                         productCode: prod?.code || 'N/A',
-                        notes: up.notes
+                        notes: up.notes || '',
+                        quantity: up.quantity || 1,
+                        price: up.price !== undefined ? up.price : (prod?.price || 0)
                     };
                 });
 
@@ -82,7 +76,7 @@ export const useVehicles = () => {
                     .filter((si: any) => si.saleId === sale.id)
                     .map((si: any) => {
                         const prod = products.find(p => p.id === si.productId);
-                        return { ...si, productName: prod?.name || 'Producto no encontrado' };
+                        return { ...si, productName: si.descriptionSnapshot || prod?.name || 'Producto no encontrado' };
                     });
                 return { ...sale, items };
             });
@@ -92,13 +86,8 @@ export const useVehicles = () => {
                 clienteNombre: cliente?.name || 'Desconocido',
                 clienteDocumento: cliente?.identityDocNumber || '',
                 choferNombre: chofer?.name || 'Mismo que propietario',
-
-                // NOTAS AHORA PERTENECEN AL VEHÍCULO (Independiente de ventas)
                 notas: v.notes || "",
-
-                // NUEVO: Ficha Técnica
                 productosHabituales: fichaTecnica,
-
                 kmActual: (latestSale as any)?.currentMileage || v.mileage || 0,
                 kmProximo: (latestSale as any)?.nextMaintenanceMileage || 0,
                 historial: historialConProductos,
@@ -147,40 +136,38 @@ export const useVehicles = () => {
 
     const handleEmitirFactura = (vehicle: any, pastSale?: any, useUsualProducts: boolean = false) => {
         closeModal();
-
         let productosParaCart: any[] = [];
         let observacionSugerida = "";
 
-        // Si elige repetir un servicio del historial
         if (pastSale && pastSale.items && pastSale.items.length > 0) {
             pastSale.items.forEach((item: any) => {
                 const fullProduct = dbData.products.find(p => p.id === item.productId);
                 if (fullProduct) {
                     productosParaCart.push({
                         ...fullProduct,
+                        name: item.productName,
                         cantidad: item.quantity,
-                        precioUnitario: fullProduct.price
+                        price: item.unitPriceWithIgv
                     });
                 }
             });
             observacionSugerida = `Servicio basado en el historial del ${new Date(pastSale.issueDate).toLocaleDateString()}.`;
         }
-        // Si elige Facturar Ficha Técnica (Productos Habituales)
         else if (useUsualProducts && vehicle.productosHabituales && vehicle.productosHabituales.length > 0) {
             vehicle.productosHabituales.forEach((pref: any) => {
                 const fullProduct = dbData.products.find(p => p.id === pref.productId);
                 if (fullProduct) {
                     productosParaCart.push({
                         ...fullProduct,
-                        cantidad: 1, // Por defecto 1
-                        precioUnitario: fullProduct.price,
-                        notaItem: pref.notes // Pasamos la nota de preferencia al carrito (Ej: "2.5 Galones")
+                        name: pref.productName,
+                        cantidad: pref.quantity,
+                        price: pref.price,
+                        notaItem: pref.notes
                     });
                 }
             });
             observacionSugerida = `Servicio basado en la Ficha Técnica del Vehículo.`;
         }
-        // Venta en Blanco
         else {
             observacionSugerida = `Atención al vehículo placa ${vehicle.licensePlate}.`;
         }
@@ -203,83 +190,33 @@ export const useVehicles = () => {
 
     const handleSaveVehicle = async (data: VehicleFormData) => {
         if (!currentDeviceId) return;
-
         setLoading(true);
         setError(null);
         try {
             const now = new Date().toISOString();
-
-            // Incluimos las notas generales del vehículo en el guardado sin usar 'any'
             const vehicleToSave: Omit<VehicleEntity, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'version'> = {
-                customerId: data.customerId,
-                conductorHabitualId: data.conductorHabitualId || undefined,
-                licensePlate: data.licensePlate,
-                brand: data.brand || null,
-                model: data.model || null,
-                year: data.year === '' ? null : Number(data.year),
-                mileage: data.mileage === '' ? null : Number(data.mileage),
-                notes: data.notes || null // <-- AHORA ES TOTALMENTE TYPE-SAFE
+                customerId: data.customerId, conductorHabitualId: data.conductorHabitualId || undefined,
+                licensePlate: data.licensePlate, brand: data.brand || null, model: data.model || null,
+                year: data.year === '' ? null : Number(data.year), mileage: data.mileage === '' ? null : Number(data.mileage), notes: data.notes || null
             };
 
             if (activeModal === 'add') {
-                const newVehicle: VehicleEntity = {
-                    ...vehicleToSave,
-                    id: uuidv4(),
-                    createdAt: now,
-                    updatedAt: now,
-                    deletedAt: null,
-                    version: 1,
-                };
-
+                const newVehicle: VehicleEntity = { ...vehicleToSave, id: uuidv4(), createdAt: now, updatedAt: now, deletedAt: null, version: 1 };
                 await db.transaction('rw', db.vehicles, db.outboxEvents, async () => {
                     await db.vehicles.add(newVehicle);
-                    await db.outboxEvents.add({
-                        id: uuidv4(),
-                        deviceId: currentDeviceId,
-                        entityType: 'vehicle',
-                        entityId: newVehicle.id,
-                        operation: 'UPSERT',
-                        payloadJson: JSON.stringify(newVehicle),
-                        clientUpdatedAt: now,
-                        entityVersion: newVehicle.version,
-                        status: 'PENDING',
-                        createdAt: now,
-                    });
+                    await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicle', entityId: newVehicle.id, operation: 'UPSERT', payloadJson: JSON.stringify(newVehicle), clientUpdatedAt: now, entityVersion: newVehicle.version, status: 'PENDING', createdAt: now });
                 });
             } else if (activeModal === 'edit' && selectedVehicle) {
                 await db.transaction('rw', db.vehicles, db.outboxEvents, async () => {
                     const existing = await db.vehicles.get(selectedVehicle.id);
                     if (!existing) throw new Error("Vehículo no encontrado");
-
-                    const updated: VehicleEntity = {
-                        ...existing,
-                        ...vehicleToSave,
-                        updatedAt: now,
-                        version: existing.version + 1,
-                    };
-
+                    const updated: VehicleEntity = { ...existing, ...vehicleToSave, updatedAt: now, version: existing.version + 1 };
                     await db.vehicles.put(updated);
-                    await db.outboxEvents.add({
-                        id: uuidv4(),
-                        deviceId: currentDeviceId,
-                        entityType: 'vehicle',
-                        entityId: updated.id,
-                        operation: 'UPSERT',
-                        payloadJson: JSON.stringify(updated),
-                        clientUpdatedAt: now,
-                        entityVersion: updated.version,
-                        status: 'PENDING',
-                        createdAt: now,
-                    });
+                    await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicle', entityId: updated.id, operation: 'UPSERT', payloadJson: JSON.stringify(updated), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now });
                 });
             }
             closeModal();
-        } catch (err: any) {
-            console.error("Error saving vehicle:", err);
-            setError(err.message || 'Error al guardar el vehículo');
-        } finally {
-            setLoading(false);
-        }
+        } catch (err: any) { setError(err.message || 'Error al guardar'); } finally { setLoading(false); }
     };
 
     const handleDeleteVehicle = async (id: string) => {
@@ -290,118 +227,65 @@ export const useVehicles = () => {
             await db.transaction('rw', db.vehicles, db.outboxEvents, async () => {
                 const existing = await db.vehicles.get(id);
                 if (!existing) return;
-
-                const deleted: VehicleEntity = {
-                    ...existing,
-                    deletedAt: now,
-                    updatedAt: now,
-                    version: existing.version + 1,
-                };
-
+                const deleted: VehicleEntity = { ...existing, deletedAt: now, updatedAt: now, version: existing.version + 1 };
                 await db.vehicles.put(deleted);
-                await db.outboxEvents.add({
-                    id: uuidv4(),
-                    deviceId: currentDeviceId,
-                    entityType: 'vehicle',
-                    entityId: deleted.id,
-                    operation: 'DELETE',
-                    payloadJson: JSON.stringify(deleted),
-                    clientUpdatedAt: now,
-                    entityVersion: deleted.version,
-                    status: 'PENDING',
-                    createdAt: now,
-                });
+                await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicle', entityId: deleted.id, operation: 'DELETE', payloadJson: JSON.stringify(deleted), clientUpdatedAt: now, entityVersion: deleted.version, status: 'PENDING', createdAt: now });
             });
             closeModal();
-        } catch (err) {
-            console.error("Error deleting vehicle:", err);
-        } finally {
-            setLoading(false);
-        }
+        } catch (err) { console.error("Error", err); } finally { setLoading(false); }
     };
 
-
-    // 7. GESTIÓN DE FICHA TÉCNICA (Productos Habituales)
-    const saveUsualProducts = async (vehicleId: string, items: { productId: string, notes: string }[]) => {
+    const saveUsualProducts = async (vehicleId: string, items: any[]) => {
         if (!currentDeviceId) return;
         setLoading(true);
         try {
             const now = new Date().toISOString();
             await db.transaction('rw', db.vehicleUsualProducts, db.outboxEvents, async () => {
-                // Obtener los actuales no eliminados para este vehículo
-                const existing = await db.vehicleUsualProducts
-                    .filter((vp: any) => vp.vehicleId === vehicleId && vp.deletedAt === null)
-                    .toArray();
-
+                const existing = await db.vehicleUsualProducts.filter((vp: any) => vp.vehicleId === vehicleId && vp.deletedAt === null).toArray();
                 const existingMap = new Map(existing.map((e: any) => [e.productId, e]));
                 const newMap = new Map(items.map(i => [i.productId, i]));
 
-                // 1. Eliminar los que ya no están en la lista (Soft Delete)
                 for (const ex of existing) {
                     if (!newMap.has(ex.productId)) {
                         const deleted: any = { ...ex, deletedAt: now, updatedAt: now, version: ex.version + 1 };
                         await db.vehicleUsualProducts.put(deleted);
-                        await db.outboxEvents.add({
-                            id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: deleted.id,
-                            operation: 'DELETE', payloadJson: JSON.stringify(deleted), clientUpdatedAt: now, entityVersion: deleted.version, status: 'PENDING', createdAt: now
-                        });
+                        await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: deleted.id, operation: 'DELETE', payloadJson: JSON.stringify(deleted), clientUpdatedAt: now, entityVersion: deleted.version, status: 'PENDING', createdAt: now });
                     }
                 }
 
-                // 2. Insertar nuevos o actualizar notas si cambiaron
                 for (const item of items) {
                     const ex = existingMap.get(item.productId);
                     if (ex) {
-                        if (ex.notes !== item.notes) {
-                            const updated: any = { ...ex, notes: item.notes || null, updatedAt: now, version: ex.version + 1 };
+                        if (ex.notes !== item.notes || ex.quantity !== item.quantity || ex.price !== item.price || ex.productNameOverride !== item.productName) {
+                            const updated: any = {
+                                ...ex,
+                                notes: item.notes || null,
+                                quantity: item.quantity,
+                                price: item.price,
+                                productNameOverride: item.productName,
+                                updatedAt: now,
+                                version: ex.version + 1
+                            };
                             await db.vehicleUsualProducts.put(updated);
-                            await db.outboxEvents.add({
-                                id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: updated.id,
-                                operation: 'UPSERT', payloadJson: JSON.stringify(updated), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now
-                            });
+                            await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: updated.id, operation: 'UPSERT', payloadJson: JSON.stringify(updated), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now });
                         }
                     } else {
                         const newVup: any = {
-                            id: uuidv4(), vehicleId, productId: item.productId, notes: item.notes || null,
+                            id: uuidv4(), vehicleId, productId: item.productId,
+                            notes: item.notes || null, quantity: item.quantity, price: item.price, productNameOverride: item.productName,
                             createdAt: now, updatedAt: now, deletedAt: null, version: 1
                         };
                         await db.vehicleUsualProducts.add(newVup);
-                        await db.outboxEvents.add({
-                            id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: newVup.id,
-                            operation: 'UPSERT', payloadJson: JSON.stringify(newVup), clientUpdatedAt: now, entityVersion: newVup.version, status: 'PENDING', createdAt: now
-                        });
+                        await db.outboxEvents.add({ id: uuidv4(), deviceId: currentDeviceId, entityType: 'vehicleUsualProduct', entityId: newVup.id, operation: 'UPSERT', payloadJson: JSON.stringify(newVup), clientUpdatedAt: now, entityVersion: newVup.version, status: 'PENDING', createdAt: now });
                     }
                 }
             });
-            closeModal();
-        } catch (err) {
-            console.error("Error saving usual products:", err);
-        } finally {
-            setLoading(false);
-        }
+        } catch (err) { console.error("Error", err); } finally { setLoading(false); }
     };
 
     return {
-        searchTerm,
-        handleSearch,
-        currentVehicles,
-        currentPage,
-        totalPages,
-        setCurrentPage,
-        itemsPerPage,
-        handleItemsPerPageChange,
-        activeModal,
-        openModal,
-        closeModal,
-        selectedVehicle,
-        handleEmitirFactura,
-        totalItems: filteredVehicles.length,
-        customersList,
-        productsList, // Exportamos la lista de productos para el buscador
-        handleSaveVehicle,
-        handleDeleteVehicle,
-        saveUsualProducts, // Exportamos la nueva función
-        loading,
-        error
+        searchTerm, handleSearch, currentVehicles, currentPage, totalPages, setCurrentPage, itemsPerPage, handleItemsPerPageChange,
+        activeModal, openModal, closeModal, selectedVehicle, handleEmitirFactura, totalItems: filteredVehicles.length,
+        customersList, productsList, handleSaveVehicle, handleDeleteVehicle, saveUsualProducts, loading, error
     };
 };
