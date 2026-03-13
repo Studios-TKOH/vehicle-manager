@@ -109,7 +109,10 @@ export interface SaleDetailEntity extends SyncMetadata {
 export interface VehicleUsualProductEntity extends SyncMetadata {
     vehicleId: string;
     productId: string;
-    notes: string | null; // Ej: "Solo usa aceite sintético de esta marca"
+    notes: string | null;
+    quantity: number;
+    price: number;
+    productNameOverride: string | null;
 }
 
 export interface DocumentSeriesEntity extends SyncMetadata {
