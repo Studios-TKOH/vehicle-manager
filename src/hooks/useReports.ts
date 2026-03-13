@@ -8,6 +8,8 @@ export const useReports = () => {
         const allProducts = await db.products.toArray();
         const allCustomers = await db.customers.toArray();
         const allVehicles = await db.vehicles.toArray();
+        const allBranches = await db.branches.toArray();
+        const allUsers = await db.users.toArray();
 
         const ventasActivas = allSales.filter(s => s.deletedAt === null);
         const ventasConfirmadas = ventasActivas.filter(s => s.status === 'CONFIRMED');
@@ -53,15 +55,23 @@ export const useReports = () => {
             .map(sale => {
                 const cliente = allCustomers.find(c => c.id === sale.customerId);
                 const vehiculo = allVehicles.find(v => v.id === sale.vehicleId);
+                const sede = allBranches.find(b => b.id === sale.branchId);
+                const vendedor = allUsers.find(u => u.id === sale.userId);
 
                 return {
                     ...sale,
                     clienteNombre: cliente?.name || 'Cliente Desconocido',
-                    vehiclePlate: vehiculo?.licensePlate || null
+                    clienteDoc: cliente?.identityDocNumber || 'S/D',
+                    sucursalNombre: sede?.nombre || null,
+                    vehiclePlate: vehiculo?.licensePlate || null,
+                    vendedor: vendedor?.nombre,
+                    condicionPago: sale.paymentCondition || 'CONTADO',
+                    metodoPago: sale.paymentMethod || 'EFECTIVO',
+                    observaciones: sale.notes || '-'
                 };
             });
 
-        const ventasRecientes = historialVentas.slice(0, 5);
+        const ventasRecientes = historialVentas.slice(0, 10);
 
         return { kpis, topProductos, ventasRecientes, historialVentas };
     }, []);
