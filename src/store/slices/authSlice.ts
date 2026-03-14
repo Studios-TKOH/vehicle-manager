@@ -59,9 +59,14 @@ const authSlice = createSlice({
     },
     completeOnboarding: (state) => {
       state.needsOnboarding = false;
+    },
+    updateSessionUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
     }
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout, completeOnboarding } = authSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logout, completeOnboarding, updateSessionUser } = authSlice.actions;
 export default authSlice.reducer;
