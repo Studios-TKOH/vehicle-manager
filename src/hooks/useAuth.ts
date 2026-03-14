@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { type RootState } from '@/store';
-import { loginStart, loginSuccess, loginFailure, logout, completeOnboarding, type User } from '../store/slices/authSlice';
+import { loginStart, loginSuccess, loginFailure, logout, completeOnboarding, updateSessionUser, type User } from '@store/slices/authSlice';
 import { usersData } from '@data/mock/users';
 import { UserRole } from '@constants/roles/roles';
 import { getOrCreateDeviceId } from '../utils/device';
@@ -12,7 +12,7 @@ export const useAuth = () => {
     const dispatch = useDispatch();
     const authState = useSelector((state: RootState) => state.auth);
 
-    const [email, setEmail] = useState('carlos@elmotors.com');
+    const [email, setEmail] = useState('gercermagden@gmail.com');
     const [password, setPassword] = useState('123456');
 
     // --- LOGIN ---
@@ -21,7 +21,7 @@ export const useAuth = () => {
         dispatch(loginStart());
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 800)); // Simulamos latencia
+            await new Promise(resolve => setTimeout(resolve, 800));
 
             // 1. Buscar en la Base de Datos Local (Dexie)
             const localUsers = await db.users.toArray();
@@ -109,6 +109,7 @@ export const useAuth = () => {
                 id: newUserId,
                 companyId: newCompanyId,
                 defaultBranchId: 'PENDING_SETUP', // Marcador temporal hasta que registre la primera sucursal
+                branchIds: [],
                 nombre: nombreNuevo,
                 email: emailLower,
                 rol: UserRole.OWNER,
@@ -173,6 +174,10 @@ export const useAuth = () => {
         dispatch(completeOnboarding());
     };
 
+    const updateSession = (updates: Partial<User>) => {
+        dispatch(updateSessionUser(updates));
+    };
+
     return {
         ...authState,
         email, setEmail,
@@ -180,6 +185,7 @@ export const useAuth = () => {
         handleLogin,
         register,
         logout: handleLogout,
-        finishOnboarding
+        finishOnboarding,
+        updateSession
     };
 };

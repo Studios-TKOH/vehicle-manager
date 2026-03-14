@@ -7,7 +7,7 @@ import { useAuth } from '@hooks/useAuth';
 export type UserModalType = 'add' | 'edit' | 'delete' | 'warning' | null;
 
 export const useUsersSettings = () => {
-    const { user, deviceId } = useAuth();
+    const { user, deviceId, updateSession } = useAuth();
     const currentCompanyId = user?.companyId;
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
 
@@ -96,6 +96,20 @@ export const useUsersSettings = () => {
                     operation: 'UPSERT', payloadJson: JSON.stringify(updated), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now
                 });
             });
+
+            if (user && user.id === id && updateSession) {
+                // Filtramos solo los datos relevantes para la sesión de Redux
+                const sessionUpdates: any = {};
+                if (data.nombre !== undefined) sessionUpdates.nombre = data.nombre;
+                if (data.email !== undefined) sessionUpdates.email = data.email;
+                if (data.rol !== undefined) sessionUpdates.rol = data.rol;
+                if (data.branchIds !== undefined) sessionUpdates.branchIds = data.branchIds;
+
+                if (Object.keys(sessionUpdates).length > 0) {
+                    updateSession(sessionUpdates);
+                }
+            }
+            
             closeModal();
         } catch (error) {
             console.error("Error actualizando usuario:", error);
