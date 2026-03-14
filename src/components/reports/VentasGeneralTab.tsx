@@ -4,7 +4,8 @@ import { Input } from '@components/ui/Input';
 import { FormField } from '@components/ui/FormField';
 import styles from '@styles/modules/reports.module.css';
 import { exportToExcel } from '@utils/excel';
-import { formatToDate, formatToDateTime } from '@utils/dateFormats';
+import { formatToDate, formatToDateTime, toLocalISO } from '@utils/dateFormats';
+import { DOC_TYPES, type DocTypeCode } from '@constants/docTypes';
 
 interface VentasGeneralTabProps {
     sales: any[];
@@ -14,10 +15,18 @@ interface VentasGeneralTabProps {
 export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branchId }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [saleType, setSaleType] = useState<DocTypeCode | ''>('');
 
-    const filteredData = branchId
-        ? sales.filter(s => s.branchId === branchId)
-        : sales;
+    const filteredData = sales.filter(s => {
+        const matchBranch = branchId ? s.branchId === branchId : true;
+        const saleDateLocal = toLocalISO(s.issueDate);
+        const matchStart = startDate ? saleDateLocal >= startDate : true;
+        const matchEnd = endDate ? saleDateLocal <= endDate : true;
+
+        const matchType = saleType ? s.docType === saleType : true;
+
+        return matchBranch && matchStart && matchEnd && matchType;
+    });
 
     const handleExportExcel = async () => {
         const totals = filteredData.reduce((acc, v) => {
@@ -31,6 +40,7 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
         const dataToExport = filteredData.map(v => ({
             'SERIE': v.series,
             'NÚMERO': String(v.correlativeNumber).padStart(6, '0'),
+            'TIPO DOC': DOC_TYPES[v.docType as DocTypeCode]?.label ?? v.docType,
             'SUCURSAL': v.sucursalNombre,
             'CLIENTE DOC': v.clienteDoc,
             'CLIENTE NOMBRE': v.clienteNombre,
@@ -48,17 +58,17 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
             'OTROS': '-',
             'MONEDA': v.currency,
             'DESCUENTO': (v.totalDiscount || 0).toFixed(2),
-            'GRAVADO': v.subtotalAmount.toFixed(2),
-            'IGV': v.igvAmount.toFixed(2),
-            'TOTAL': v.totalAmount.toFixed(2),
+            'GRAVADO': (v.subtotalAmount || 0).toFixed(2),
+            'IGV': (v.igvAmount || 0).toFixed(2),
+            'TOTAL': (v.totalAmount || 0).toFixed(2),
             'ESTADO SUNAT': v.sunatStatus
-        }));        
+        }));
 
-        await exportToExcel(dataToExport, 'Reporte_Ventas_General', totals);
+        await exportToExcel(dataToExport, 'Reporte_Ventas_General', totals, 'ventas_general');
     };
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
             <section className={styles.cardFilters}>
                 <div className={styles.dateGroup}>
                     <FormField label="Fecha Inicio">
@@ -85,18 +95,49 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
                         </div>
                     </FormField>
                 </div>
+
+                <div className={styles.dateGroup}>
+                    <FormField label="Tipo de Comprobante">
+                        <div className={styles.branchSelectorGroup}>
+                            <select
+                                value={saleType}
+                                onChange={(e) => setSaleType(e.target.value as DocTypeCode | '')}
+                                className={styles.filterSelect}
+                            >
+                                <option value="">Todos los documentos</option>
+                                {Object.entries(DOC_TYPES).map(([code, doc]) => (
+                                    <option key={code} value={code}>
+                                        {doc.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </FormField>
+                </div>
+
+                {(startDate || endDate || saleType) && (
+                    <div className={styles.clearFilterContainer}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => { setStartDate(''); setEndDate(''); setSaleType(''); }}
+                            className="font-bold text-[11px] text-blue-600 hover:text-blue-800 uppercase tracking-tighter"
+                        >
+                            Limpiar filtros
+                        </Button>
+                    </div>
+                )}
             </section>
 
             <div className={styles.cardActions}>
                 <Button
-                    variant="outline"
                     className={styles.btnPreview}
                     onClick={handleExportExcel}
                 >
-                    Exportar (Excel)
+                    Exportar {filteredData.length} registros (Excel)
                 </Button>
 
-                <Button variant="primary" className={styles.btnDownload}>
+                <Button className={styles.btnDownload}>
                     Descargar PDF
                 </Button>
             </div>
@@ -105,10 +146,10 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
                 <table className={styles.excelTable}>
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Documento</th>
-                            <th>Cliente</th>
-                            <th className="text-right">Total</th>
+                            <th className={styles.thBase}>Fecha</th>
+                            <th className={styles.thBase}>Documento</th>
+                            <th className={styles.thBase}>Cliente</th>
+                            <th className={styles.thBase}>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,7 +157,7 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
                             filteredData.map((v) => (
                                 <tr key={v.id}>
                                     <td className={styles.colDate}>
-                                        {new Date(v.issueDate).toLocaleDateString()}
+                                        {formatToDate(v.issueDate)}
                                     </td>
                                     <td>
                                         <span className="font-semibold text-blue-600">
@@ -125,7 +166,7 @@ export const VentasGeneralTab: React.FC<VentasGeneralTabProps> = ({ sales, branc
                                     </td>
                                     <td>{v.clienteNombre}</td>
                                     <td className={styles.colAmount}>
-                                        S/ {v.totalAmount.toFixed(2)}
+                                        S/ {(v.totalAmount || 0).toFixed(2)}
                                     </td>
                                 </tr>
                             ))
