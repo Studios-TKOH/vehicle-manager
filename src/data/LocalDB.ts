@@ -33,6 +33,7 @@ export interface BranchEntity extends SyncMetadata {
 export interface UserEntity extends SyncMetadata {
     companyId: string;
     defaultBranchId: string;
+    branchIds?: string[];
     nombre: string;
     email: string;
     rol: string; // 'ADMIN' | 'VENDEDOR'
