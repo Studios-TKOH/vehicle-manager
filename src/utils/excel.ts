@@ -1,75 +1,87 @@
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+type ReportId = 'ventas_general' | 'productos_vendidos' | 'historial_vehiculos' | 'clientes_frecuentes';
 
-export const exportToExcel = async (data: any[], fileName: string, totals?: any) => {
+export const exportToExcel = async (data: any[], fileName: string, totals: any, reportId: ReportId) => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('REPORTE DE VENTAS');
+    const worksheet = workbook.addWorksheet('REPORTE');
 
     if (data.length > 0) {
+        // --- CONFIGURACIÓN REPORTE ---
+        const configs = {
+            ventas_general: {
+                merge: { start: 17, end: 18 },
+                moneyCols: [19, 20, 21, 22],
+                label: 'TOTAL SOLES (S/.)'
+            },
+            productos_vendidos: {
+                merge: { start: 5, end: 4 },
+                moneyCols: [5],
+                label: 'RESUMEN TOTAL'
+            },
+            historial_vehiculos: {
+                merge: { start: 7, end: 8 },
+                moneyCols: [9],
+                label: 'RESUMEN HISTORIAL'
+            },
+            clientes_frecuentes: {
+                merge: { start: 1, end: 2 },
+                moneyCols: [4],
+                label: 'TOTAL POR CLIENTES'
+            }
+        };
+
+        const config = configs[reportId];
+
+        // --- CONFIGURAR COLUMNAS ---
         const columns = Object.keys(data[0]).map(key => ({
             header: key.toUpperCase(),
             key: key,
-            width: 20
+            width: key.includes('NOMBRE') || key.includes('PRODUCTO') || key.includes('OBSERV') ? 40 : 18
         }));
         worksheet.columns = columns;
-
         worksheet.addRows(data);
 
+        // --- FILA DE TOTALES ---
         if (totals) {
-            const lastRow = worksheet.addRow({
-                'OTROS': 'TOTAL SOLES (S/.)',
-                'DESCUENTO': totals.descuento,
-                'GRAVADO': totals.gravado,
-                'IGV': totals.igv,
-                'TOTAL': totals.total
+            const totalRowValues: any = {};
+            const firstColKey = columns[config.merge.start - 1].key;
+            totalRowValues[firstColKey] = config.label;
+
+            Object.keys(totals).forEach(key => {
+                if (key !== 'label') {
+                    totalRowValues[key.toUpperCase()] = totals[key];
+                }
             });
 
-            const rowNum = lastRow.number;
+            const totalRow = worksheet.addRow(totalRowValues);
+            const rowNum = totalRow.number;
 
-            worksheet.mergeCells(rowNum, 17, rowNum, 18);
+            // Celda de texto fusionada
+            worksheet.mergeCells(rowNum, config.merge.start, rowNum, config.merge.end);
 
-            lastRow.eachCell((cell) => {
-                cell.font = { bold: true, color: { argb: 'FFFFFF' }, size: 12 };
+            // --- ESTILOS DE LA FILA AZUL ---
+            totalRow.eachCell((cell, colNumber) => {
+                cell.font = { bold: true, color: { argb: 'FFFFFF' }, size: 11 };
                 cell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
-                    fgColor: { argb: '2563EB' } 
+                    fgColor: { argb: '2563EB' }
                 };
-                
-                cell.alignment = { horizontal: 'right',vertical: 'middle' };
-                
-                if (cell.value && typeof cell.value === 'number') {
+                cell.alignment = { horizontal: 'right', vertical: 'middle' }; // Todo a la derecha
+                cell.border = { top: { style: 'medium' }, bottom: { style: 'medium' } };
+
+                if (config.moneyCols.includes(colNumber)) {
                     cell.numFmt = '"S/ " #,##0.00';
                 }
-
-                cell.border = {
-                    top: { style: 'medium', color: { argb: '000000' } },
-                    bottom: { style: 'medium', color: { argb: '000000' } }
-                };
             });
         }
 
-        const headerRow = worksheet.getRow(1);
-        headerRow.eachCell((cell) => {
+        // --- ESTILO DE ENCABEZADO ---
+        worksheet.getRow(1).eachCell((cell) => {
             cell.font = { bold: true, color: { argb: 'FFFFFF' } };
-            cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: '2563EB' }
-            };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        });
-
-        worksheet.eachRow((row, rowNumber) => {
-            if (rowNumber > 1) {
-                row.eachCell((cell) => {
-                    if (!cell.border) {
-                        cell.border = {
-                            bottom: { style: 'thin', color: { argb: 'E2E8F0' } }
-                        };
-                    }
-                });
-            }
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '2563EB' } };
+            cell.alignment = { horizontal: 'center' };
         });
     }
 
