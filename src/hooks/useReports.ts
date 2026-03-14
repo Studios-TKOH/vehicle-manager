@@ -50,7 +50,7 @@ export const useReports = () => {
             .sort((a, b) => b.ingresos - a.ingresos)
             .slice(0, 5);
 
-        const historialVentas = ventasConfirmadas
+        const historialMap= ventasConfirmadas
             .sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime())
             .map(sale => {
                 const cliente = allCustomers.find(c => c.id === sale.customerId);
@@ -71,9 +71,9 @@ export const useReports = () => {
                 };
             });
 
-        const ventasRecientes = historialVentas.slice(0, 10);
+        const ventasRecientes = historialMap.slice(0, 10);
 
-        return { kpis, topProductos, ventasRecientes, historialVentas };
+        return { kpis, topProductos, ventasRecientes, historialVentas: historialMap };
     }, []);
 
     return {

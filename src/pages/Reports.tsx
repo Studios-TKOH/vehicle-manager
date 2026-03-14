@@ -33,7 +33,7 @@ const Reports: React.FC = () => {
 
   const TabComponents: Record<string, React.ReactNode> = {
     ventas_general: (
-      <VentasGeneralTab sales={ventasRecientes} branchId={selectedBranch} />
+      <VentasGeneralTab sales={historialVentas} branchId={selectedBranch} />
     ),
     productos_vendidos: <ProductosTopTab products={topProductos} />,
     historial_vehiculos: <VehiculoHistorialTab sales={historialVentas} />,
@@ -49,7 +49,8 @@ const Reports: React.FC = () => {
           <div className={styles.branchSelectorGroup}>
             <span className={styles.branchLabel}>Sede:</span>
             <select
-              className={styles.branchSelect}
+            
+              className={styles.filterSelect}
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
             >
