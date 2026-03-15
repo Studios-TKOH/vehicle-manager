@@ -9,6 +9,7 @@ import {
   Clock,
   XCircle,
   CalendarClock,
+  User,
 } from "lucide-react";
 import styles from "@styles/modules/sales.module.css";
 
@@ -18,6 +19,7 @@ export interface SaleSuccessData {
   correlativeNumber: number;
   customerName: string;
   customerDocument?: string;
+  sellerName: string;
   totalAmount: number;
   issueDate: string;
   sunatStatus: string;
@@ -101,7 +103,6 @@ export const SaleSuccessModal: React.FC<Props> = ({
   );
   const docNumber = `${saleData.series}-${formattedCorrelative}`;
 
-  // Formateamos la hora para que se vea amigable (Ej: 15 de marzo de 2026, 04:30 PM)
   const formattedDateTime = new Date(saleData.issueDate).toLocaleString(
     "es-PE",
     {
@@ -117,7 +118,6 @@ export const SaleSuccessModal: React.FC<Props> = ({
         className={styles.successModalContent}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* HEADER DINÁMICO */}
         <div
           className={
             isHistory ? styles.historyHeaderModal : styles.successHeader
@@ -125,7 +125,11 @@ export const SaleSuccessModal: React.FC<Props> = ({
         >
           <div className={styles.successIconBox}>
             {isHistory ? (
-              <FileText size={48} className={styles.formSuccessWhiteText} strokeWidth={2} />
+              <FileText
+                size={48}
+                className={styles.formSuccessWhiteText}
+                strokeWidth={2}
+              />
             ) : (
               <CheckCircle2
                 size={48}
@@ -144,7 +148,6 @@ export const SaleSuccessModal: React.FC<Props> = ({
           </p>
         </div>
 
-        {/* BODY (Resumen del Ticket) */}
         <div className={styles.successBody}>
           <div className={styles.receiptPreview}>
             <div className={styles.receiptTopRow}>
@@ -154,7 +157,6 @@ export const SaleSuccessModal: React.FC<Props> = ({
                 </span>
                 <span className={styles.receiptDoc}>{docNumber}</span>
               </div>
-              {/* Badge SUNAT */}
               <div>{renderSunatStatus(saleData.sunatStatus)}</div>
             </div>
 
@@ -165,9 +167,17 @@ export const SaleSuccessModal: React.FC<Props> = ({
               </span>
             </div>
 
-            <span className={styles.receiptDate}>
-              <CalendarClock size={14} /> Emitido el {formattedDateTime}
-            </span>
+            <div className={styles.receiptDate}>
+              <span className={styles.receiptDate}>
+                <CalendarClock size={14} /> Emitido el {formattedDateTime}
+              </span>
+              <span className={styles.receiptDate}>
+                <User size={14} /> Atendido por:{" "}
+                <strong className={styles.receiptSellerName}>
+                  {saleData.sellerName}
+                </strong>
+              </span>
+            </div>
 
             <div className={styles.receiptTotalBox}>
               <span className={styles.receiptLabel}>Total de Operación</span>
@@ -178,7 +188,6 @@ export const SaleSuccessModal: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* FOOTER (Acciones) */}
         <div className={styles.successActions}>
           <div className={styles.formSuccessWideText}>
             <button className={styles.btnActionOutline} onClick={onPrintTicket}>
