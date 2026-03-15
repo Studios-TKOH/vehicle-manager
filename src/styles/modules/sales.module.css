@@ -167,6 +167,14 @@
     @apply flex gap-3 w-full;
 }
 
+.receiptDate {
+    @apply flex flex-col gap-1.5 mt-2;
+}
+
+.receiptSellerName {
+    @apply ml-1 text-slate-600;
+}
+
 .btnSecondary {
     @apply w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-600 font-bold hover:border-rose-200 hover:bg-rose-100 hover:text-rose-700 transition-all cursor-pointer active:scale-95;
 }

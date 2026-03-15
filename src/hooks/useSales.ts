@@ -17,6 +17,7 @@ export interface CartItem extends ProductEntity {
 
 export const useSales = () => {
     const location = useLocation();
+
     const { deviceId, user } = useAuth();
     const currentDeviceId = deviceId || localStorage.getItem('deviceId');
     const currentCompanyId = user?.companyId;
@@ -243,16 +244,27 @@ export const useSales = () => {
     const resetForm = () => {
         handleSelectCustomer(null);
         setCart([]);
-        setExtras(initialExtras);
+
+        setExtras({
+            vehicleId: "",
+            placa: "",
+            kilometrajeActual: "",
+            proximoCambioKm: "",
+            observaciones: "",
+            condicionPago: "CONTADO",
+            ordenCompra: "",
+            guiaRemision: ""
+        });
+
         setGlobalDiscount(0);
-        setIssueDate(today.toISOString().split("T")[0]);
+        setIssueDate(new Date().toISOString().split("T")[0]);
         setProductSearch("");
         setInlineInputs({});
         setIsOtrosMenuOpen(false);
+        setDocTypeState('03');
     };
 
     const processSale = async () => {
-        // 3. Validación estricta: No permite facturar si no hay una sucursal en el estado global
         if (!currentDeviceId || !currentCompanyId || !activeBranchId) {
             setSaleError("Error de seguridad: No se ha detectado una sucursal activa en la sesión.");
             return null;
@@ -325,6 +337,7 @@ export const useSales = () => {
                     id: saleId,
                     companyId: currentCompanyId,
                     branchId: activeBranchId,
+                    sellerId: user?.id || 'SISTEMA',
                     customerId: finalCustomerId,
                     vehicleId: finalVehicleId,
                     docType: docTypeState,
@@ -395,6 +408,7 @@ export const useSales = () => {
                 correlativeNumber: selectedSeries ? selectedSeries.nextCorrelative : 0,
                 customerName: selectedCustomerInternal ? selectedCustomerInternal.name : 'Público en General',
                 customerDocument: selectedCustomerInternal ? selectedCustomerInternal.identityDocNumber : 'S/N',
+                sellerName: user?.nombre || 'Vendedor Autorizado',
                 totalAmount: totals.total,
                 issueDate: finalIssueDate,
                 sunatStatus: 'NOT_SENT'

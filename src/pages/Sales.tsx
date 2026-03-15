@@ -110,6 +110,7 @@ export const Sales = () => {
         correlativeNumber: saleResult.correlativeNumber,
         customerName: saleResult.customerName,
         customerDocument: saleResult.customerDocument,
+        sellerName: saleResult.sellerName,
         totalAmount: saleResult.totalAmount,
         issueDate: saleResult.issueDate,
         sunatStatus: saleResult.sunatStatus,
@@ -120,6 +121,8 @@ export const Sales = () => {
   const handleNewSale = () => {
     setSuccessData(null);
     resetForm();
+    setCustomerSearch("");
+    setItemToEdit(null);
   };
 
   const handlePlateToggle = () => {
@@ -553,6 +556,7 @@ export const Sales = () => {
 
       <SaleSuccessModal
         isOpen={!!successData}
+        mode="success"
         saleData={successData}
         onNewSale={handleNewSale}
         onPrintTicket={() => alert("Simulando impresión...")}

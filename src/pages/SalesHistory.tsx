@@ -116,7 +116,6 @@ export const SalesHistory = () => {
         </div>
       </div>
 
-      {/* BODY: Tabla de Ventas */}
       <div className={styles.tableContainer}>
         {isLoading ? (
           <div className={styles.emptyState}>Cargando historial...</div>

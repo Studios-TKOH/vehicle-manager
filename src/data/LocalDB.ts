@@ -77,6 +77,7 @@ export interface ProductEntity extends SyncMetadata {
 export interface SaleEntity extends SyncMetadata {
     companyId: string;
     branchId: string;
+    sellerId?: string;
     customerId: string;
     vehicleId: string | null;
     docType: string; // '01', '03', 'PR'

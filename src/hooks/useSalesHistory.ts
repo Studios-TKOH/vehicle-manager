@@ -74,7 +74,8 @@ export const useSalesHistory = () => {
         const populatedSales = await Promise.all(daySales.map(async (sale) => {
             const customer = await db.customers.get(sale.customerId);
             const vehicle = sale.vehicleId ? await db.vehicles.get(sale.vehicleId) : null;
-            return { ...sale, customer, vehicle };
+            const seller = sale.sellerId ? await db.users.get(sale.sellerId) : null;
+            return { ...sale, customer, vehicle, seller };
         }));
 
         return populatedSales.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
@@ -89,8 +90,9 @@ export const useSalesHistory = () => {
             const docStr = `${sale.series}-${sale.correlativeNumber}`.toLowerCase();
             const clientName = sale.customer?.name.toLowerCase() || '';
             const plate = sale.vehicle?.licensePlate.toLowerCase() || '';
+            const sellerName = sale.seller?.nombre.toLowerCase() || '';
 
-            return docStr.includes(q) || clientName.includes(q) || plate.includes(q);
+            return docStr.includes(q) || clientName.includes(q) || plate.includes(q) || sellerName.includes(q);
         });
     }, [rawSalesData, searchQuery]);
 
@@ -107,6 +109,7 @@ export const useSalesHistory = () => {
             correlativeNumber: sale.correlativeNumber,
             customerName: sale.customer?.name || 'Público en General',
             customerDocument: sale.customer?.identityDocNumber || 'S/N',
+            sellerName: sale.seller?.nombre || 'SISTEMA',
             totalAmount: sale.totalAmount,
             issueDate: sale.issueDate,
             sunatStatus: sale.sunatStatus
