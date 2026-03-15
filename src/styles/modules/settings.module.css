@@ -305,3 +305,71 @@
 .userRoleBadge {
     @apply bg-blue-100 px-2 py-0.5 rounded font-bold text-[10px] text-blue-700 uppercase;
 }
+
+/* ================= MODAL USUARIOS Y "MI PERFIL" ================= */
+.userCardIsMe {
+    @apply border-blue-300 bg-blue-50/30;
+}
+
+.userAvatarBoxIsMe {
+    @apply bg-blue-600 text-white flex justify-center items-center shadow-inner rounded-full w-12 h-12 shrink-0;
+}
+
+.userMeBadge {
+    @apply ml-2 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest;
+}
+
+.modalHeaderIsMe {
+    @apply px-6 py-5 border-b border-blue-100 flex justify-between items-center bg-blue-50/50 rounded-t-2xl;
+}
+
+.modalTitleIconBoxIsMe {
+    @apply bg-blue-600 text-white p-2 flex justify-center items-center shadow-inner rounded-xl;
+}
+
+/* Checkboxes de Sucursales */
+.checkboxGroup {
+    @apply flex flex-wrap gap-3 mt-2;
+}
+
+.checkboxLabel {
+    @apply flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-colors bg-white border-slate-200 text-slate-600 hover:bg-slate-50;
+}
+
+.checkboxLabelChecked {
+    @apply flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-colors bg-blue-50 border-blue-300 text-blue-800 font-bold;
+}
+
+.checkboxInput {
+    @apply w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer;
+}
+
+/* Sección de Contraseña */
+.passwordSection {
+    @apply md:col-span-2 mt-4 pt-6 border-t border-slate-200;
+}
+
+.passwordToggleLabel {
+    @apply flex items-center gap-2 cursor-pointer w-fit mb-4;
+}
+
+.passwordToggleText {
+    @apply font-bold text-slate-700 flex items-center gap-2;
+}
+
+.passwordGrid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-200;
+}
+
+/* NUEVAS CLASES PARA EL TEXTO DEL HEADER */
+.modalTitleTextContainer {
+    @apply flex flex-col justify-center;
+}
+
+.modalTitleText {
+    @apply font-extrabold text-slate-800 text-xl tracking-tight leading-tight;
+}
+
+.modalTitleSubtext {
+    @apply mt-0.5 font-medium text-slate-500 text-sm;
+}

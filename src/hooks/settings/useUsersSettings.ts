@@ -74,7 +74,7 @@ export const useUsersSettings = () => {
         }
     }, [currentCompanyId, currentDeviceId]);
 
-    const updateUser = useCallback(async (id: string, data: Partial<UserEntity>) => {
+    const updateUser = useCallback(async (id: string, data: Partial<UserEntity> & { newPassword?: string }) => {
         if (!currentDeviceId) return;
         setLoading(true);
         try {
@@ -83,22 +83,29 @@ export const useUsersSettings = () => {
                 const existing = await db.users.get(id);
                 if (!existing) throw new Error("Usuario no encontrado");
 
+                const { newPassword, ...entityData } = data;
+
                 const updated: UserEntity = {
                     ...existing,
-                    ...data,
+                    ...entityData,
                     updatedAt: now,
                     version: existing.version + 1,
                 };
 
                 await db.users.put(updated);
+
+                const outboxPayload = {
+                    ...updated,
+                    ...(newPassword && { newPassword })
+                };
+
                 await db.outboxEvents.add({
                     id: uuidv4(), deviceId: currentDeviceId, entityType: 'user', entityId: updated.id,
-                    operation: 'UPSERT', payloadJson: JSON.stringify(updated), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now
+                    operation: 'UPSERT', payloadJson: JSON.stringify(outboxPayload), clientUpdatedAt: now, entityVersion: updated.version, status: 'PENDING', createdAt: now
                 });
             });
 
             if (user && user.id === id && updateSession) {
-                // Filtramos solo los datos relevantes para la sesión de Redux
                 const sessionUpdates: any = {};
                 if (data.nombre !== undefined) sessionUpdates.nombre = data.nombre;
                 if (data.email !== undefined) sessionUpdates.email = data.email;
@@ -109,14 +116,14 @@ export const useUsersSettings = () => {
                     updateSession(sessionUpdates);
                 }
             }
-            
+
             closeModal();
         } catch (error) {
             console.error("Error actualizando usuario:", error);
         } finally {
             setLoading(false);
         }
-    }, [currentDeviceId]);
+    }, [currentDeviceId, user, updateSession]);
 
     const deleteUser = useCallback(async (id: string) => {
         if (!currentDeviceId) return;
